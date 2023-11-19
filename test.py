@@ -1,14 +1,9 @@
-from flask import Flask, render_template, request, send_file
-import pandas as pd
-import matplotlib
 import matplotlib.pyplot as plt
-import io
-import os
-import tomli, tomli_w
+import tomli
+import tomli_w
+from flask import Flask, render_template, request
+
 import classes
-import pathlib
-import base64
-from config import settings as consts
 
 app = Flask(__name__)
 
@@ -56,7 +51,7 @@ def settings():
     return render_template('sett_vals.html', config=config_data)
 
 
-@app.route('/save_settings',  methods=['POST'])
+@app.route('/save_settings', methods=['POST'])
 def safe_settings():
     if request.method == 'POST':
         # Pfad zur TOML-Datei
@@ -143,4 +138,3 @@ def test_day_data(weather_data: dict, sun: object, pv: object, market: object) -
 
 if __name__ == '__main__':
     app.run(debug=True)
-

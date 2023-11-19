@@ -2,7 +2,6 @@ import datetime
 from functools import lru_cache
 
 import numpy as np
-import requests
 import requests_cache
 
 
@@ -280,7 +279,7 @@ class calc_sun_pos:
         :param t:  as a float
         :return: The solar elevation in degrees
         """
-        self.time_last_calc: float = round((int(t)) + ((t-int(t))*100/60), 2) - 0.25
+        self.time_last_calc: float = round((int(t)) + ((t - int(t)) * 100 / 60), 2) - 0.25
         self.mid_local_time: float = self.time_last_calc + self.longitude * np.deg2rad(4)
         self.real_local_time: float = self.mid_local_time + self.time_equation
         self.hour_angle: float = (12.00 - self.real_local_time) * np.deg2rad(15)

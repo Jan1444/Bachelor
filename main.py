@@ -1,10 +1,8 @@
 import matplotlib.pyplot as plt
-import time
 import pandas as pd
-import datetime
 
-from config import settings as consts
 import classes
+from config import settings as consts
 
 
 def init_classes(latitude: float, longitude: float, module_efficiency: float, module_area: int, tilt_angle: float,
