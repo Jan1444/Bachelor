@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="de">
+<meta charset="utf-8">
+<head>
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" type="text/css">
+    <title>Photovoltaik-Analyse-Settings</title>
+</head>
+<body>
+
+<form action="/save_settings" method="post">
+    <div>
+        <table>
+            <thead>
+            <tr>
+                <th colspan="2"><h1>Photovoltaik-Analyse</h1></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td><label for="latitude">Breitengrad [°]:</label></td>
+                <td><input id="latitude" minlength="2" name="latitude" type="text"
+                           value="{{ config['coordinates']['latitude'] }}"></td>
+            </tr>
+            <tr>
+                <td><label for="longitude">Längengrad [°]:</label></td>
+                <td><input id="longitude" minlength="2" name="longitude"
+                           type="text" value="{{ config['coordinates']['longitude'] }}"></td>
+            </tr>
+            <tr>
+                <td><label for="tilt_angle">Neigungswinkel [°]:</label></td>
+                <td><input id="tilt_angle" minlength="2" name="tilt_angle" type="text"
+                           value="{{ config['pv']['tilt_angle'] }}"></td>
+            </tr>
+            <tr>
+                <td><label for="area">Modulfläche [qm]:</label></td>
+                <td><input id="area" minlength="2" name="area" type="text" value="{{ config['pv']['area'] }}"></td>
+            </tr>
+            <tr>
+                <td><label for="module_efficiency">Modul-Effizienz [%]:</label></td>
+                <td><input id="module_efficiency" minlength="2" name="module_efficiency"
+                           type="text" value="{{ config['pv']['module_efficiency'] }}"></td>
+            </tr>
+            <tr>
+                <td><label for="exposure_angle">Ausrichtungswinkel [°]:</label></td>
+                <td><input id="exposure_angle" minlength="1" name="exposure_angle"
+                           type="text" value="{{ config['pv']['exposure_angle'] }}"></td>
+            </tr>
+            <tr>
+                <td><label for="mounting_type">Montagetyp:</label></td>
+                <td><input id="mounting_type" minlength="1" name="mounting_type"
+                           type="text" value="{{ config['pv']['mounting_type'] }}"></td>
+                <td>
+                    <div class="tooltip">?
+                        <span class="tooltiptext">
+                            0: Completely free elevation<br>
+                            1: On the roof, large distance<br>
+                            2: Integrated on the roof or roof, good rear ventilation<br>
+                            3: Integrated on the roof or rooftop, poor rear ventilation<br>
+                            4: Integrated on the façade or façades, good rear ventilation<br>
+                            5: Integrated on the façade or façades, poor rear ventilation<br>
+                            6: Roof integration, without rear ventilation<br>
+                            7: Façade integration, without rear ventilation.</span>
+                    </div>
+                </td>
+
+            </tr>
+            <tr>
+                <td><label for="temperature_coefficient">Temperatur Koeffizient:</label></td>
+                <td><input id="temperature_coefficient" minlength="1"
+                           name="temperature_coefficient" type="text"
+                           value="{{ config['pv']['temperature_coefficient'] }}"></td>
+            </tr>
+            <tr>
+                <td><label for="nominal_temperature">Nominal Temperatur:</label></td>
+                <td><input id="nominal_temperature" minlength="1" name="nominal_temperature"
+                           type="text" value="{{ config['pv']['nominal_temperature'] }}"></td>
+            </tr>
+            <tr>
+                <td><label for="consumer_price">Strompreis [ct]:</label></td>
+                <td><input id="consumer_price" minlength="1" name="consumer_price"
+                           type="text" value="{{ config['market']['consumer_price'] }}"></td>
+            </tr>
+            <tr>
+                <td>
+                    <button type="submit">Speichern</button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</form>
+</body>
+</html>
