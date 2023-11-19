@@ -2,7 +2,7 @@
 <html lang="de">
 <meta charset="utf-8">
 <head>
-    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" type="text/css">
+    <link href="{{ url_for('static', filename='css/style_set_vals.css.css') }}" rel="stylesheet" type="text/css">
     <title>Photovoltaik-Analyse-Settings</title>
 </head>
 <body>
@@ -65,13 +65,13 @@
 
             </tr>
             <tr>
-                <td><label for="temperature_coefficient">Temperatur Koeffizient:</label></td>
+                <td><label for="temperature_coefficient">Temperatur Koeffizient [%/°C]:</label></td>
                 <td><input id="temperature_coefficient" minlength="1"
                            name="temperature_coefficient" type="text"
                            value="{{ config['pv']['temperature_coefficient'] }}"></td>
             </tr>
             <tr>
-                <td><label for="nominal_temperature">Nominal Temperatur:</label></td>
+                <td><label for="nominal_temperature">Nominal Temperatur [°C]:</label></td>
                 <td><input id="nominal_temperature" minlength="1" name="nominal_temperature"
                            type="text" value="{{ config['pv']['nominal_temperature'] }}"></td>
             </tr>

@@ -48,7 +48,7 @@ def settings():
     with open(toml_file_path, 'rb') as f:
         config_data = tomli.load(f)
 
-    return render_template('sett_vals.html', config=config_data)
+    return render_template('set_vals.html', config=config_data)
 
 
 @app.route('/save_settings', methods=['POST'])
