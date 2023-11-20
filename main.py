@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import pandas as pd
-
+import time
 import classes
 from config import settings as consts
 
@@ -29,8 +29,8 @@ def init_classes(latitude: float, longitude: float, module_efficiency: float, mo
 def to_excel(w, col):
     df = pd.DataFrame.from_dict(w.data[list(w.data.keys())[0]])
     df = df.iloc[6]
-    with pd.ExcelWriter(r'/Users/jan/Documents/Weiterbildung/Bachelor/7. Semester/Bachelorarbeit/SolarDaten/'
-                        r'2023_11_17_data.xlsx',
+    with pd.ExcelWriter(r'/Users/jan/Documents/Weiterbildung/Bachelor/7. Semester/Bachelorarbeit/SolarDaten'
+                        r'/2023_11_21_data.xlsx',
                         mode='a', if_sheet_exists="overlay") as wr:
         df.to_excel(wr, index=True, startrow=1, startcol=col)
 
@@ -116,8 +116,8 @@ def main2(count):
 
 if __name__ == "__main__":
     i = 0
-    main1()
-    '''
+    # main1()
+
     while True:
         main2(i)
         i += 2
@@ -126,7 +126,7 @@ if __name__ == "__main__":
         for t in range(0, minute, 1):
             print("verbleibende minuten: ", minute - t)
             time.sleep(60)
-    '''
+
 
 # mitsubishi pymelcloud
 # Daikin gibts auch Lsg
