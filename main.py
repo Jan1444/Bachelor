@@ -26,15 +26,28 @@ def init_classes(latitude: float, longitude: float, module_efficiency: float, mo
     return weather, market, sun, pv
 
 
-def to_excel(w, col):
-    df = pd.DataFrame.from_dict(w.data[list(w.data.keys())[0]])
-    df = df.iloc[6]
-    with pd.ExcelWriter(r'/Users/jan/Documents/Weiterbildung/Bachelor/7. Semester/Bachelorarbeit/SolarDaten'
-                        r'/2023_11_21_data.xlsx',
-                        mode='a', if_sheet_exists="overlay") as wr:
-        df.to_excel(wr, index=True, startrow=1, startcol=col)
+def get_coord(street: str, nr: str, city: str, postalcode: int, country: str) -> (str, str):
+    # https://nominatim.org/release-docs/develop/api/Search/
+    street_rep = street.replace(" ", "&20")
+    city_rep = city.replace(" ", "&20")
 
-    # print(df)
+    url = (f"https://nominatim.openstreetmap.org/search?q={street_rep}%20{nr}%20{city_rep}%20{postalcode}%20{country}"
+           f"&format=json&addressdetails=1")
+    req = requests.request("GET", url).json()
+    if len(req) > 1:
+        for result in req:
+            if "address" in result.keys():
+                if street in result["address"].values():
+                    if city in result["address"].values():
+                        if nr in result["address"].values():
+                            if postalcode in result["address"].values():
+                                lat = float(req[0]["lat"])
+                                lon = float(req[0]["lon"])
+                                return lat, lon
+
+    lat = float(req[0]["lat"])
+    lon = float(req[0]["lon"])
+    return lat, lon
 
 
 def test_day_data(weather_data: dict, sun: object, pv: object, market: object) -> (list, list, list, list):

@@ -102,7 +102,9 @@ class weather:
         """
         self.latitude: float = latitude
         self.longitude: float = longitude
-        self.session = requests_cache.CachedSession('weatherdata.cache', expire_after=datetime.timedelta(hours=1))
+        self._expire_time = 1
+        self.session = requests_cache.CachedSession('weatherdata.cache',
+                                                    expire_after=datetime.timedelta(hours=self._expire_time))
         weather_data: dict = self.get_weather(start_date, end_date)
         self.data: dict = {}
         try:

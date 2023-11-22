@@ -20,11 +20,12 @@ def to_excel(w, col, path_):
         df.to_excel(wr, index=True, startrow=1, startcol=col)
 
 
-def main2(count, path_):
+def main(count, path_):
     w, m, sun, pv = init_classes(consts["coordinates"]["latitude"], consts["coordinates"]["longitude"],
                                  consts["pv"]["module_efficiency"], consts["pv"]["area"],
                                  consts["pv"]["tilt_angle"], consts["pv"]["exposure_angle"],
                                  consts["pv"]["mounting_type"], consts["market"]["consumer_price"])
+    w._expire_time = 0
     to_excel(w, count, path_)
 
 
@@ -32,7 +33,7 @@ if __name__ == "__main__":
     i = 0
     path = r'/Users/jan/Documents/Weiterbildung/Bachelor/7. Semester/Bachelorarbeit/SolarDaten/2023_11_21_data.xlsx'
     while True:
-        main2(i, path)
+        main(i, path)
         i += 2
         print("i = ", i)
         minute = 15
