@@ -6,32 +6,32 @@
       type="text/css">
 <head>
     <title>Photovoltaik-Analyse</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon/android-chrome-512x512.png') }}">
 </head>
-
-<table align="center" class="Box1">
-    <thead>
-    <tr>
-        <td colspan="2">
-            <h1>Übersicht</h1>
-        </td>
-    </tr>
-    </thead>
-    <tbody>
-    <tr>
-        <td>
-            <a>Heute Übersicht:</a>
-        </td>
-        <td>
-            <a></a>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <form action="/settings">
-                <input type="submit" value="Einstellungen">
-            </form>
-        </td>
-    </tr>
-    </tbody>
-</table>
+    <table>
+        <thead >
+            <tr>
+                <td colspan="2">
+                    <img src="{{ url_for('static', filename='favicon/android-chrome-512x512.png') }}" width="50px" align="left"><h1>Übersicht</h1>
+                </td>
+            </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>
+                <a>Heute Übersicht:</a>
+            </td>
+            <td>
+                <a></a>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <form action="/settings">
+                    <input type="submit" value="Einstellungen">
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
 </html>
