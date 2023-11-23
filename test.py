@@ -22,10 +22,10 @@ def init_classes(latitude: float, longitude: float, module_efficiency: float, mo
     :param exposure_angle:
     :return:
     """
-    weather = classes.weather(latitude, longitude)
-    market = classes.market_data(costs)
-    sun = classes.calc_sun_pos(latitude, longitude)
-    pv = classes.pv_profit(module_efficiency, module_area, tilt_angle, exposure_angle, -0.35, 25, mounting_type)
+    weather = classes.Weather(latitude, longitude)
+    market = classes.MarketData(costs)
+    sun = classes.CalcSunPos(latitude, longitude)
+    pv = classes.PVProfit(module_efficiency, module_area, tilt_angle, exposure_angle, -0.35, 25, mounting_type)
     return weather, market, sun, pv
 
 

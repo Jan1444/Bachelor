@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
-import pandas as pd
-import time
+import requests
 import classes
 from config import settings as consts
 
@@ -19,10 +18,10 @@ def init_classes(latitude: float, longitude: float, module_efficiency: float, mo
     :param exposure_angle:
     :return:
     """
-    weather = classes.weather(latitude, longitude)
-    market = classes.market_data(costs)
-    sun = classes.calc_sun_pos(latitude, longitude)
-    pv = classes.pv_profit(module_efficiency, module_area, tilt_angle, exposure_angle, -0.35, 25, mounting_type)
+    weather = classes.Weather(latitude, longitude)
+    market = classes.MarketData(costs)
+    sun = classes.CalcSunPos(latitude, longitude)
+    pv = classes.PVProfit(module_efficiency, module_area, tilt_angle, exposure_angle, -0.35, 25, mounting_type)
     return weather, market, sun, pv
 
 
@@ -101,7 +100,7 @@ def test_day_data(weather_data: dict, sun: object, pv: object, market: object) -
     plt.plot(x, pv_eff, label="PV Effizienz")
 
 
-def main1():
+def main():
     plt.figure(figsize=(60, 15))
     plt.grid()
     coordinates = consts["coordinates"]
@@ -118,27 +117,10 @@ def main1():
     plt.show()
 
 
-def main2(count):
-    w, m, sun, pv = init_classes(consts["coordinates"]["latitude"], consts["coordinates"]["longitude"],
-                                 consts["pv"]["module_efficiency"], consts["pv"]["area"],
-                                 consts["pv"]["tilt_angle"], consts["pv"]["exposure_angle"],
-                                 consts["pv"]["mounting_type"], consts["market"]["consumer_price"])
-    test_day_data(w.data[list(w.data.keys())[0]], sun, pv, m)
-    to_excel(w, count)
-
-
 if __name__ == "__main__":
     i = 0
-    # main1()
+    main()
 
-    while True:
-        main2(i)
-        i += 2
-        print("i = ", i)
-        minute = 15
-        for t in range(0, minute, 1):
-            print("verbleibende minuten: ", minute - t)
-            time.sleep(60)
 
 
 # mitsubishi pymelcloud

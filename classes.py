@@ -5,7 +5,7 @@ import numpy as np
 import requests_cache
 
 
-class market_data:
+class MarketData:
     """
     Gets the market data to the given time interval
     """
@@ -16,10 +16,10 @@ class market_data:
         :param consumer_costs: The cost of the grid
         :return: None
         """
-        date_today: datetime.time = datetime.datetime.today().strftime("%Y-%m-%d")
+        date_today: str = datetime.datetime.today().strftime("%Y-%m-%d")
         time_start: str = "00:00:00,00"
         self.session = requests_cache.CachedSession('marketdata.cache', expire_after=datetime.timedelta(hours=1))
-        time_start_ms: float = self.convert_time_to_ms(date_today, time_start)
+        time_start_ms: int = self.convert_time_to_ms(date_today, time_start)
         self.data: dict = self.get_data(start=time_start_ms)
         self.convert_dict(consumer_costs)
 
@@ -42,14 +42,14 @@ class market_data:
         return t
 
     @staticmethod
-    def convert_time_to_ms(date: datetime.date, t: str) -> str:
+    def convert_time_to_ms(date: str, t: str) -> int:
         """
         convert the given date and time to milliseconds
-        :param date: As datetime.date
+        :param date: As str
         :param t: time as string in format %H:%M:%S,%f
         :return: milliseconds
         """
-        dt_obj = datetime.datetime.strptime(date + ' ' + t, '%Y-%m-%d %H:%M:%S,%f').timestamp() * 1000
+        dt_obj = int(datetime.datetime.strptime(f"{date} {t}", '%Y-%m-%d %H:%M:%S,%f').timestamp() * 1000)
         return dt_obj
 
     def get_data(self, start: int | None = None, end: int | None = None) -> dict:
@@ -84,7 +84,7 @@ class market_data:
             self.data[i]['unit'] = 'EUR/kWh'
 
 
-class weather:
+class Weather:
     """
     Gets the needed weather data from open-meteo.com
     """
@@ -190,7 +190,7 @@ class weather:
                 date = date.strftime('%d-%m-%Y')
         date = datetime.datetime.strptime(unsorted_data["minutely_15"]["time"][0],
                                           '%Y-%m-%dT%H:%M').strftime('%d-%m-%Y')
-        tt: str = None
+        tt: str | None = None
         for i, t in enumerate(unsorted_data["hourly"]["time"]):
             for x in range(0, 60, 15):
                 tt = f"{t[11:13]}:{str(x).zfill(2)}"
@@ -210,7 +210,7 @@ class weather:
             date = date.strftime('%d-%m-%Y')
 
 
-class calc_sun_pos:
+class CalcSunPos:
     """
     calcs the position of the sun
     """
@@ -221,16 +221,16 @@ class calc_sun_pos:
         :param latitude:
         :param longitude:
         """
-        self.time_last_calc: float = None
-        self.hour_angle: float = None
-        self.real_local_time: float = None
-        self.mid_local_time: float = None
+        self.time_last_calc: float | None = None
+        self.hour_angle: float | None = None
+        self.real_local_time: float | None = None
+        self.mid_local_time: float | None = None
         self.latitude: float = np.deg2rad(latitude)
         self.longitude: float = np.deg2rad(longitude)
         if date is None:
-            self.current_date: datetime.time = datetime.datetime.now()
+            self.current_date: datetime.datetime.time = datetime.datetime.now()
         else:
-            self.current_date: datetime.time = datetime.datetime.strptime(date, "%d-%m-%Y")
+            self.current_date: datetime.datetime.time = datetime.datetime.strptime(date, "%d-%m-%Y")
         self.left_days: int = (self.current_date - datetime.datetime(self.current_date.year, 1, 1)).days
         self.days_per_year: int = (datetime.datetime(self.current_date.year, 12, 31) -
                                    datetime.datetime(self.current_date.year, 1, 1)).days + 1
@@ -290,7 +290,7 @@ class calc_sun_pos:
         return np.rad2deg(sun_height)
 
 
-class pv_profit:
+class PVProfit:
     """
     calculates the profit for the pv system
     """
