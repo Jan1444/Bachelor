@@ -31,7 +31,12 @@ def init_classes(latitude: float, longitude: float, module_efficiency: float, mo
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    return render_template('index.html')
+    toml_file_path = 'config/config_test.toml'
+
+    # TOML-Datei lesen
+    with open(toml_file_path, 'rb') as f:
+        config_data = tomli.load(f)
+    return render_template('index.html', config=config_data)
 
 
 @app.route('/download')

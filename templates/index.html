@@ -12,17 +12,38 @@
         <thead >
             <tr>
                 <td colspan="2">
-                    <img src="{{ url_for('static', filename='favicon/android-chrome-512x512.png') }}" width="50px" align="left"><h1>Übersicht</h1>
+                    <img src="{{ url_for('static', filename='favicon/android-chrome-512x512.png') }}"><h1>Übersicht</h1>
                 </td>
             </tr>
         </thead>
         <tbody>
         <tr>
-            <td>
+            <td class="Box1" colspan="2">
                 <a>Heute Übersicht:</a>
             </td>
+        </tr>
+        <tr>
             <td>
-                <a></a>
+                <a>Berechnete Photovoltaik Leistung:</a>
+            </td>
+            <td>
+                <a>{{ config['coordinates']['longitude'] }}</a>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <a>Gewählte Heizmethode:</a>
+            </td>
+            <td>
+                <a>{{ config['coordinates']['longitude'] }}</a>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <a>Berechnete Photovoltaik Leistung:</a>
+            </td>
+            <td>
+                <a>{{ config['coordinates']['longitude'] }}</a>
             </td>
         </tr>
         <tr>
