@@ -29,18 +29,18 @@
 }
 
 :root{
-    --font_size: 20px;
+    --font_size: 13px;
     --standard_font: Arial;
 }
 
 tr{
     font-size: var(--font_size);
-    height: calc(var(--font_size) + 20px);
+    height: calc(var(--font_size) + 15px);
     font-family: var(--standard_font);
 }
 
 button{
-    font-size: calc(var(--font_size) - 5px);
+    font-size: (var(--font_size));
     font-family: var(--standard_font);
 }
 
