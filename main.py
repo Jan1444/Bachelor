@@ -49,6 +49,12 @@ def get_coord(street: str, nr: str, city: str, postalcode: int, country: str) ->
     return lat, lon
 
 
+def calc_energy(energy: list, interval: float = 0.25) -> list:
+    power_values = list(map(lambda x: x / 1000, energy))
+    total_energy = sum((power_values[i] + power_values[i + 1]) / 2 * interval for i in range(len(power_values) - 1))
+    return total_energy
+
+
 def test_day_data(weather_data: dict, sun: object, pv: object, market: object) -> (list, list, list, list):
     t_list: list = []
     energy_list: list = []
@@ -92,6 +98,13 @@ def test_day_data(weather_data: dict, sun: object, pv: object, market: object) -
         data_mean = sum(data_mean) / len(data_mean)
     for count in range(len(t_list)):
         data_mean_list.append(data_mean)
+    interval = 0.25
+
+    power_values = list(map(lambda x: x / 1000, energy_list))
+    total_energy = sum((power_values[i] + power_values[i + 1]) / 2 * interval for i in range(len(power_values) - 1))
+
+    print(f"Energie über den Tag: {total_energy}kWh")
+
     x = t_list
 
     plt.plot(x, energy_list, label="Energie")
@@ -120,8 +133,6 @@ def main():
 if __name__ == "__main__":
     i = 0
     main()
-
-
 
 # mitsubishi pymelcloud
 # Daikin gibts auch Lsg

@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import tomli
 import tomli_w
 from flask import Flask, render_template, request
-
+from apscheduler.schedulers.background import BackgroundScheduler
 import classes
 
 app = Flask(__name__)
@@ -36,6 +36,9 @@ def index():
     # TOML-Datei lesen
     with open(toml_file_path, 'rb') as f:
         config_data = tomli.load(f)
+
+
+
     return render_template('index.html', config=config_data)
 
 
