@@ -30,12 +30,13 @@
     visibility: visible;
 }
 
-:root{
+:root {
     --font_family: Arial, SansSerif, serif;
     --font_size: 13px;
     --standard_font: Arial;
 }
-table{
+
+table {
     font-size: var(--font_height);
     font-family: var(--font_family);
     margin-left: 45px;
@@ -44,17 +45,17 @@ table{
 }
 
 
-button{
+button {
     font-size: var(--font_size);
     font-family: var(--standard_font);
 }
 
-input{
+input {
     font-size: var(--font_size);
     font-family: var(--standard_font);
 }
 
-h1{
+h1 {
     font-family: var(--standard_font);
 }
 
