@@ -1,3 +1,5 @@
+@charset "UTF-8";
+
 /* Tooltip-Container */
 .tooltip {
     position: relative;
@@ -29,18 +31,21 @@
 }
 
 :root{
+    --font_family: Arial, SansSerif, serif;
     --font_size: 13px;
     --standard_font: Arial;
 }
-
-tr{
-    font-size: var(--font_size);
-    height: calc(var(--font_size) + 15px);
-    font-family: var(--standard_font);
+table{
+    font-size: var(--font_height);
+    font-family: var(--font_family);
+    margin-left: 45px;
+    margin-top: 30px;
+    color: white;
 }
 
+
 button{
-    font-size: (var(--font_size));
+    font-size: var(--font_size);
     font-family: var(--standard_font);
 }
 
@@ -51,5 +56,5 @@ input{
 
 h1{
     font-family: var(--standard_font);
-
 }
+
