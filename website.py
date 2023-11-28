@@ -100,6 +100,17 @@ def index():
     return render_template('index.html', config=config_data)
 
 
+@app.route('/dashboard')
+def dashboard():
+    toml_file_path = 'config/config_test.toml'
+
+    # TOML-Datei lesen
+    with open(toml_file_path, 'rb') as f:
+        config_data = tomli.load(f)
+
+    return render_template('dashboard.html', config=config_data)
+
+
 @app.route('/download')
 def download():
     # Hier könnte Code zum Exportieren von Daten als Excel-Datei stehen

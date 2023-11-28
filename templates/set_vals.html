@@ -28,7 +28,7 @@
     <div class="menu">
         <ul class="menu-content">
             <li><a href="/"><span class="material-symbols-outlined">home</span><span>Home</span></a></li>
-            <li><a href="#"><span class="material-symbols-outlined">dashboard</span><span>DashBoard</span></a></li>
+            <li><a href="/dashboard"><span class="material-symbols-outlined">dashboard</span><span>DashBoard</span></a></li>
             <li><a href="#"><span class="material-symbols-outlined">analytics</span><span>Analytics</span></a></li>
             <li><a href="/settings"><span class="material-symbols-outlined">settings</span><span>Settings</span></a>
             </li>
@@ -36,14 +36,17 @@
         </ul>
     </div>
 
-    <form action="/save_settings" method="post">
+    <table class="BoxHeader">
+        <tr>
+            <td>
+                <img class="HeaderImage" src="{{ url_for('static', filename='favicon/android-chrome-512x512.png') }}">
+                <h1 class="Headerh1">Photovoltaik-Analyse-Settings</h1>
+            </td>
+        </tr>
+    </table>
+
+    <form action="/save_settings" method="post" class="BoxContent">
         <table>
-            <thead>
-            <tr>
-                <th colspan="3"><h1>Photovoltaik-Analyse-Settings</h1></th>
-            </tr>
-            </thead>
-            <tbody>
             <tr>
                 <td><label for="latitude">Breitengrad [°]:</label></td>
                 <td><input id="latitude" minlength="2" name="latitude" type="text"
@@ -124,7 +127,6 @@
                 <td></td>
                 <td></td>
             </tr>
-            </tbody>
         </table>
     </form>
 </div>

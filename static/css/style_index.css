@@ -6,19 +6,6 @@
     --pic_width: 150px;
 }
 
-
-h1 {
-    color: black;
-    font-family: var(--font_family);
-    font-size: calc(var(--font_height) * 2);
-    margin-top: calc((var(--pic_width) - (var(--font_height) * 2)) / 2);
-}
-
-img {
-    width: var(--pic_width);
-    float: left;
-}
-
 input {
     font-family: var(--font_family);
     font-size: calc(var(--font_height) - 3px);
@@ -32,10 +19,13 @@ table {
 
 }
 
-thead {
-    background-color: lightslategrey;
+.BoxContent{
+    grid-row-start: 2;
+    grid-row-end: 2;
+    grid-column-start: 2;
+    grid-column-end: 2;
+    width: 100%;
 }
-
 .Box1 {
     background-color: darkcyan;
     height: calc(var(--font_height) + 5px);

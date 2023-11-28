@@ -39,8 +39,6 @@
 table {
     font-size: var(--font_height);
     font-family: var(--font_family);
-    margin-left: 45px;
-    margin-top: 30px;
     color: white;
 }
 
@@ -77,4 +75,12 @@ tr td:nth-child(2){
 }
 tr td:nth-child(3){
   width: 10px;
+}
+
+.BoxContent{
+    grid-row-start: 2;
+    grid-row-end: 2;
+    grid-column-start: 2;
+    grid-column-end: 2;
+    width: 40%;
 }

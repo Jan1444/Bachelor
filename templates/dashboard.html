@@ -20,9 +20,9 @@
     <link href="{{ url_for('static', filename='favicon/site.webmanifest') }}" rel="manifest">
     <link color="#5bbad5" href="{{ url_for('static', filename='favicon/safari-pinned-tab.svg') }}" rel="mask-icon">
     <!--Stylesheet-->
-    <link href="{{ url_for('static', filename='css/style_index.css') }}" rel="stylesheet" type="text/css">
+    <link href="{{ url_for('static', filename='css/style_dashboard.css') }}" rel="stylesheet" type="text/css">
     <!--Title-->
-    <title>Photovoltaik-Analyse</title>
+    <title>Photovoltaik-Analyse-Dashboard</title>
 </head>
 <body>
 <div id="main-container">
@@ -38,16 +38,16 @@
 
     </div>
 
-    <table class="BoxHeader">
+    <table>
+        <thead>
         <tr>
-            <td>
-                <img class="HeaderImage" src="{{ url_for('static', filename='favicon/android-chrome-512x512.png') }}">
-                <h1 class="Headerh1">Übersicht</h1>
+            <td colspan="2">
+                <img src="{{ url_for('static', filename='favicon/android-chrome-512x512.png') }}">
+                <h1>Übersicht</h1>
             </td>
         </tr>
-    </table>
-
-    <table class="BoxContent">
+        </thead>
+        <tbody>
         <tr>
             <td class="Box1" colspan="2">
                 <a>Heute Übersicht:</a>
@@ -77,6 +77,7 @@
                 <a>{{ config['coordinates']['longitude'] }} kWh</a>
             </td>
         </tr>
+        </tbody>
     </table>
 </div>
 </body>
