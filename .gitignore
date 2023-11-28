@@ -1,4 +1,2 @@
-/htmlReport/
-marketdata.cache
-weatherdata.cache
-*.cache
+/marketdata.cache
+/weatherdata.cache

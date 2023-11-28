@@ -1,10 +1,11 @@
+import datetime
+import random
+
 import matplotlib.pyplot as plt
 import tomli
 import tomli_w
-from flask import Flask, render_template, request, Response
-import datetime
-import random
-import io
+from flask import Flask, render_template, request
+
 import classes
 
 app = Flask(__name__)
@@ -123,11 +124,13 @@ def dashboard():
 
 @app.route('/analytics')
 def analytics():
+    plt.clf()
     xs = range(100)
     ys = [random.randint(1, 50) for x in xs]
     plt.plot(xs, ys)
     plt.savefig('static/plots/output.png')
     return render_template('analytics.html', name="new_plot", url="/static/plots/output.png")
+
 
 @app.route('/download')
 def download():
