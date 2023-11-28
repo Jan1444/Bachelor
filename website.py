@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import tomli
 import tomli_w
 from flask import Flask, render_template, request
+import datetime
 
 import classes
 
@@ -29,7 +30,7 @@ def init_classes(latitude: float, longitude: float, module_efficiency: float, mo
     return weather, market, sun, pv
 
 
-def write_data_to_toml(data: dict, toml_file_path: str) -> None:
+def write_data_to_config(data: dict, toml_file_path: str) -> None:
     with open(toml_file_path, 'rb') as f:
         config_data = tomli.load(f)
 
@@ -48,67 +49,44 @@ def write_data_to_toml(data: dict, toml_file_path: str) -> None:
         tomli_w.dump(config_data, f)
 
 
-def write_date_data_to_file(weather_data: dict) -> None:
+def write_data_to_file(weather_data: dict, sun: object, pv: object, market: object) -> None:
     data_file_path = "data/data.toml"
-    # with open(data_file_path, 'rb') as f:
-    #     config_data = tomli.load(f)
-
-
-
-
-    with open(data_file_path, 'wb') as f:
-        tomli_w.dump(weather_data, f)
-
-def test_day_data(weather_data: dict, sun: object, pv: object, market: object) -> (list, list, list, list):
-    time_list: list = []
-    energy_list: list = []
-    market_list: list = []
-    pv_eff: list = []
-    zeit = 0
-    count = -3
-    for t in weather_data.keys():
+    data: dict = {"write_time": {"time": datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S"),
+                                 "format": "%d-%m-%Y %H:%M:%S"}}
+    zeit: int = -1
+    for z, t in enumerate(weather_data.keys()):
         if t != "daily":
             radiation = float(weather_data[t]["radiation"])
-            pv_temp = pv.calc_pv_temp(weather_data[t]["temp"], 100)
             time_float = float(t[:2]) + float(t[3:]) / 100
-            time_list.append(t)
             sun_height = sun.calc_solar_elevation(time_float)
             sun_azimuth = sun.calc_azimuth(time_float)
             incidence = pv.calc_incidence_angle(sun_height, sun_azimuth)
             curr_eff = pv.calc_temp_dependency(weather_data[t]["temp"], radiation)
             energy = pv.calc_energy(radiation, incidence, sun_height, curr_eff)
-            energy_list.append(energy)
-            market_list.append(market.data[zeit]["consumerprice"])
-            pv_eff.append(curr_eff * 100)
-            print("time: ", time_float)
-            print("pv temp: ", pv_temp)
-            print("radiation: ", radiation)
-            print("sun height: ", sun_height)
-            print("sun azimuth: ", sun_azimuth)
-            print("incidence: ", incidence)
-            print("Efficiency: ", curr_eff)
-            print("energy: ", energy)
-            print("price", market.data[zeit]["consumerprice"])
-            print("-" * 30)
-            if count % 4 == 0:
-                zeit += 1
-            count += 1
-    data_mean = []
-    data_mean_list = []
-    for count in range(len(energy_list)):
-        if energy_list[count] > 0:
-            data_mean.append(energy_list[count])
-    if len(data_mean) != 0:
-        data_mean = sum(data_mean) / len(data_mean)
-    for count in range(len(time_list)):
-        data_mean_list.append(data_mean)
-    x = time_list
 
-    plt.plot(x, energy_list, label="Energie")
-    plt.plot(x, market_list, label="Strompreis")
-    plt.plot(x, data_mean_list, label="Durchschnittsleistung")
-    plt.plot(x, pv_eff, label="PV Effizienz")
-    return x, energy_list, market_list, pv_eff
+            data.update({t: {"radiation": radiation, "energy": round(energy, 3),
+                             "market_price": market.data[zeit]["consumerprice"]}})
+        if (z - 4) % 4 == 0:
+            zeit += 1
+
+    with open(data_file_path, 'wb') as f:
+        tomli_w.dump(data, f)
+
+
+def test():
+    from config import settings as consts
+    coordinates = consts["coordinates"]
+    pv_consts = consts["pv"]
+    market_consts = consts["market"]
+
+    w, m, sun, pv = init_classes(coordinates["latitude"], coordinates["longitude"],
+                                 pv_consts["module_efficiency"], pv_consts["area"],
+                                 pv_consts["tilt_angle"], pv_consts["exposure_angle"],
+                                 pv_consts["mounting_type"], market_consts["consumer_price"])
+
+    w = w.data[list(w.data.keys())[0]]
+
+    return w, m, sun, pv
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -147,10 +125,9 @@ def safe_settings():
             config_data = tomli.load(f)
 
         data = request.form.to_dict()
-        write_data_to_toml(data, toml_file_path)
+        write_data_to_config(data, toml_file_path)
 
         return render_template('index.html', config=config_data)
-
 
 
 if __name__ == '__main__':
