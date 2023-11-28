@@ -40,7 +40,7 @@
         <table>
             <thead>
             <tr>
-                <th colspan="2"><h1>Photovoltaik-Analyse-Settings</h1></th>
+                <th colspan="3"><h1>Photovoltaik-Analyse-Settings</h1></th>
             </tr>
             </thead>
             <tbody>
@@ -48,30 +48,36 @@
                 <td><label for="latitude">Breitengrad [°]:</label></td>
                 <td><input id="latitude" minlength="2" name="latitude" type="text"
                            value="{{ config['coordinates']['latitude'] }}"></td>
+                <td></td>
             </tr>
             <tr>
                 <td><label for="longitude">Längengrad [°]:</label></td>
                 <td><input id="longitude" minlength="2" name="longitude"
                            type="text" value="{{ config['coordinates']['longitude'] }}"></td>
+                <td></td>
             </tr>
             <tr>
                 <td><label for="tilt_angle">Neigungswinkel [°]:</label></td>
                 <td><input id="tilt_angle" minlength="2" name="tilt_angle" type="text"
                            value="{{ config['pv']['tilt_angle'] }}"></td>
+                <td></td>
             </tr>
             <tr>
                 <td><label for="area">Modulfläche [qm]:</label></td>
                 <td><input id="area" minlength="2" name="area" type="text" value="{{ config['pv']['area'] }}"></td>
+                <td></td>
             </tr>
             <tr>
                 <td><label for="module_efficiency">Modul-Effizienz [%]:</label></td>
                 <td><input id="module_efficiency" minlength="2" name="module_efficiency"
                            type="text" value="{{ config['pv']['module_efficiency'] }}"></td>
+                <td></td>
             </tr>
             <tr>
                 <td><label for="exposure_angle">Ausrichtungswinkel [°]:</label></td>
                 <td><input id="exposure_angle" minlength="1" name="exposure_angle"
                            type="text" value="{{ config['pv']['exposure_angle'] }}"></td>
+                <td></td>
             </tr>
             <tr>
                 <td><label for="mounting_type">Montagetyp:</label></td>
@@ -97,21 +103,26 @@
                 <td><input id="temperature_coefficient" minlength="1"
                            name="temperature_coefficient" type="text"
                            value="{{ config['pv']['temperature_coefficient'] }}"></td>
+                <td></td>
             </tr>
             <tr>
                 <td><label for="nominal_temperature">Nominal Temperatur [°C]:</label></td>
                 <td><input id="nominal_temperature" minlength="1" name="nominal_temperature"
                            type="text" value="{{ config['pv']['nominal_temperature'] }}"></td>
+                <td></td>
             </tr>
             <tr>
                 <td><label for="consumer_price">Strompreis [ct]:</label></td>
                 <td><input id="consumer_price" minlength="1" name="consumer_price"
                            type="text" value="{{ config['market']['consumer_price'] }}"></td>
+                <td></td>
             </tr>
             <tr>
                 <td>
                     <button type="submit">Speichern</button>
                 </td>
+                <td></td>
+                <td></td>
             </tr>
             </tbody>
         </table>

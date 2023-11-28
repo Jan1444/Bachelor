@@ -57,5 +57,16 @@ input {
 
 h1 {
     font-family: var(--standard_font);
+    margin-bottom: 10px;
 }
 
+table{
+    table-layout: auto;
+    width: 100%;
+}
+tr td:nth-child(2){
+  width: 100px;
+}
+tr td:nth-child(3){
+  width: 10px;
+}
