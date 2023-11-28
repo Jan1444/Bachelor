@@ -1,9 +1,10 @@
 import matplotlib.pyplot as plt
 import tomli
 import tomli_w
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, Response
 import datetime
-
+import random
+import io
 import classes
 
 app = Flask(__name__)
@@ -47,6 +48,15 @@ def write_data_to_config(data: dict, toml_file_path: str) -> None:
 
     with open(toml_file_path, 'wb') as f:
         tomli_w.dump(config_data, f)
+
+
+def create_figure():
+    fig = Figure()
+    axis = fig.add_subplot(1, 1, 1)
+    xs = range(100)
+    ys = [random.randint(1, 50) for x in xs]
+    axis.plot(xs, ys)
+    return fig
 
 
 def write_data_to_file(weather_data: dict, sun: object, pv: object, market: object) -> None:
@@ -110,6 +120,14 @@ def dashboard():
 
     return render_template('dashboard.html', config=config_data)
 
+
+@app.route('/analytics')
+def analytics():
+    xs = range(100)
+    ys = [random.randint(1, 50) for x in xs]
+    plt.plot(xs, ys)
+    plt.savefig('static/plots/output.png')
+    return render_template('analytics.html', name="new_plot", url="/static/plots/output.png")
 
 @app.route('/download')
 def download():
