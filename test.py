@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import tomli
 import tomli_w
 from flask import Flask, render_template, request
-from apscheduler.schedulers.background import BackgroundScheduler
+
 import classes
 
 app = Flask(__name__)
@@ -29,68 +29,35 @@ def init_classes(latitude: float, longitude: float, module_efficiency: float, mo
     return weather, market, sun, pv
 
 
-@app.route('/', methods=['GET', 'POST'])
-def index():
-    toml_file_path = 'config/config_test.toml'
-
-    # TOML-Datei lesen
+def write_data_to_toml(data: dict, toml_file_path: str) -> None:
     with open(toml_file_path, 'rb') as f:
         config_data = tomli.load(f)
 
+    config_data['coordinates']['latitude'] = float(data['latitude'])
+    config_data['coordinates']['longitude'] = float(data['longitude'])
+    config_data['pv']['tilt_angle'] = float(data['tilt_angle'])
+    config_data['pv']['area'] = float(data['area'])
+    config_data['pv']['module_efficiency'] = float(data['module_efficiency'])
+    config_data['pv']['exposure_angle'] = float(data['exposure_angle'])
+    config_data['pv']['temperature_coefficient'] = float(data['temperature_coefficient'])
+    config_data['pv']['nominal_temperature'] = float(data['nominal_temperature'])
+    config_data['pv']['mounting_type'] = int(data['mounting_type'])
+    config_data['market']['consumer_price'] = float(data['consumer_price'])
+
+    with open(toml_file_path, 'wb') as f:
+        tomli_w.dump(config_data, f)
 
 
-    return render_template('index.html', config=config_data)
+def write_date_data_to_file(weather_data: dict) -> None:
+    data_file_path = "data/data.toml"
+    # with open(data_file_path, 'rb') as f:
+    #     config_data = tomli.load(f)
 
 
-@app.route('/download')
-def download():
-    # Hier könnte Code zum Exportieren von Daten als Excel-Datei stehen
-    pass
 
 
-@app.route('/settings')
-def settings():
-    toml_file_path = 'config/config_test.toml'
-
-    # TOML-Datei lesen
-    with open(toml_file_path, 'rb') as f:
-        config_data = tomli.load(f)
-
-    return render_template('set_vals.html', config=config_data)
-
-
-@app.route('/save_settings', methods=['POST'])
-def safe_settings():
-    if request.method == 'POST':
-        # Pfad zur TOML-Datei
-        toml_file_path = 'config/config_test.toml'
-
-        # Formulardaten empfangen
-        data = request.form.to_dict()
-
-        # TOML-Datei lesen, aktualisieren und zurückschreiben
-        with open(toml_file_path, 'rb') as f:
-            config_data = tomli.load(f)
-
-        # Aktualisieren Sie hier die Konfigurationsdaten mit den Formulardaten
-        # Beispiel:
-        config_data['coordinates']['latitude'] = float(data['latitude'])
-        config_data['coordinates']['longitude'] = float(data['longitude'])
-        config_data['pv']['tilt_angle'] = float(data['tilt_angle'])
-        config_data['pv']['area'] = float(data['area'])
-        config_data['pv']['module_efficiency'] = float(data['module_efficiency'])
-        config_data['pv']['exposure_angle'] = float(data['exposure_angle'])
-        config_data['pv']['temperature_coefficient'] = float(data['temperature_coefficient'])
-        config_data['pv']['nominal_temperature'] = float(data['nominal_temperature'])
-        config_data['pv']['mounting_type'] = int(data['mounting_type'])
-        config_data['market']['consumer_price'] = float(data['consumer_price'])
-
-        # TOML-Datei mit aktualisierten Daten schreiben
-        with open(toml_file_path, 'wb') as f:
-            tomli_w.dump(config_data, f)
-
-        return render_template('index.html', config=config_data)
-
+    with open(data_file_path, 'wb') as f:
+        tomli_w.dump(weather_data, f)
 
 def test_day_data(weather_data: dict, sun: object, pv: object, market: object) -> (list, list, list, list):
     time_list: list = []
@@ -142,6 +109,48 @@ def test_day_data(weather_data: dict, sun: object, pv: object, market: object) -
     plt.plot(x, data_mean_list, label="Durchschnittsleistung")
     plt.plot(x, pv_eff, label="PV Effizienz")
     return x, energy_list, market_list, pv_eff
+
+
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    toml_file_path = 'config/config_test.toml'
+
+    # TOML-Datei lesen
+    with open(toml_file_path, 'rb') as f:
+        config_data = tomli.load(f)
+
+    return render_template('index.html', config=config_data)
+
+
+@app.route('/download')
+def download():
+    # Hier könnte Code zum Exportieren von Daten als Excel-Datei stehen
+    pass
+
+
+@app.route('/settings')
+def settings():
+    toml_file_path = 'config/config_test.toml'
+
+    # TOML-Datei lesen
+    with open(toml_file_path, 'rb') as f:
+        config_data = tomli.load(f)
+
+    return render_template('set_vals.html', config=config_data)
+
+
+@app.route('/save_settings', methods=['POST'])
+def safe_settings():
+    if request.method == 'POST':
+        toml_file_path = 'config/config_test.toml'
+        with open(toml_file_path, 'rb') as f:
+            config_data = tomli.load(f)
+
+        data = request.form.to_dict()
+        write_data_to_toml(data, toml_file_path)
+
+        return render_template('index.html', config=config_data)
+
 
 
 if __name__ == '__main__':

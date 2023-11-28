@@ -21,7 +21,7 @@
     <link color="#5bbad5" href="{{ url_for('static', filename='favicon/safari-pinned-tab.svg') }}" rel="mask-icon">
     <!--Stylesheet-->
     <link href="{{ url_for('static', filename='css/style_index.css') }}" rel="stylesheet" type="text/css">
-
+    <!--Title-->
     <title>Photovoltaik-Analyse</title>
 </head>
 <body>
@@ -71,10 +71,10 @@
         </tr>
         <tr>
             <td>
-                <a>Berechnete Photovoltaik Leistung:</a>
+                <a>Geschätzte Energie:</a>
             </td>
             <td align="right">
-                <a>{{ config['coordinates']['longitude'] }}</a>
+                <a>{{ config['coordinates']['longitude'] }} kWh</a>
             </td>
         </tr>
         </tbody>

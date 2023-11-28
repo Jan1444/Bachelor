@@ -103,7 +103,7 @@ def test_day_data(weather_data: dict, sun: object, pv: object, market: object) -
     power_values = list(map(lambda x: x / 1000, energy_list))
     total_energy = sum((power_values[i] + power_values[i + 1]) / 2 * interval for i in range(len(power_values) - 1))
 
-    print(f"Energie über den Tag: {total_energy}kWh")
+    print(f"Energie über den Tag: {round(total_energy, 2)}kWh")
 
     x = t_list
 
