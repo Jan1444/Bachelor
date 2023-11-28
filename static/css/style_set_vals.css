@@ -32,7 +32,7 @@
 
 :root {
     --font_family: Arial, SansSerif, serif;
-    --font_size: 13px;
+    --font_size: 18px;
     --standard_font: Arial;
 }
 
@@ -46,18 +46,26 @@ table {
 
 
 button {
+    margin-top: 10px;
     font-size: var(--font_size);
     font-family: var(--standard_font);
 }
 
 input {
+    margin-top: 5px;
     font-size: var(--font_size);
     font-family: var(--standard_font);
 }
 
-h1 {
+label{
     font-family: var(--standard_font);
-    margin-bottom: 10px;
+    font-size: var(--font_size);
+}
+
+h1 {
+    font-size: calc(var(--font_size) + 18px);
+    font-family: var(--standard_font);
+    margin-bottom: 30px;
 }
 
 table{

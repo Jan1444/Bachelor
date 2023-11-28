@@ -26,7 +26,7 @@
     transition: .3s;
     background: #ffffff12;
     padding: 20px 20px 20px 0;
-    width: 85px;
+    width: 100px;
     box-shadow: 8px 0 9px 0 #00000014;
     backdrop-filter: blur(5px);
     min-height: 100vh;
@@ -65,9 +65,9 @@ a {
 }
 
 .material-symbols-outlined {
-    font-size: 25px;
+    font-size: 35px;
     margin-right: 10px;
     background: #0c0c0c;
     border-radius: 50%;
-    padding: 10px;
+    padding: 12px;
 }
