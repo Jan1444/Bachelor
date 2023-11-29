@@ -57,15 +57,6 @@ def write_data_to_config(data: dict, toml_file_path: str) -> None:
         tomli_w.dump(config_data, f)
 
 
-def create_figure():
-    fig = Figure()
-    axis = fig.add_subplot(1, 1, 1)
-    xs = range(100)
-    ys = [random.randint(1, 50) for x in xs]
-    axis.plot(xs, ys)
-    return fig
-
-
 def write_data_to_file(weather_data: dict, sun: object, pv: object, market: object) -> None:
     data_file_path = "data/data.toml"
     data: dict = {"write_time": {"time": datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S"),
@@ -117,6 +108,7 @@ def calc_energy(energy: list, interval: float = 0.25) -> list:
     power_values = list(map(lambda x: x / 1000, energy))
     total_energy = sum((power_values[i] + power_values[i + 1]) / 2 * interval for i in range(len(power_values) - 1))
     return total_energy
+
 
 def test():
     from config import settings as consts
