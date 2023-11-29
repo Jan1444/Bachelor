@@ -1,7 +1,8 @@
 import datetime
 import random
-import requests
+
 import matplotlib.pyplot as plt
+import requests
 import tomli
 import tomli_w
 from flask import Flask, render_template, request
@@ -12,8 +13,8 @@ app = Flask(__name__)
 
 
 def init_classes(latitude: float, longitude: float, module_efficiency: float, module_area: int, tilt_angle: float,
-                 exposure_angle: float, mounting_type: int, costs: float) -> (
-classmethod, classmethod, classmethod, classmethod):
+                 exposure_angle: float, mounting_type: int, costs: float) -> \
+        (classmethod, classmethod, classmethod, classmethod):
     """
 
     :param mounting_type:
@@ -112,6 +113,11 @@ def get_coord(street: str, nr: str, city: str, postalcode: int, country: str) ->
     return lat, lon
 
 
+def calc_energy(energy: list, interval: float = 0.25) -> list:
+    power_values = list(map(lambda x: x / 1000, energy))
+    total_energy = sum((power_values[i] + power_values[i + 1]) / 2 * interval for i in range(len(power_values) - 1))
+    return total_energy
+
 def test():
     from config import settings as consts
     coordinates = consts["coordinates"]
@@ -131,8 +137,6 @@ def test():
 @app.route('/', methods=['GET', 'POST'])
 def index():
     toml_file_path = 'config/config_test.toml'
-
-    # TOML-Datei lesen
     with open(toml_file_path, 'rb') as f:
         config_data = tomli.load(f)
 
@@ -160,21 +164,80 @@ def analytics():
     return render_template('analytics.html', name="new_plot", url="/static/plots/output.png")
 
 
-@app.route('/download')
+@app.route('/download', methods=['POST'])
 def download():
-    # Hier könnte Code zum Exportieren von Daten als Excel-Datei stehen
-    pass
+    toml_file_path = 'config/config_test.toml'
+    with open(toml_file_path, 'rb') as f:
+        config_data = tomli.load(f)
+    if request.method == 'POST':
+        data = request.form.to_dict()
+        start_date = datetime.datetime.strptime(data['start_date'], "%Y-%m-%d")
+        end_date = datetime.datetime.strptime(data['end_date'], "%Y-%m-%d")
+
+        weather_date = classes.Weather(
+            config_data['coordinates']['latitude'], config_data['coordinates']['longitude'],
+            datetime.datetime.strftime(start_date, "%d-%m-%Y"),
+            datetime.datetime.strftime(end_date, "%d-%m-%Y")).data
+
+        pv = classes.PVProfit(config_data["pv"]["module_efficiency"], config_data["pv"]["area"],
+                              config_data["pv"]["tilt_angle"], config_data["pv"]["exposure_angle"],
+                              config_data["pv"]["temperature_coefficient"],
+                              config_data["pv"]["nominal_temperature"], config_data["pv"]["mounting_type"])
+
+        power_data: dict = {}
+        energy_data: dict = {}
+        for date in weather_date.keys():
+            sun = classes.CalcSunPos(config_data['coordinates']['latitude'], config_data['coordinates']['longitude'],
+                                     date)
+            power_data[date] = {}
+            energy_data_list: list = []
+            for t in weather_date[date].keys():
+                if t != "daily":
+                    time_float: float = int(t[:2]) + int(t[3:]) / 100
+                    azimuth: float = sun.calc_azimuth(time_float)
+                    elevation: floatt = sun.calc_solar_elevation(time_float)
+                    incidence = pv.calc_incidence_angle(elevation, azimuth)
+                    eff = pv.calc_temp_dependency(weather_date[date][t]["temp"], weather_date[date][t]["radiation"])
+                    power_data[date][t] = pv.calc_power(weather_date[date][t]["radiation"], incidence, elevation, eff)
+                    energy_data_list.append(power_data[date][t])
+            energy_data[date] = calc_energy(energy_data_list)
+        print(power_data)
+        print(energy_data)
+        plt.figure(figsize=(60, 15))
+        plt.grid()
+        plt.xticks(rotation=90)
+        plt.plot(energy_data.keys(), energy_data.values())
+        plt.savefig("plot.png")
+    return render_template('index.html', config=config_data)
 
 
 @app.route('/settings')
 def settings():
     toml_file_path = 'config/config_test.toml'
 
-    # TOML-Datei lesen
-    with open(toml_file_path, 'rb') as f:
-        config_data = tomli.load(f)
+    try:
+        with open(toml_file_path, 'rb') as f:
+            config_data = tomli.load(f)
 
-    return render_template('set_vals.html', config=config_data)
+    except FileNotFoundError:
+        open(toml_file_path, "x")
+        config_data = {
+            "coordinates": {
+                "latitude": "",
+                "longitude": ""
+            },
+            "pv": {
+                "tilt_angle": "",
+                "area": "",
+                "module_efficiency": "",
+                "exposure_angle": ""
+            },
+            "market": {
+                "consumer_price": "",
+            }
+        }
+    finally:
+        return render_template('set_vals.html', config=config_data)
 
 
 @app.route('/save_settings', methods=['POST'])
@@ -186,17 +249,21 @@ def safe_settings():
 
         data = request.form.to_dict()
 
-        if ((data['latitude'] != "" and data['longitude'] != "" )or (data['Straße'] != "" and data['Nr'] != "" and
-            data['Stadt'] != "" and data['PLZ'] != "" and data['Land'])):
+        if ((data['latitude'] != "" and data['longitude'] != "") or (data['Straße'] != "" and data['Nr'] != "" and
+                                                                     data['Stadt'] != "" and data['PLZ'] != "" and
+                                                                     data['Land'])):
             write_data_to_config(data, toml_file_path)
             return render_template('index.html', config=config_data)
         else:
-            return render_template('set_vals.html', error='Bitte füllen Sie mindestens eines der Felder aus.',
+            return render_template('set_vals.html',
+                                   error='Bitte füllen Sie mindestens Latitude und Longitude aus oder die Adresse',
                                    config=config_data)
+
 
 @app.route('/file_download')
 def file_download():
-    return render_template('file_download.html')
+    date_today = datetime.datetime.now().strftime("%Y-%m-%d")
+    return render_template('file_download.html', config=date_today)
 
 
 if __name__ == '__main__':

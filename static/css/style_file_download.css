@@ -1,0 +1,80 @@
+@charset "UTF-8";
+
+/* Tooltip-Container */
+.tooltip {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted black;
+}
+
+/* Tooltip-Text */
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 700px;
+    background-color: black;
+    color: whitesmoke;
+    text-align: left;
+    border-radius: 10px;
+    padding: 5px 5px;
+    position: absolute;
+    z-index: 1;
+    bottom: 10%;
+    left: 0;
+    margin-left: 20px;
+    font-size: var(--font_height);
+}
+
+/* Tooltip-Anzeige beim Darüberfahren */
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+}
+
+:root {
+    --font_family: Arial, SansSerif, serif;
+    --font_size: 18px;
+    --standard_font: Arial;
+}
+
+table {
+    font-size: var(--font_height);
+    font-family: var(--font_family);
+    color: white;
+}
+
+
+button {
+    margin-top: 10px;
+    font-size: var(--font_size);
+    font-family: var(--standard_font);
+}
+
+input {
+    margin-top: 5px;
+    font-size: var(--font_size);
+    font-family: var(--standard_font);
+}
+
+label{
+    font-family: var(--standard_font);
+    font-size: var(--font_size);
+}
+
+h1 {
+    font-size: calc(var(--font_size) + 18px);
+    font-family: var(--standard_font);
+    margin-bottom: 30px;
+}
+
+table{
+    table-layout: auto;
+    width: 100%;
+}
+
+
+.BoxContent{
+    grid-row-start: 2;
+    grid-row-end: 2;
+    grid-column-start: 2;
+    grid-column-end: 2;
+    width: 25%;
+}

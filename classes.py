@@ -371,11 +371,11 @@ class PVProfit:
         return current_efficiency
 
     @lru_cache(maxsize=None)
-    def calc_energy(self, energy_direct_horizontal: float, incidence_angle: float, sun_height: float,
-                    current_efficiency) -> float:
+    def calc_power(self, power_direct_horizontal: float, incidence_angle: float, sun_height: float,
+                   current_efficiency) -> float:
         """
         calcs the energy output of the pv panel
-        :param energy_direct_horizontal: the direct radiation of the weather data
+        :param power_direct_horizontal: the direct radiation of the weather data
         :param incidence_angle: the incidence angle of the sun
         :param sun_height: the height of the sun
         :param current_efficiency: the current efficiency of the panel
@@ -383,6 +383,6 @@ class PVProfit:
         """
         if incidence_angle == -1:
             return 0
-        energy_direct_gen = (energy_direct_horizontal * np.cos(np.deg2rad(incidence_angle)) /
-                             np.sin(np.deg2rad(90 - sun_height)))
-        return abs(energy_direct_gen * current_efficiency * self.module_area)
+        power_direct_gen = (power_direct_horizontal * np.cos(np.deg2rad(incidence_angle)) /
+                            np.sin(np.deg2rad(90 - sun_height)))
+        return abs(power_direct_gen * current_efficiency * self.module_area)
