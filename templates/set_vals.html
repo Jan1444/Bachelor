@@ -47,17 +47,30 @@
 
     <form action="/save_settings" method="post" class="BoxContent">
         <table>
+                {% if error %}
+                    <p style="color: red;">{{ error }}</p>
+                {% endif %}
             <tr>
                 <td><label for="latitude">Breitengrad [°]:</label></td>
                 <td><input id="latitude" minlength="2" name="latitude" type="text"
                            value="{{ config['coordinates']['latitude'] }}"></td>
-                <td></td>
+                <td><label for="Straße" >Straße:</label>
+                    <input id="Straße" minlength="2" name="Straße" type="text" value="">
+                    <label for="Nr">Hausnummer:</label>
+                    <input id="Nr" minlength="2" name="Nr" type="text" value="">
+                    <label for="Stadt">Stadt:</label>
+                    <input id="Stadt" minlength="2" name="Stadt" type="text" value="">
+                </td>
             </tr>
             <tr>
                 <td><label for="longitude">Längengrad [°]:</label></td>
                 <td><input id="longitude" minlength="2" name="longitude"
                            type="text" value="{{ config['coordinates']['longitude'] }}"></td>
-                <td></td>
+                <td><label for="PLZ">Postleitzahl:</label>
+                    <input id="PLZ" minlength="5" maxlength="5" name="PLZ" type="number">
+                    <label for="Land">Land:</label>
+                    <input id="Land" minlength="2" name="Land" type="text" value="Deutschland">
+                </td>
             </tr>
             <tr>
                 <td><label for="tilt_angle">Neigungswinkel [°]:</label></td>

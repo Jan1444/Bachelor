@@ -1,6 +1,6 @@
 import datetime
 import random
-
+import requests
 import matplotlib.pyplot as plt
 import tomli
 import tomli_w
@@ -12,7 +12,8 @@ app = Flask(__name__)
 
 
 def init_classes(latitude: float, longitude: float, module_efficiency: float, module_area: int, tilt_angle: float,
-                 exposure_angle: float, mounting_type: int, costs: float) -> (classmethod, classmethod, classmethod, classmethod):
+                 exposure_angle: float, mounting_type: int, costs: float) -> (
+classmethod, classmethod, classmethod, classmethod):
     """
 
     :param mounting_type:
@@ -35,9 +36,13 @@ def init_classes(latitude: float, longitude: float, module_efficiency: float, mo
 def write_data_to_config(data: dict, toml_file_path: str) -> None:
     with open(toml_file_path, 'rb') as f:
         config_data = tomli.load(f)
-
-    config_data['coordinates']['latitude'] = float(data['latitude'])
-    config_data['coordinates']['longitude'] = float(data['longitude'])
+    if data['latitude'] != "" or data['longitude'] != "":
+        config_data['coordinates']['latitude'] = float(data['latitude'])
+        config_data['coordinates']['longitude'] = float(data['longitude'])
+    else:
+        lat, lon = get_coord(data['Straße'], data['Nr'], data['Stadt'], data['PLZ'], data['Land'])
+        config_data['coordinates']['latitude'] = lat
+        config_data['coordinates']['longitude'] = lon
     config_data['pv']['tilt_angle'] = float(data['tilt_angle'])
     config_data['pv']['area'] = float(data['area'])
     config_data['pv']['module_efficiency'] = float(data['module_efficiency'])
@@ -82,6 +87,29 @@ def write_data_to_file(weather_data: dict, sun: object, pv: object, market: obje
 
     with open(data_file_path, 'wb') as f:
         tomli_w.dump(data, f)
+
+
+def get_coord(street: str, nr: str, city: str, postalcode: int, country: str) -> (str, str):
+    # https://nominatim.org/release-docs/develop/api/Search/
+    street_rep = street.replace(" ", "&20")
+    city_rep = city.replace(" ", "&20")
+    url = (f"https://nominatim.openstreetmap.org/search?q={street_rep}%20{nr}%20{city_rep}%20{postalcode}%20{country}"
+           f"&format=json&addressdetails=1")
+    req = requests.request("GET", url).json()
+    if len(req) > 1:
+        for result in req:
+            if "address" in result.keys():
+                if street in result["address"].values():
+                    if city in result["address"].values():
+                        if nr in result["address"].values():
+                            if postalcode in result["address"].values():
+                                lat = float(req[0]["lat"])
+                                lon = float(req[0]["lon"])
+                                return lat, lon
+
+    lat = float(req[0]["lat"])
+    lon = float(req[0]["lon"])
+    return lat, lon
 
 
 def test():
@@ -157,10 +185,14 @@ def safe_settings():
             config_data = tomli.load(f)
 
         data = request.form.to_dict()
-        write_data_to_config(data, toml_file_path)
 
-        return render_template('index.html', config=config_data)
-
+        if ((data['latitude'] != "" and data['longitude'] != "" )or (data['Straße'] != "" and data['Nr'] != "" and
+            data['Stadt'] != "" and data['PLZ'] != "" and data['Land'])):
+            write_data_to_config(data, toml_file_path)
+            return render_template('index.html', config=config_data)
+        else:
+            return render_template('set_vals.html', error='Bitte füllen Sie mindestens eines der Felder aus.',
+                                   config=config_data)
 
 @app.route('/file_download')
 def file_download():
