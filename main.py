@@ -5,7 +5,7 @@ from config import settings as consts
 
 
 def init_classes(latitude: float, longitude: float, module_efficiency: float, module_area: int, tilt_angle: float,
-                 exposure_angle: float, mounting_type: int, costs: float) -> (object, object, object, object):
+                 exposure_angle: float, mounting_type: int, costs: float) -> (classmethod, classmethod, classmethod, classmethod):
     """
 
     :param mounting_type:
@@ -18,10 +18,10 @@ def init_classes(latitude: float, longitude: float, module_efficiency: float, mo
     :param exposure_angle:
     :return:
     """
-    weather = classes.Weather(latitude, longitude)
-    market = classes.MarketData(costs)
-    sun = classes.CalcSunPos(latitude, longitude)
-    pv = classes.PVProfit(module_efficiency, module_area, tilt_angle, exposure_angle, -0.35, 25, mounting_type)
+    weather: classmethod = classes.Weather(latitude, longitude)
+    market: classmethod = classes.MarketData(costs)
+    sun: classmethod = classes.CalcSunPos(latitude, longitude)
+    pv: classmethod = classes.PVProfit(module_efficiency, module_area, tilt_angle, exposure_angle, -0.35, 25, mounting_type)
     return weather, market, sun, pv
 
 
@@ -131,7 +131,6 @@ def main():
 
 
 if __name__ == "__main__":
-    i = 0
     main()
 
 # mitsubishi pymelcloud

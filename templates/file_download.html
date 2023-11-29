@@ -22,7 +22,7 @@
     <!--Stylesheet-->
     <link href="{{ url_for('static', filename='css/style_index.css') }}" rel="stylesheet" type="text/css">
     <!--Title-->
-    <title>Photovoltaik-Übersicht</title>
+    <title>Photovoltaik-Download</title>
 </head>
 <body>
 <div id="main-container">
@@ -42,41 +42,13 @@
         <tr>
             <td>
                 <img class="HeaderImage" src="{{ url_for('static', filename='favicon/android-chrome-512x512.png') }}">
-                <h1 class="Headerh1">Übersicht</h1>
+                <h1 class="Headerh1">Datei Download</h1>
             </td>
         </tr>
     </table>
 
     <table class="BoxContent">
-        <tr>
-            <td class="Box1" colspan="2">
-                <a>Heute Übersicht:</a>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <a>Berechnete Photovoltaik Leistung:</a>
-            </td>
-            <td align="right">
-                <a>{{ config['coordinates']['longitude'] }}</a>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <a>Gewählte Heizmethode:</a>
-            </td>
-            <td align="right">
-                <a>{{ config['coordinates']['longitude'] }}</a>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <a>Geschätzte Energie:</a>
-            </td>
-            <td align="right">
-                <a>{{ config['coordinates']['longitude'] }} kWh</a>
-            </td>
-        </tr>
+
     </table>
 </div>
 </body>

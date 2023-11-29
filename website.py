@@ -12,7 +12,7 @@ app = Flask(__name__)
 
 
 def init_classes(latitude: float, longitude: float, module_efficiency: float, module_area: int, tilt_angle: float,
-                 exposure_angle: float, mounting_type: int, costs: float) -> (object, object, object, object):
+                 exposure_angle: float, mounting_type: int, costs: float) -> (classmethod, classmethod, classmethod, classmethod):
     """
 
     :param mounting_type:
@@ -160,6 +160,11 @@ def safe_settings():
         write_data_to_config(data, toml_file_path)
 
         return render_template('index.html', config=config_data)
+
+
+@app.route('/file_download')
+def file_download():
+    return render_template('file_download.html')
 
 
 if __name__ == '__main__':
