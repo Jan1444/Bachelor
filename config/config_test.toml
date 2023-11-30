@@ -3,10 +3,10 @@ latitude = 49.5198371
 longitude = 11.2948653
 
 [pv]
-tilt_angle = 20.0
+tilt_angle = 30.0
 area = 20.0
 module_efficiency = 20.0
-exposure_angle = 0.0
+exposure_angle = 5.0
 temperature_coefficient = -0.35
 nominal_temperature = 25.0
 mounting_type = 1

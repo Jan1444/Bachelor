@@ -111,7 +111,7 @@ class Weather:
             self.create_dict(weather_data, start_date, end_date)
             self.sort_weather(weather_data)
         except LookupError as e:
-            if "reasons" in weather_data.keys():
+            if "reason" in weather_data.keys():
                 print(weather_data["reason"])
             else:
                 print(e)
@@ -356,7 +356,14 @@ class PVProfit:
         :param radiation: the current radiation in W/m^2
         :return: the temperatur of the pv panel in °C
         """
-        return temperature + self.mounting_type * radiation / 1000
+        try:
+            return temperature + self.mounting_type * radiation / 1000
+        except (ValueError, TypeError):
+            if temperature is None:
+                print("No temperature")
+            if radiation is None:
+                print("No radiation")
+            return 0
 
     @lru_cache(maxsize=None)
     def calc_temp_dependency(self, temperature: float, radiation: float) -> float:
@@ -383,6 +390,11 @@ class PVProfit:
         """
         if incidence_angle == -1:
             return 0
-        power_direct_gen = (power_direct_horizontal * np.cos(np.deg2rad(incidence_angle)) /
-                            np.sin(np.deg2rad(90 - sun_height)))
-        return abs(power_direct_gen * current_efficiency * self.module_area)
+        try:
+            power_direct_gen = (power_direct_horizontal * np.cos(np.deg2rad(incidence_angle)) /
+                                np.sin(np.deg2rad(90 - sun_height)))
+            return abs(power_direct_gen * current_efficiency * self.module_area)
+        except (ValueError, TypeError):
+            if power_direct_horizontal is None:
+                print("No radiation")
+            return 0

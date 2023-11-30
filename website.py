@@ -1,6 +1,6 @@
 import datetime
 import random
-
+import pandas as pd
 import matplotlib.pyplot as plt
 import requests
 import tomli
@@ -193,14 +193,22 @@ def download():
                     power_data[date][t] = pv.calc_power(weather_date[date][t]["radiation"], incidence, elevation, eff)
                     energy_data_list.append(power_data[date][t])
             energy_data[date] = calc_energy(energy_data_list)
-        print(power_data)
+
+        df = pd.DataFrame.from_dict(energy_data, orient='index', columns=['energy [kWh]'])
+        print(df)
         print(energy_data)
-        plt.figure(figsize=(60, 15))
+        x = len(energy_data.keys()) * 0.25
+        y = x * 0.4
+        plt.figure(figsize=(x, y))
         plt.grid()
-        plt.xticks(rotation=90)
-        plt.plot(energy_data.keys(), energy_data.values())
+        plt.xticks(rotation=90, ha="right", fontsize=10)
+        plt.plot(energy_data.keys(), energy_data.values(), label="Energy[kWh]")
+        plt.legend(loc="upper left")
+        plt.tight_layout()
         plt.savefig("plot.png")
     return render_template('index.html', config=config_data)
+
+
 
 
 @app.route('/settings')
