@@ -47,25 +47,89 @@
                 </tr>
             </table>
 
-            <form action="/download" method="post" class="BoxContent">
+            <form action="/generate_download" method="post" class="BoxContent">
+                <!--Wetter Daten-->
                 <table>
+                    {% if error_weather or error_market %}
+                        <p style="color: red;">{{ error_weather }}</p>
+                        <p style="color: red;">{{ error_market }}</p>
+                    {% endif %}
                     <tr>
-                        <td><label for="start_date">Start Datum:</label></td>
-                        <td><input id="start_date" minlength="1" name="start_date" type="date"
-                                   min="2022-06-08" required></td>
-                        <td><label for="end_date">End Datum:</label></td>
-                        <td><input id="end_date" minlength="1" name="end_date" type="date"
-                                   value="{{ config }}" required></td>
+                        <td colspan="4" class="Box1">
+                            <b>
+                                Wetter Daten
+                            </b>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label for="start_date_weather">Start Datum:</label></td>
+                        <td><input id="start_date_weather" minlength="1" name="start_date_weather" type="date"
+                                   min="2022-06-08"
+                                   {% if error_weather %} style="border-color: red; border-width: 3px" {% endif %}></td>
+                        <td><label for="end_date_weather">End Datum:</label></td>
+                        <td><input id="end_date_weather" minlength="1" name="end_date_weather" type="date"
+                                   value="{{ config['date'] }}"></td>
+                    </tr>
+                    <tr>
+                        <td><label for="excel_weather">Excel .xlsx</label></td>
+                        <td><input id="excel_weather"  name="excel_weather" type="checkbox"></td>
+                        <td>{% if "excel" in ret %}
+                            <a style="align-items: stretch; font-size: 20px;" href="{{ url_for('download_file', name='data.xlsx') }}">Download File</a>
+                            {% endif %}
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td><label for="plot_png_weather">Plot .png</label></td>
+                        <td><input id="plot_png_weather" name="plot_png_weather" type="checkbox"></td>
+                        <td>{% if "plot" in ret %}
+                            <a style="align-items: stretch; font-size: 20px;" href="{{ url_for('download_file', name='plot.png') }}">Download File</a>
+                            {% endif %}
+                        </td>
+                        <td></td>
+                    </tr>
+                    <!--Markt Daten-->
+                    <tr>
+                        <td colspan="4" class="Box1">
+                            <b>
+                                Strom Daten
+                            </b>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label for="start_date_market">Start Datum:</label></td>
+                        <td><input id="start_date_market" minlength="1" name="start_date_market" type="datetime-local"
+                        {% if error_market %} style="border-color: red; border-width: 3px" {% endif %}></td>
+                        <td><label for="end_date_market">End Datum:</label></td>
+                        <td><input id="end_date_market" minlength="1" name="end_date_market" type="datetime-local"
+                                   value="{{ config['datetime'] }}"></td>
+                    </tr>
+                    <tr>
+                        <td><label for="excel_market">Excel .xlsx</label></td>
+                        <td><input id="excel_market"  name="excel_market" type="checkbox"></td>
+                    </tr>
+                    <tr>
+                        <td><label for="plot_png_market">Plot .png</label></td>
+                        <td><input id="plot_png_market" name="plot_png_market" type="checkbox"></td>
                     </tr>
                     <tr>
                         <td></td>
                         <td>
-                            <button type="submit" >Download</button>
+                            <button type="submit">Generieren</button>
                         </td>
                         <td></td>
                     </tr>
+
                 </table>
+                <table>
+
+
+                </table>
+
             </form>
+
+
         </div>
+
     </body>
 </html>

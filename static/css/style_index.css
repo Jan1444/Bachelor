@@ -30,7 +30,6 @@ table {
     background-color: darkcyan;
     height: calc(var(--font_height) + 5px);
     padding-left: 5px;
-
 }
 
 tr td:nth-child(1){

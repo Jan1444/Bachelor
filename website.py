@@ -1,15 +1,19 @@
 import datetime
+import os
 import random
 import pandas as pd
 import matplotlib.pyplot as plt
 import requests
 import tomli
 import tomli_w
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, send_from_directory
 
 import classes
 
 app = Flask(__name__)
+
+
+# app.config["UPLOAD_FOLDER"] = "uploads"
 
 
 def init_classes(latitude: float, longitude: float, module_efficiency: float, module_area: int, tilt_angle: float,
@@ -58,7 +62,7 @@ def write_data_to_config(data: dict, toml_file_path: str) -> None:
 
 
 def write_data_to_file(weather_data: dict, sun: object, pv: object, market: object) -> None:
-    data_file_path = "data/data.toml"
+    data_file_path = r"data/data.toml"
     data: dict = {"write_time": {"time": datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S"),
                                  "format": "%d-%m-%Y %H:%M:%S"}}
     zeit: int = -1
@@ -128,7 +132,7 @@ def test():
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    toml_file_path = 'config/config_test.toml'
+    toml_file_path = r'config/config_test.toml'
     with open(toml_file_path, 'rb') as f:
         config_data = tomli.load(f)
 
@@ -156,64 +160,131 @@ def analytics():
     return render_template('analytics.html', name="new_plot", url="/static/plots/output.png")
 
 
-@app.route('/download', methods=['POST'])
+def generate_weather_data(data: requests, config_data) -> str:
+    if not os.path.exists(r"uploads"):
+        os.mkdir(r"uploads")
+
+    start_date = datetime.datetime.strptime(data['start_date_weather'], "%Y-%m-%d")
+    end_date = datetime.datetime.strptime(data['end_date_weather'], "%Y-%m-%d")
+
+    weather_date = classes.Weather(
+        config_data['coordinates']['latitude'], config_data['coordinates']['longitude'],
+        datetime.datetime.strftime(start_date, "%d-%m-%Y"),
+        datetime.datetime.strftime(end_date, "%d-%m-%Y")).data
+
+    pv = classes.PVProfit(config_data["pv"]["module_efficiency"], config_data["pv"]["area"],
+                          config_data["pv"]["tilt_angle"], config_data["pv"]["exposure_angle"],
+                          config_data["pv"]["temperature_coefficient"],
+                          config_data["pv"]["nominal_temperature"], config_data["pv"]["mounting_type"])
+
+    power_data: dict = {}
+    energy_data: dict = {}
+    msg: str = ""
+    for date in weather_date.keys():
+        sun = classes.CalcSunPos(config_data['coordinates']['latitude'],
+                                 config_data['coordinates']['longitude'],
+                                 date)
+
+        power_data[date] = {}
+        energy_data_list: list = []
+        for t in weather_date[date].keys():
+            if t != "daily":
+                time_float: float = int(t[:2]) + int(t[3:]) / 100
+                azimuth: float = sun.calc_azimuth(time_float)
+                elevation: floatt = sun.calc_solar_elevation(time_float)
+                incidence = pv.calc_incidence_angle(elevation, azimuth)
+                eff = pv.calc_temp_dependency(weather_date[date][t]["temp"], weather_date[date][t]["radiation"])
+                power_data[date][t] = pv.calc_power(weather_date[date][t]["radiation"], incidence, elevation,
+                                                    eff)
+                energy_data_list.append(power_data[date][t])
+        energy_data[date] = calc_energy(energy_data_list)
+
+    if "excel_weather" in data.keys():
+        if os.path.exists(r"uploads/data.xlsx"):
+            os.remove(r"uploads/data.xlsx")
+        if data["excel_weather"] == "on":
+            df = pd.DataFrame.from_dict(energy_data, orient='index', columns=['energy [kWh]'])
+            df.to_excel('uploads/data.xlsx')
+            msg = "excel"
+
+    if "plot_png_weather" in data.keys():
+        if data["plot_png_weather"] == "on":
+            if os.path.exists(r"uploads/plot.png"):
+                os.remove(r"uploads/plot.png")
+            if len(energy_data.keys()) > 50:
+                x = len(energy_data.keys()) * 0.25
+                y = x * 0.4
+            else:
+                x = 10
+                y = 5
+
+            plt.figure(figsize=(x, y))
+            plt.grid()
+            plt.xticks(rotation=90, ha="right", fontsize=10)
+            plt.plot(energy_data.keys(), energy_data.values(), label="Energy[kWh]")
+            plt.legend(loc="upper left")
+            plt.tight_layout()
+            plt.savefig(r"uploads/plot.png")
+            msg = f"{msg}, plot"
+
+    return msg
+
+
+@app.route('/generate_download', methods=['POST'])
 def download():
-    toml_file_path = 'config/config_test.toml'
+    toml_file_path: str = r'config/config_test.toml'
+    msg: str = ""
+    err_msg_weather: str = ""
+    err_msg_market: str = ""
+    date_now: dict = {}
+
     with open(toml_file_path, 'rb') as f:
         config_data = tomli.load(f)
+
     if request.method == 'POST':
+        date_now = date_time_download()
         data = request.form.to_dict()
-        start_date = datetime.datetime.strptime(data['start_date'], "%Y-%m-%d")
-        end_date = datetime.datetime.strptime(data['end_date'], "%Y-%m-%d")
+        print(data.keys())
+        if "excel_weather" in data.keys() or "plot_png_weather" in data.keys():
+            if data['start_date_weather'] == "":
+                err_msg_weather = "Bitte Start Datum ausfüllen"
 
-        weather_date = classes.Weather(
-            config_data['coordinates']['latitude'], config_data['coordinates']['longitude'],
-            datetime.datetime.strftime(start_date, "%d-%m-%Y"),
-            datetime.datetime.strftime(end_date, "%d-%m-%Y")).data
+            elif data['start_date_weather'] != "":
+                t = datetime.datetime.now() - datetime.datetime.strptime(data['start_date_weather'], "%Y-%m-%d")
+                if t.total_seconds() < 0:
+                    err_msg_weather = "Das Startdatum muss kleiner sein als das Enddatum"
 
-        pv = classes.PVProfit(config_data["pv"]["module_efficiency"], config_data["pv"]["area"],
-                              config_data["pv"]["tilt_angle"], config_data["pv"]["exposure_angle"],
-                              config_data["pv"]["temperature_coefficient"],
-                              config_data["pv"]["nominal_temperature"], config_data["pv"]["mounting_type"])
+            return render_template('file_download.html', config=date_now, ret=msg,
+                                   error_weather=err_msg_weather, error_market=err_msg_market)
 
-        power_data: dict = {}
-        energy_data: dict = {}
-        for date in weather_date.keys():
-            sun = classes.CalcSunPos(config_data['coordinates']['latitude'], config_data['coordinates']['longitude'],
-                                     date)
-            power_data[date] = {}
-            energy_data_list: list = []
-            for t in weather_date[date].keys():
-                if t != "daily":
-                    time_float: float = int(t[:2]) + int(t[3:]) / 100
-                    azimuth: float = sun.calc_azimuth(time_float)
-                    elevation: floatt = sun.calc_solar_elevation(time_float)
-                    incidence = pv.calc_incidence_angle(elevation, azimuth)
-                    eff = pv.calc_temp_dependency(weather_date[date][t]["temp"], weather_date[date][t]["radiation"])
-                    power_data[date][t] = pv.calc_power(weather_date[date][t]["radiation"], incidence, elevation, eff)
-                    energy_data_list.append(power_data[date][t])
-            energy_data[date] = calc_energy(energy_data_list)
+        if "excel_market" in data.keys() or "plot_png_market" in data.keys():
+            if data['start_date_market'] == "":
+                err_msg_market = "Bitte Start Datum ausfüllen"
 
-        df = pd.DataFrame.from_dict(energy_data, orient='index', columns=['energy [kWh]'])
-        print(df)
-        print(energy_data)
-        x = len(energy_data.keys()) * 0.25
-        y = x * 0.4
-        plt.figure(figsize=(x, y))
-        plt.grid()
-        plt.xticks(rotation=90, ha="right", fontsize=10)
-        plt.plot(energy_data.keys(), energy_data.values(), label="Energy[kWh]")
-        plt.legend(loc="upper left")
-        plt.tight_layout()
-        plt.savefig("plot.png")
-    return render_template('index.html', config=config_data)
+            elif data['start_date_market'] != "":
+                t = datetime.datetime.now() - datetime.datetime.strptime(data['start_date_market'],
+                                                                         "%Y-%m-%dT%H:%M")
+                if t.total_seconds() < 0:
+                    err_msg_weather = "Das Startdatum muss kleiner sein als das Enddatum"
+
+            return render_template('file_download.html', config=date_now, ret=msg,
+                                   error_weather=err_msg_weather, error_market=err_msg_market)
+
+        if "excel_weather" in data.keys() or "plot_png_weather" in data.keys():
+            msg = generate_weather_data(data, config_data)
+
+    return render_template('file_download.html', config=date_now, ret=msg,
+                           error_weather=err_msg_weather, error_market=err_msg_market)
 
 
+@app.route('/uploads/<name>')
+def download_file(name):
+    return send_from_directory(app.config["UPLOAD_FOLDER"], name)
 
 
 @app.route('/settings')
 def settings():
-    toml_file_path = 'config/config_test.toml'
+    toml_file_path = r'config/config_test.toml'
 
     try:
         with open(toml_file_path, 'rb') as f:
@@ -243,7 +314,7 @@ def settings():
 @app.route('/save_settings', methods=['POST'])
 def safe_settings():
     if request.method == 'POST':
-        toml_file_path = 'config/config_test.toml'
+        toml_file_path = r'config/config_test.toml'
         with open(toml_file_path, 'rb') as f:
             config_data = tomli.load(f)
 
@@ -260,10 +331,17 @@ def safe_settings():
                                    config=config_data)
 
 
+def date_time_download() -> dict:
+    date_today = datetime.datetime.now().strftime("%Y-%m-%d")
+    date_and_time = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M")
+    data: dict = {"date": date_today, "datetime": date_and_time}
+    return data
+
+
 @app.route('/file_download')
 def file_download():
-    date_today = datetime.datetime.now().strftime("%Y-%m-%d")
-    return render_template('file_download.html', config=date_today)
+    data = date_time_download()
+    return render_template('file_download.html', config=data)
 
 
 if __name__ == '__main__':

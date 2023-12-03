@@ -72,7 +72,7 @@ def test_day_data(weather_data: dict, sun: object, pv: object, market: object) -
             sun_azimuth = sun.calc_azimuth(time_float)
             incidence = pv.calc_incidence_angle(sun_height, sun_azimuth)
             curr_eff = pv.calc_temp_dependency(weather_data[t]["temp"], radiation)
-            energy = pv.calc_energy(radiation, incidence, sun_height, curr_eff)
+            energy = pv.calc_power(radiation, incidence, sun_height, curr_eff)
             energy_list.append(energy)
             market_list.append(market.data[zeit]["consumerprice"])
             pv_eff.append(curr_eff * 100)
