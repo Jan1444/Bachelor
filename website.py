@@ -2,6 +2,7 @@ import datetime
 import os
 import random
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 import requests
 import tomli
@@ -108,8 +109,11 @@ def get_coord(street: str, nr: str, city: str, postalcode: int, country: str) ->
     return lat, lon
 
 
-def calc_energy(energy: list, interval: float = 0.25) -> list:
-    power_values = list(map(lambda x: x / 1000, energy))
+def calc_energy(energy: list, interval: float = 0.25, kwh: bool = True) -> list:
+    multiplier = 1
+    if kwh:
+        multiplier = 1000
+    power_values = list(map(lambda x: x / multiplier, energy))
     total_energy = sum((power_values[i] + power_values[i + 1]) / 2 * interval for i in range(len(power_values) - 1))
     return total_energy
 
@@ -152,12 +156,73 @@ def dashboard():
 
 @app.route('/analytics')
 def analytics():
+    toml_file_path = 'config/config_test.toml'
+
+    with open(toml_file_path, 'rb') as f:
+        config_data = tomli.load(f)
+
+    coordinates = config_data["coordinates"]
+    pv_consts = config_data["pv"]
+    market_consts = config_data["market"]
+
+    weather, market, sun, pv = init_classes(coordinates["latitude"], coordinates["longitude"],
+                                            pv_consts["module_efficiency"], pv_consts["area"],
+                                            pv_consts["tilt_angle"], pv_consts["exposure_angle"],
+                                            pv_consts["mounting_type"], market_consts["consumer_price"])
+    today = list(weather.data.keys())[0]
+    weather_date = weather.data[today]
+    power_data = {}
+    energy_data_list: list = []
+    time_list: list = []
+
+    for t in weather_date.keys():
+        if t != "daily":
+            time_list.append(t)
+            time_float: float = int(t[:2]) + int(t[3:]) / 100
+            azimuth: float = sun.calc_azimuth(time_float)
+            elevation: floatt = sun.calc_solar_elevation(time_float)
+            incidence = pv.calc_incidence_angle(elevation, azimuth)
+            eff = pv.calc_temp_dependency(weather_date[t]["temp"], weather_date[t]["radiation"])
+            power_data[t] = pv.calc_power(weather_date[t]["radiation"], incidence, elevation, eff)
+            energy_data_list.append(power_data[t])
+
+    energy = calc_energy(energy_data_list, kwh=False)
+    energy_data_list = []
+
+    for p in power_data:
+        energy_data_list.append(energy)
+
     plt.clf()
-    xs = range(100)
-    ys = [random.randint(1, 50) for x in xs]
-    plt.plot(xs, ys)
-    plt.savefig('static/plots/output.png')
-    return render_template('analytics.html', name="new_plot", url="/static/plots/output.png")
+    plt.figure(figsize=(60, 25))
+    plt.grid()
+    plt.plot(time_list, power_data.values(), label="Power [W]")
+    plt.plot(time_list, energy_data_list, label="Energy [Wh]")
+    plt.xticks(rotation=90, ha="right", fontsize=30)
+    plt.yticks(ticks=np.arange(0, max(max(power_data.values()), max(energy_data_list)) + 100, step=100), ha="right", fontsize=30)
+    plt.tight_layout()
+    plt.legend(loc="center left", fontsize=30)
+    plt.savefig('static/plots/output_weather.png')
+
+    x_time: list = []
+    y_price: list = []
+    for t in market.data:
+        x_time.append(t["start_timestamp"])
+        y_price.append(t["marketprice"])
+    plt.clf()
+    plt.figure(figsize=(60, 25))
+    plt.grid()
+    plt.plot(x_time, y_price, label="EUR/kWh")
+    plt.xticks(rotation=90, ha="right", fontsize=30)
+    plt.yticks(ticks=np.arange(0, max(y_price) + 5, step=1), ha="right", fontsize=30)
+    plt.tight_layout()
+    plt.legend(loc="center left", fontsize=30)
+    plt.savefig('static/plots/output_market.png')
+
+
+
+
+    return render_template('analytics.html', name="new_plot", url_weather="/static/plots/output_weather.png",
+                           url_market="/static/plots/output_market.png")
 
 
 def generate_weather_data(data: requests, config_data) -> str:
