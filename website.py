@@ -13,10 +13,6 @@ import classes
 
 app = Flask(__name__)
 
-
-# app.config["UPLOAD_FOLDER"] = "uploads"
-
-
 def init_classes(latitude: float, longitude: float, module_efficiency: float, module_area: int, tilt_angle: float,
                  exposure_angle: float, mounting_type: int, costs: float) -> \
         (classmethod, classmethod, classmethod, classmethod):
@@ -309,7 +305,7 @@ def download():
     if request.method == 'POST':
         date_now = date_time_download()
         data = request.form.to_dict()
-        print(data.keys())
+
         if "excel_weather" in data.keys() or "plot_png_weather" in data.keys():
             if data['start_date_weather'] == "":
                 err_msg_weather = "Bitte Start Datum ausfüllen"
