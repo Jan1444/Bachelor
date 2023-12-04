@@ -66,9 +66,9 @@
             </tr>
             <tr>
                 <td><label for="start_date_weather">Start Datum:</label></td>
-                <td><input %} %} endif error_weather
-                           id="start_date_weather"
-                           if min="2022-06-08" minlength="1" name="start_date_weather" style="border-color: red; border-width: 3px" type="date" {% {%></td>
+                <td><input id="start_date_weather" minlength="1" name="start_date_weather" type="date"
+                           min="2022-06-08"
+                           {% if error_weather %} style="border-color: red; border-width: 3px" {% endif %}></td>
                 <td><label for="end_date_weather">End Datum:</label></td>
                 <td><input id="end_date_weather" minlength="1" name="end_date_weather" type="date"
                            value="{{ config['date'] }}"></td>
@@ -77,8 +77,7 @@
                 <td><label for="excel_weather">Excel .xlsx</label></td>
                 <td><input id="excel_weather" name="excel_weather" type="checkbox"></td>
                 <td>{% if "excel" in ret %}
-                    <a href="{{ url_for('download_file', name='data.xlsx') }}"
-                       style="align-items: stretch; font-size: 20px;">Download File</a>
+                    <a style="align-items: stretch; font-size: 20px;" href="{{ url_for('download_file', name='data.xlsx') }}">Download File</a>
                     {% endif %}
                 </td>
                 <td></td>
@@ -103,8 +102,8 @@
             </tr>
             <tr>
                 <td><label for="start_date_market">Start Datum:</label></td>
-                <td><input %} %} endif error_market
-                           id="start_date_market" if minlength="1" name="start_date_market" style="border-color: red; border-width: 3px" type="datetime-local" {% {%></td>
+                <td><input id="start_date_market" minlength="1" name="start_date_market" type="datetime-local"
+                           {% if error_market %} style="border-color: red; border-width: 3px" {% endif %}></td>
                 <td><label for="end_date_market">End Datum:</label></td>
                 <td><input id="end_date_market" minlength="1" name="end_date_market" type="datetime-local"
                            value="{{ config['datetime'] }}"></td>

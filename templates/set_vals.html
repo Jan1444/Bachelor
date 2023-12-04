@@ -51,36 +51,36 @@
 
     <form action="/save_settings" class="BoxContent" method="post">
         <table>
-            {% if error %}
-            <p style="color: red;">{{ error }}</p>
-            {% endif %}
+                {% if error %}
+                    <p style="color: red;">{{ error }}</p>
+                {% endif %}
             <tr>
                 <td><label for="latitude">Breitengrad [°]:</label></td>
-                <td><input %} %} endif error
-                           id="latitude"
-                           if minlength="2" name="latitude" style="border-color: red; border-width: 3px" type="text" value="{{ config['coordinates']['latitude'] }}" {% {%></td>
-                <td><label for="Straße">Straße:</label>
-                    <input %} %} endif error id="Straße"
-                           if minlength="2" name="Straße" style="border-color: red; border-width: 3px" type="text" value="" {% {%>
+                <td><input id="latitude" minlength="2" name="latitude" type="text"
+                           value="{{ config['coordinates']['latitude'] }}"
+                           {% if error %} style="border-color: red; border-width: 3px" {% endif %}></td>
+                <td><label for="Straße" >Straße:</label>
+                    <input id="Straße" minlength="2" name="Straße" type="text" value=""
+                           {% if error %} style="border-color: red; border-width: 3px" {% endif %}>
                     <label for="Nr">Hausnummer:</label>
-                    <input %} %} endif error id="Nr"
-                           if minlength="2" name="Nr" style="border-color: red; border-width: 3px" type="text" value="" {% {%>
+                    <input id="Nr" minlength="2" name="Nr" type="text" value=""
+                           {% if error %} style="border-color: red; border-width: 3px" {% endif %}>
                     <label for="Stadt">Stadt:</label>
-                    <input %} %} endif error id="Stadt"
-                           if minlength="2" name="Stadt" style="border-color: red; border-width: 3px" type="text" value="" {% {%>
+                    <input id="Stadt" minlength="2" name="Stadt" type="text" value=""
+                           {% if error %} style="border-color: red; border-width: 3px" {% endif %}>
                 </td>
             </tr>
             <tr>
                 <td><label for="longitude">Längengrad [°]:</label></td>
-                <td><input %} %} endif
-                           error id="longitude"
-                           if minlength="2" name="longitude" style="border-color: red; border-width: 3px" type="text" value="{{ config['coordinates']['longitude'] }}" {% {%></td>
+                <td><input id="longitude" minlength="2" name="longitude"
+                           type="text" value="{{ config['coordinates']['longitude'] }}"
+                           {% if error %} style="border-color: red; border-width: 3px" {% endif %}></td>
                 <td><label for="PLZ">Postleitzahl:</label>
-                    <input %} %} endif error id="PLZ"
-                           if maxlength="5" minlength="5" name="PLZ" style="border-color: red; border-width: 3px" type="number" {% {%>
+                    <input id="PLZ" minlength="5" maxlength="5" name="PLZ" type="number"
+                           {% if error %} style="border-color: red; border-width: 3px" {% endif %}>
                     <label for="Land">Land:</label>
-                    <input %} %} endif error id="Land"
-                           if minlength="2" name="Land" style="border-color: red; border-width: 3px" type="text" value="Deutschland" {% {%>
+                    <input id="Land" minlength="2" name="Land" type="text" value="Deutschland"
+                           {% if error %} style="border-color: red; border-width: 3px" {% endif %}>
                 </td>
             </tr>
             <tr>
