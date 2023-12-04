@@ -80,19 +80,19 @@ a {
     padding: 12px;
 }
 
-.HeaderImage{
+.HeaderImage {
     width: 150px;
     float: left;
 }
 
-.Headerh1{
+.Headerh1 {
     color: black;
     font-family: var(--font_family);
     font-size: calc(var(--font_height) * 2);
     margin-top: calc((var(--pic_width) - (var(--font_height) * 2)) / 2);
 }
 
-.BoxHeader{
+.BoxHeader {
     background-color: lightslategrey;
     grid-row-start: 1;
     grid-row-end: 1;

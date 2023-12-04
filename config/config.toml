@@ -10,12 +10,12 @@ exposure_angle = 0               # The exposure angle in degrees
 temperature_coefficient = -0.35  # The temperature coefficient in percent per degrees
 nominal_temperature = 25         # The normalized PV temperature in degrees
 mounting_type = 1                # 0: Completely free elevation
-                                 # 1: On the roof, large distance
-                                 # 2: Integrated on the roof or roof, good rear ventilation
-                                 # 3: Integrated on the roof or rooftop, poor rear ventilation
-                                 # 4: Integrated on the façade or façades, good rear ventilation
-                                 # 5: Integrated on the façade or façades, poor rear ventilation
-                                 # 6: Roof integration, without rear ventilation
-                                 # 7: Façade integration, without rear ventilation
+# 1: On the roof, large distance
+# 2: Integrated on the roof or roof, good rear ventilation
+# 3: Integrated on the roof or rooftop, poor rear ventilation
+# 4: Integrated on the façade or façades, good rear ventilation
+# 5: Integrated on the façade or façades, poor rear ventilation
+# 6: Roof integration, without rear ventilation
+# 7: Façade integration, without rear ventilation
 [market]
 consumer_price = 13.35  # The price of tax and fees

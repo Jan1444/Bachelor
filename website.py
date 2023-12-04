@@ -1,13 +1,15 @@
 import datetime
 import os
-import random
-import pandas as pd
-import numpy as np
+from functools import lru_cache, wraps
+
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 import requests
 import tomli
 import tomli_w
 from flask import Flask, render_template, request, send_from_directory
+from frozendict import frozendict
 
 import classes
 
@@ -34,6 +36,24 @@ def init_classes(latitude: float, longitude: float, module_efficiency: float, mo
     sun = classes.CalcSunPos(latitude, longitude)
     pv = classes.PVProfit(module_efficiency, module_area, tilt_angle, exposure_angle, -0.35, 25, mounting_type)
     return weather, market, sun, pv
+
+
+def freezeargs(func):
+    @wraps(func)
+    def wrapped(*args, **kwargs):
+        args = tuple(frozendict(arg) if isinstance(arg, dict) else arg for arg in args)
+        kwargs = {k: frozendict(v) if isinstance(v, dict) else v for k, v in kwargs.items()}
+        return func(*args, **kwargs)
+
+    return wrapped
+
+
+def freeze_nested(obj):
+    if isinstance(obj, dict):
+        return frozendict({k: freeze_nested(v) for k, v in obj.items()})
+    elif isinstance(obj, list):
+        return tuple(freeze_nested(v) for v in obj)
+    return obj
 
 
 def write_data_to_config(data: dict, toml_file_path: str) -> None:
@@ -220,7 +240,9 @@ def analytics():
                            url_market="/static/plots/output_market.png")
 
 
-def generate_weather_data(data: requests, config_data) -> str:
+@freezeargs
+@lru_cache(maxsize=None)
+def generate_weather_data(data: dict, config_data: dict) -> str:
     if not os.path.exists(r"uploads"):
         os.mkdir(r"uploads")
 
@@ -280,9 +302,14 @@ def generate_weather_data(data: requests, config_data) -> str:
 
             plt.figure(figsize=(x, y))
             plt.grid()
-            plt.xticks(rotation=90, ha="right", fontsize=10)
             plt.plot(energy_data.keys(), energy_data.values(), label="Energy[kWh]")
-            plt.legend(loc="upper left")
+            plt.xticks(rotation=90, ha="right", fontsize=18)
+            x = len(energy_data.keys())
+            z = max(energy_data.values())
+            z = (z) + (100 if z > 100 else 5)
+            ticks = np.arange(0, z, step=(x // 100 * 10 if z > 100 else 1))
+            plt.yticks(ticks=ticks, ha="right", fontsize=20)
+            plt.legend(loc="upper left", fontsize=20)
             plt.tight_layout()
             plt.savefig(r"uploads/plot.png")
             msg = f"{msg}, plot"
@@ -332,7 +359,9 @@ def download():
                                        error_weather=err_msg_weather, error_market=err_msg_market)
 
         if "excel_weather" in data.keys() or "plot_png_weather" in data.keys():
-            msg = generate_weather_data(data, config_data)
+            frozen_data = freeze_nested(data)
+            frozen_config_data = freeze_nested(config_data)
+            msg = generate_weather_data(frozen_data, frozen_config_data)
 
     return render_template('file_download.html', config=date_now, ret=msg,
                            error_weather=err_msg_weather, error_market=err_msg_market)

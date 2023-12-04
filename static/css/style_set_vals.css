@@ -54,7 +54,7 @@ input {
     font-family: var(--standard_font);
 }
 
-label{
+label {
     font-family: var(--standard_font);
     font-size: var(--font_size);
 }
@@ -65,18 +65,20 @@ h1 {
     margin-bottom: 30px;
 }
 
-table{
+table {
     table-layout: auto;
     width: 100%;
 }
-tr td:nth-child(2){
-  width: 110px;
-}
-tr td:nth-child(3){
-  width: 930px;
+
+tr td:nth-child(2) {
+    width: 110px;
 }
 
-.BoxContent{
+tr td:nth-child(3) {
+    width: 930px;
+}
+
+.BoxContent {
     grid-row-start: 2;
     grid-row-end: 2;
     grid-column-start: 2;

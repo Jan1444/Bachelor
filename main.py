@@ -1,11 +1,13 @@
 import matplotlib.pyplot as plt
 import requests
+
 import classes
 from config import settings as consts
 
 
 def init_classes(latitude: float, longitude: float, module_efficiency: float, module_area: int, tilt_angle: float,
-                 exposure_angle: float, mounting_type: int, costs: float) -> (classmethod, classmethod, classmethod, classmethod):
+                 exposure_angle: float, mounting_type: int, costs: float) -> (
+classmethod, classmethod, classmethod, classmethod):
     """
 
     :param mounting_type:
@@ -21,7 +23,8 @@ def init_classes(latitude: float, longitude: float, module_efficiency: float, mo
     weather: classmethod = classes.Weather(latitude, longitude)
     market: classmethod = classes.MarketData(costs)
     sun: classmethod = classes.CalcSunPos(latitude, longitude)
-    pv: classmethod = classes.PVProfit(module_efficiency, module_area, tilt_angle, exposure_angle, -0.35, 25, mounting_type)
+    pv: classmethod = classes.PVProfit(module_efficiency, module_area, tilt_angle, exposure_angle, -0.35, 25,
+                                       mounting_type)
     return weather, market, sun, pv
 
 

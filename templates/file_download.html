@@ -1,134 +1,140 @@
 <!doctype html>
 <html lang="de">
-    <meta charset="utf-8">
+<meta charset="utf-8">
 
-    <head>
-        <!--Navigator-->
-        <meta content="width=device-width, initial-scale=1.0" name="viewport">
-        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
-              rel="stylesheet">
-        <link href="{{ url_for('static', filename='css/navigator.css') }}" rel="stylesheet" type="text/css">
-        <!--Favicon-->
-        <meta content="#da532c" name="msapplication-TileColor">
-        <meta content="#ffffff" name="theme-color">
-        <link href="{{ url_for('static', filename='favicon/apple-touch-icon.png') }}" rel="apple-touch-icon"
-              sizes="180x180">
-        <link href="{{ url_for('static', filename='favicon/favicon-32x32.png') }}" rel="icon" sizes="32x32"
-              type="image/png">
-        <link href="{{ url_for('static', filename='favicon/favicon-16x16.png') }}" rel="icon" sizes="16x16"
-              type="image/png">
-        <link href="{{ url_for('static', filename='favicon/site.webmanifest') }}" rel="manifest">
-        <link color="#5bbad5" href="{{ url_for('static', filename='favicon/safari-pinned-tab.svg') }}" rel="mask-icon">
-        <!--Stylesheet-->
-        <link href="{{ url_for('static', filename='css/style_file_download.css') }}" rel="stylesheet" type="text/css">
-        <!--Title-->
-        <title>Photovoltaik-Download</title>
-    </head>
-    <body>
-        <div id="main-container">
-            <div class="menu">
-                <ul class="menu-content">
-                    <!-- https://fonts.google.com/icons -->
-                    <li><a href="/"><span class="material-symbols-outlined">home</span><span>Home</span></a></li>
-                    <li><a href="/dashboard"><span class="material-symbols-outlined">dashboard</span><span>DashBoard</span></a></li>
-                    <li><a href="/analytics"><span class="material-symbols-outlined">analytics</span><span>Analytics</span></a></li>
-                    <li><a href="/file_download"><span class="material-symbols-outlined">file_download</span><span>File Download</span></a></li>
-                    <li><a href="/settings"><span class="material-symbols-outlined">settings</span><span>Settings</span></a></li>
-                </ul>
-            </div>
+<head>
+    <!--Navigator-->
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+          rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/navigator.css') }}" rel="stylesheet" type="text/css">
+    <!--Favicon-->
+    <meta content="#da532c" name="msapplication-TileColor">
+    <meta content="#ffffff" name="theme-color">
+    <link href="{{ url_for('static', filename='favicon/apple-touch-icon.png') }}" rel="apple-touch-icon"
+          sizes="180x180">
+    <link href="{{ url_for('static', filename='favicon/favicon-32x32.png') }}" rel="icon" sizes="32x32"
+          type="image/png">
+    <link href="{{ url_for('static', filename='favicon/favicon-16x16.png') }}" rel="icon" sizes="16x16"
+          type="image/png">
+    <link href="{{ url_for('static', filename='favicon/site.webmanifest') }}" rel="manifest">
+    <link color="#5bbad5" href="{{ url_for('static', filename='favicon/safari-pinned-tab.svg') }}" rel="mask-icon">
+    <!--Stylesheet-->
+    <link href="{{ url_for('static', filename='css/style_file_download.css') }}" rel="stylesheet" type="text/css">
+    <!--Title-->
+    <title>Photovoltaik-Download</title>
+</head>
+<body>
+<div id="main-container">
+    <div class="menu">
+        <ul class="menu-content">
+            <!-- https://fonts.google.com/icons -->
+            <li><a href="/"><span class="material-symbols-outlined">home</span><span>Home</span></a></li>
+            <li><a href="/dashboard"><span class="material-symbols-outlined">dashboard</span><span>DashBoard</span></a>
+            </li>
+            <li><a href="/analytics"><span class="material-symbols-outlined">analytics</span><span>Analytics</span></a>
+            </li>
+            <li><a href="/file_download"><span
+                    class="material-symbols-outlined">file_download</span><span>File Download</span></a></li>
+            <li><a href="/settings"><span class="material-symbols-outlined">settings</span><span>Settings</span></a>
+            </li>
+        </ul>
+    </div>
 
-            <table class="BoxHeader">
-                <tr>
-                    <td>
-                        <img class="HeaderImage" src="{{ url_for('static', filename='favicon/android-chrome-512x512.png') }}">
-                        <h1 class="Headerh1">Datei Download</h1>
-                    </td>
-                </tr>
-            </table>
+    <table class="BoxHeader">
+        <tr>
+            <td>
+                <img class="HeaderImage" src="{{ url_for('static', filename='favicon/android-chrome-512x512.png') }}">
+                <h1 class="Headerh1">Datei Download</h1>
+            </td>
+        </tr>
+    </table>
 
-            <form action="/generate_download" method="post" class="BoxContent">
-                <!--Wetter Daten-->
-                <table>
-                    {% if error_weather or error_market %}
-                        <p style="color: red;">{{ error_weather }}</p>
-                        <p style="color: red;">{{ error_market }}</p>
+    <form action="/generate_download" class="BoxContent" method="post">
+        <!--Wetter Daten-->
+        <table>
+            {% if error_weather or error_market %}
+            <p style="color: red;">{{ error_weather }}</p>
+            <p style="color: red;">{{ error_market }}</p>
+            {% endif %}
+            <tr>
+                <td class="Box1" colspan="4">
+                    <b>
+                        Wetter Daten
+                    </b>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="start_date_weather">Start Datum:</label></td>
+                <td><input %} %} endif error_weather
+                           id="start_date_weather"
+                           if min="2022-06-08" minlength="1" name="start_date_weather" style="border-color: red; border-width: 3px" type="date" {% {%></td>
+                <td><label for="end_date_weather">End Datum:</label></td>
+                <td><input id="end_date_weather" minlength="1" name="end_date_weather" type="date"
+                           value="{{ config['date'] }}"></td>
+            </tr>
+            <tr>
+                <td><label for="excel_weather">Excel .xlsx</label></td>
+                <td><input id="excel_weather" name="excel_weather" type="checkbox"></td>
+                <td>{% if "excel" in ret %}
+                    <a href="{{ url_for('download_file', name='data.xlsx') }}"
+                       style="align-items: stretch; font-size: 20px;">Download File</a>
                     {% endif %}
-                    <tr>
-                        <td colspan="4" class="Box1">
-                            <b>
-                                Wetter Daten
-                            </b>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><label for="start_date_weather">Start Datum:</label></td>
-                        <td><input id="start_date_weather" minlength="1" name="start_date_weather" type="date"
-                                   min="2022-06-08"
-                                   {% if error_weather %} style="border-color: red; border-width: 3px" {% endif %}></td>
-                        <td><label for="end_date_weather">End Datum:</label></td>
-                        <td><input id="end_date_weather" minlength="1" name="end_date_weather" type="date"
-                                   value="{{ config['date'] }}"></td>
-                    </tr>
-                    <tr>
-                        <td><label for="excel_weather">Excel .xlsx</label></td>
-                        <td><input id="excel_weather"  name="excel_weather" type="checkbox"></td>
-                        <td>{% if "excel" in ret %}
-                            <a style="align-items: stretch; font-size: 20px;" href="{{ url_for('download_file', name='data.xlsx') }}">Download File</a>
-                            {% endif %}
-                        </td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td><label for="plot_png_weather">Plot .png</label></td>
-                        <td><input id="plot_png_weather" name="plot_png_weather" type="checkbox"></td>
-                        <td>{% if "plot" in ret %}
-                            <a style="align-items: stretch; font-size: 20px;" href="{{ url_for('download_file', name='plot.png') }}">Download File</a>
-                            {% endif %}
-                        </td>
-                        <td></td>
-                    </tr>
-                    <!--Markt Daten-->
-                    <tr>
-                        <td colspan="4" class="Box1">
-                            <b>
-                                Strom Daten
-                            </b>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><label for="start_date_market">Start Datum:</label></td>
-                        <td><input id="start_date_market" minlength="1" name="start_date_market" type="datetime-local"
-                        {% if error_market %} style="border-color: red; border-width: 3px" {% endif %}></td>
-                        <td><label for="end_date_market">End Datum:</label></td>
-                        <td><input id="end_date_market" minlength="1" name="end_date_market" type="datetime-local"
-                                   value="{{ config['datetime'] }}"></td>
-                    </tr>
-                    <tr>
-                        <td><label for="excel_market">Excel .xlsx</label></td>
-                        <td><input id="excel_market"  name="excel_market" type="checkbox"></td>
-                    </tr>
-                    <tr>
-                        <td><label for="plot_png_market">Plot .png</label></td>
-                        <td><input id="plot_png_market" name="plot_png_market" type="checkbox"></td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td>
-                            <button type="submit">Generieren</button>
-                        </td>
-                        <td></td>
-                    </tr>
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td><label for="plot_png_weather">Plot .png</label></td>
+                <td><input id="plot_png_weather" name="plot_png_weather" type="checkbox"></td>
+                <td>{% if "plot" in ret %}
+                    <a href="{{ url_for('download_file', name='plot.png') }}"
+                       style="align-items: stretch; font-size: 20px;">Download File</a>
+                    {% endif %}
+                </td>
+                <td></td>
+            </tr>
+            <!--Markt Daten-->
+            <tr>
+                <td class="Box1" colspan="4">
+                    <b>
+                        Strom Daten
+                    </b>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="start_date_market">Start Datum:</label></td>
+                <td><input %} %} endif error_market
+                           id="start_date_market" if minlength="1" name="start_date_market" style="border-color: red; border-width: 3px" type="datetime-local" {% {%></td>
+                <td><label for="end_date_market">End Datum:</label></td>
+                <td><input id="end_date_market" minlength="1" name="end_date_market" type="datetime-local"
+                           value="{{ config['datetime'] }}"></td>
+            </tr>
+            <tr>
+                <td><label for="excel_market">Excel .xlsx</label></td>
+                <td><input id="excel_market" name="excel_market" type="checkbox"></td>
+            </tr>
+            <tr>
+                <td><label for="plot_png_market">Plot .png</label></td>
+                <td><input id="plot_png_market" name="plot_png_market" type="checkbox"></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>
+                    <button type="submit">Generieren</button>
+                </td>
+                <td></td>
+            </tr>
 
-                </table>
-                <table>
+        </table>
+        <table>
 
 
-                </table>
+        </table>
 
-            </form>
+    </form>
 
 
-        </div>
+</div>
 
-    </body>
+</body>
 </html>
