@@ -13,6 +13,7 @@ import classes
 
 app = Flask(__name__)
 
+
 def init_classes(latitude: float, longitude: float, module_efficiency: float, module_area: int, tilt_angle: float,
                  exposure_angle: float, mounting_type: int, costs: float) -> \
         (classmethod, classmethod, classmethod, classmethod):
@@ -194,7 +195,8 @@ def analytics():
     plt.plot(time_list, power_data.values(), label="Power [W]")
     plt.plot(time_list, energy_data_list, label="Energy [Wh]")
     plt.xticks(rotation=90, ha="right", fontsize=30)
-    plt.yticks(ticks=np.arange(0, max(max(power_data.values()), max(energy_data_list)) + 100, step=100), ha="right", fontsize=30)
+    plt.yticks(ticks=np.arange(0, max(max(power_data.values()), max(energy_data_list)) + 100, step=100), ha="right",
+               fontsize=30)
     plt.tight_layout()
     plt.legend(loc="center left", fontsize=30)
     plt.savefig('static/plots/output_weather.png')
@@ -213,9 +215,6 @@ def analytics():
     plt.tight_layout()
     plt.legend(loc="center left", fontsize=30)
     plt.savefig('static/plots/output_market.png')
-
-
-
 
     return render_template('analytics.html', name="new_plot", url_weather="/static/plots/output_weather.png",
                            url_market="/static/plots/output_market.png")
@@ -305,7 +304,7 @@ def download():
     if request.method == 'POST':
         date_now = date_time_download()
         data = request.form.to_dict()
-
+        print(data)
         if "excel_weather" in data.keys() or "plot_png_weather" in data.keys():
             if data['start_date_weather'] == "":
                 err_msg_weather = "Bitte Start Datum ausfüllen"
@@ -314,9 +313,10 @@ def download():
                 t = datetime.datetime.now() - datetime.datetime.strptime(data['start_date_weather'], "%Y-%m-%d")
                 if t.total_seconds() < 0:
                     err_msg_weather = "Das Startdatum muss kleiner sein als das Enddatum"
-
-            return render_template('file_download.html', config=date_now, ret=msg,
-                                   error_weather=err_msg_weather, error_market=err_msg_market)
+            print(err_msg_weather)
+            if err_msg_weather != "":
+                return render_template('file_download.html', config=date_now, ret=msg,
+                                       error_weather=err_msg_weather, error_market=err_msg_market)
 
         if "excel_market" in data.keys() or "plot_png_market" in data.keys():
             if data['start_date_market'] == "":
@@ -326,10 +326,10 @@ def download():
                 t = datetime.datetime.now() - datetime.datetime.strptime(data['start_date_market'],
                                                                          "%Y-%m-%dT%H:%M")
                 if t.total_seconds() < 0:
-                    err_msg_weather = "Das Startdatum muss kleiner sein als das Enddatum"
-
-            return render_template('file_download.html', config=date_now, ret=msg,
-                                   error_weather=err_msg_weather, error_market=err_msg_market)
+                    err_msg_market = "Das Startdatum muss kleiner sein als das Enddatum"
+            if err_msg_market != "":
+                return render_template('file_download.html', config=date_now, ret=msg,
+                                       error_weather=err_msg_weather, error_market=err_msg_market)
 
         if "excel_weather" in data.keys() or "plot_png_weather" in data.keys():
             msg = generate_weather_data(data, config_data)
@@ -340,7 +340,7 @@ def download():
 
 @app.route('/uploads/<name>')
 def download_file(name):
-    return send_from_directory(app.config["UPLOAD_FOLDER"], name)
+    return send_from_directory("uploads", name)
 
 
 @app.route('/settings')
