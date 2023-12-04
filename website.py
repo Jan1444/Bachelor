@@ -38,7 +38,7 @@ def init_classes(latitude: float, longitude: float, module_efficiency: float, mo
     return weather, market, sun, pv
 
 
-def freezeargs(func):
+def freeze_args(func):
     @wraps(func)
     def wrapped(*args, **kwargs):
         args = tuple(frozendict(arg) if isinstance(arg, dict) else arg for arg in args)
@@ -101,6 +101,12 @@ def write_data_to_file(weather_data: dict, sun: object, pv: object, market: obje
 
     with open(data_file_path, 'wb') as f:
         tomli_w.dump(data, f)
+
+
+def read_data_from_file(file_path: str) -> dict:
+    with open(file_path, 'rb') as f:
+        data = tomli.load(f)
+    return data
 
 
 def get_coord(street: str, nr: str, city: str, postalcode: int, country: str) -> (str, str):
@@ -171,8 +177,20 @@ def dashboard():
     return render_template('dashboard.html', config=config_data)
 
 
+def plot_analytics():
+    pass
+
+
 @app.route('/analytics')
 def analytics():
+    if os.path.exists(r"data/data.toml"):
+        data = read_data_from_file(r"data/data.toml")
+
+        time_write = datetime.datetime.strptime(data["write_time"]["time"], data["write_time"]["format"])
+        time_now = datetime.datetime.now()
+        if (time_write - time_now).seconds > (60 * 60):
+            pass  # TODO: fertig stellen!
+
     toml_file_path = 'config/config_test.toml'
 
     with open(toml_file_path, 'rb') as f:
@@ -223,9 +241,11 @@ def analytics():
 
     x_time: list = []
     y_price: list = []
+
     for t in market.data:
         x_time.append(t["start_timestamp"])
         y_price.append(t["marketprice"])
+
     plt.clf()
     plt.figure(figsize=(60, 25))
     plt.grid()
@@ -240,7 +260,7 @@ def analytics():
                            url_market="/static/plots/output_market.png")
 
 
-@freezeargs
+@freeze_args
 @lru_cache(maxsize=None)
 def generate_weather_data(data: dict, config_data: dict) -> str:
     if not os.path.exists(r"uploads"):
