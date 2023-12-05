@@ -398,3 +398,9 @@ class PVProfit:
             if power_direct_horizontal is None:
                 print("No radiation")
             return 0
+
+
+class ShellyControl:
+    def __init__(self, ip_address: str):
+        self.ip_address: str = ip_address
+

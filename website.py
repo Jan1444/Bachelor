@@ -274,7 +274,7 @@ def analytics():
 
         for t in market.data:
             market_time.append(t["start_timestamp"])
-            market_price.append(t["marketprice"])
+            market_price.append(t["consumerprice"])
 
         write_data_to_file(None, None, None, None, weather_time, radiation_data, power_data, market_price)
 
