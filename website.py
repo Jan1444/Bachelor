@@ -79,25 +79,38 @@ def write_data_to_config(data: dict, toml_file_path: str) -> None:
         tomli_w.dump(config_data, f)
 
 
-def write_data_to_file(weather_data: dict, sun: object, pv: object, market: object) -> None:
+def write_data_to_file(weather_data: None | dict, sun: None | object, pv: None | object, market: None | object,
+                       time: None | dict = None, radiation: None | dict = None, power: None | dict = None,
+                       market_price: None | dict = None) -> None:
     data_file_path = r"data/data.toml"
     data: dict = {"write_time": {"time": datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S"),
                                  "format": "%d-%m-%Y %H:%M:%S"}}
-    zeit: int = -1
-    for z, t in enumerate(weather_data.keys()):
-        if t != "daily":
-            radiation = float(weather_data[t]["radiation"])
-            time_float = float(t[:2]) + float(t[3:]) / 100
-            sun_height = sun.calc_solar_elevation(time_float)
-            sun_azimuth = sun.calc_azimuth(time_float)
-            incidence = pv.calc_incidence_angle(sun_height, sun_azimuth)
-            curr_eff = pv.calc_temp_dependency(weather_data[t]["temp"], radiation)
-            energy = pv.calc_energy(radiation, incidence, sun_height, curr_eff)
 
-            data.update({t: {"radiation": radiation, "energy": round(energy, 3),
-                             "market_price": market.data[zeit]["consumerprice"]}})
-        if (z - 4) % 4 == 0:
-            zeit += 1
+    if time is not None and radiation is not None and power is not None and market_price is not None:
+        h = -1
+        for i, k in enumerate(time):
+            if k != "daily":
+                data.update(
+                    {k: {"radiation": radiation[i], "power": round(power[i], 3), "market_price": market_price[h]}})
+            if (i - 4) % 4 == 0:
+                h += 1
+
+    else:
+        zeit: int = -1
+        for z, t in enumerate(weather_data.keys()):
+            if t != "daily":
+                radiation = float(weather_data[t]["radiation"])
+                time_float = float(t[:2]) + float(t[3:]) / 100
+                sun_height = sun.calc_solar_elevation(time_float)
+                sun_azimuth = sun.calc_azimuth(time_float)
+                incidence = pv.calc_incidence_angle(sun_height, sun_azimuth)
+                curr_eff = pv.calc_temp_dependency(weather_data[t]["temp"], radiation)
+                power = pv.calc_energy(radiation, incidence, sun_height, curr_eff)
+
+                data.update({t: {"radiation": radiation, "power": round(power, 3),
+                                 "market_price": market.data[zeit]["consumerprice"]}})
+            if (z - 4) % 4 == 0:
+                zeit += 1
 
     with open(data_file_path, 'wb') as f:
         tomli_w.dump(data, f)
@@ -181,77 +194,110 @@ def plot_analytics():
     pass
 
 
+def unpack_data(data: dict) -> (list, list, list, list):
+    weather_time: list = []
+    power_data: list = []
+
+    market_time: list = []
+    market_price: list = []
+
+    for t in data.keys():
+        if t != "write_time":
+            weather_time.append(t)
+            power_data.append(data[t]["power"])
+
+            if t[3:] == "00":
+                market_time.append(t)
+                market_price.append(data[t]["market_price"])
+
+    return weather_time, power_data, market_time, market_price
+
+
 @app.route('/analytics')
 def analytics():
+    power_data: list = []
+    weather_time: list = []
+
+    energy: float = 0.0
+    energy_data: list = []
+
+    market_time: list = []
+    market_price: list = []
+
+    old_data: bool = True
+
     if os.path.exists(r"data/data.toml"):
         data = read_data_from_file(r"data/data.toml")
 
         time_write = datetime.datetime.strptime(data["write_time"]["time"], data["write_time"]["format"])
         time_now = datetime.datetime.now()
-        if (time_write - time_now).seconds > (60 * 60):
-            pass  # TODO: fertig stellen!
 
-    toml_file_path = 'config/config_test.toml'
+        if (time_now - time_write).seconds < (60 * 60) and (time_now - time_write).days <= 0:
+            old_data = False
 
-    with open(toml_file_path, 'rb') as f:
-        config_data = tomli.load(f)
+            weather_time, power_data, market_time, market_price = unpack_data(data)
 
-    coordinates = config_data["coordinates"]
-    pv_consts = config_data["pv"]
-    market_consts = config_data["market"]
+            energy = calc_energy(power_data, kwh=False)
 
-    weather, market, sun, pv = init_classes(coordinates["latitude"], coordinates["longitude"],
-                                            pv_consts["module_efficiency"], pv_consts["area"],
-                                            pv_consts["tilt_angle"], pv_consts["exposure_angle"],
-                                            pv_consts["mounting_type"], market_consts["consumer_price"])
-    today = list(weather.data.keys())[0]
-    weather_date = weather.data[today]
-    power_data = {}
-    energy_data_list: list = []
-    time_list: list = []
+    if old_data:
+        toml_file_path = 'config/config_test.toml'
 
-    for t in weather_date.keys():
-        if t != "daily":
-            time_list.append(t)
-            time_float: float = int(t[:2]) + int(t[3:]) / 100
-            azimuth: float = sun.calc_azimuth(time_float)
-            elevation: floatt = sun.calc_solar_elevation(time_float)
-            incidence = pv.calc_incidence_angle(elevation, azimuth)
-            eff = pv.calc_temp_dependency(weather_date[t]["temp"], weather_date[t]["radiation"])
-            power_data[t] = pv.calc_power(weather_date[t]["radiation"], incidence, elevation, eff)
-            energy_data_list.append(power_data[t])
+        with open(toml_file_path, 'rb') as f:
+            config_data = tomli.load(f)
 
-    energy = calc_energy(energy_data_list, kwh=False)
-    energy_data_list = []
+        coordinates = config_data["coordinates"]
+        pv_consts = config_data["pv"]
+        market_consts = config_data["market"]
+
+        weather, market, sun, pv = init_classes(coordinates["latitude"], coordinates["longitude"],
+                                                pv_consts["module_efficiency"], pv_consts["area"],
+                                                pv_consts["tilt_angle"], pv_consts["exposure_angle"],
+                                                pv_consts["mounting_type"], market_consts["consumer_price"])
+        today = list(weather.data.keys())[0]
+        weather_date = weather.data[today]
+
+        radiation_data: list = []
+
+        for t in weather_date.keys():
+            if t != "daily":
+                weather_time.append(t)
+                time_float: float = int(t[:2]) + int(t[3:]) / 100
+                azimuth: float = sun.calc_azimuth(time_float)
+                elevation: floatt = sun.calc_solar_elevation(time_float)
+                incidence = pv.calc_incidence_angle(elevation, azimuth)
+                radiation = weather_date[t]["radiation"]
+                radiation_data.append(radiation)
+                eff = pv.calc_temp_dependency(weather_date[t]["temp"], radiation)
+                power_data.append(pv.calc_power(weather_date[t]["radiation"], incidence, elevation, eff))
+
+        energy = calc_energy(power_data, kwh=False)
+
+        for t in market.data:
+            market_time.append(t["start_timestamp"])
+            market_price.append(t["marketprice"])
+
+        write_data_to_file(None, None, None, None, weather_time, radiation_data, power_data, market_price)
 
     for p in power_data:
-        energy_data_list.append(energy)
+        energy_data.append(energy)
 
     plt.clf()
     plt.figure(figsize=(60, 25))
     plt.grid()
-    plt.plot(time_list, power_data.values(), label="Power [W]")
-    plt.plot(time_list, energy_data_list, label="Energy [Wh]")
+    plt.plot(weather_time, power_data, label="Power [W]")
+    plt.plot(weather_time, energy_data, label="Energy [Wh]")
     plt.xticks(rotation=90, ha="right", fontsize=30)
-    plt.yticks(ticks=np.arange(0, max(max(power_data.values()), max(energy_data_list)) + 100, step=100), ha="right",
-               fontsize=30)
+    plt.yticks(ticks=np.arange(0, max(max(power_data), max(energy_data)) + 100, step=100), ha="right", fontsize=30)
     plt.tight_layout()
     plt.legend(loc="center left", fontsize=30)
     plt.savefig('static/plots/output_weather.png')
 
-    x_time: list = []
-    y_price: list = []
-
-    for t in market.data:
-        x_time.append(t["start_timestamp"])
-        y_price.append(t["marketprice"])
-
     plt.clf()
     plt.figure(figsize=(60, 25))
     plt.grid()
-    plt.plot(x_time, y_price, label="EUR/kWh")
+    plt.plot(market_time, market_price, label="EUR/kWh")
     plt.xticks(rotation=90, ha="right", fontsize=30)
-    plt.yticks(ticks=np.arange(0, max(y_price) + 5, step=1), ha="right", fontsize=30)
+    plt.yticks(ticks=np.arange(0, max(market_price) + 5, step=1), ha="right", fontsize=30)
     plt.tight_layout()
     plt.legend(loc="center left", fontsize=30)
     plt.savefig('static/plots/output_market.png')
