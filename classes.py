@@ -80,8 +80,8 @@ class MarketData:
             self.data[i]['start_timestamp'] = self.convert_ms_to_time(old_data['start_timestamp'])
             self.data[i]['end_timestamp'] = self.convert_ms_to_time(old_data['end_timestamp'])
             self.data[i]['marketprice'] = round(old_data['marketprice'] / 10, 3)
-            self.data[i]['consumerprice'] = round((old_data['marketprice'] + consumer_costs) * 1.19, 3)
-            self.data[i]['unit'] = 'EUR/kWh'
+            self.data[i]['consumerprice'] = round(((old_data['marketprice'] + consumer_costs) * 1.19), 3)
+            self.data[i]['unit'] = 'ct/kWh'
 
 
 class Weather:

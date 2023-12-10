@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dataSource name="marketdata">
-  <database-model serializer="dbm" dbms="SQLITE" family-id="SQLITE" format-version="4.49">
-    <root id="1"/>
+  <database-model serializer="dbm" dbms="SQLITE" family-id="SQLITE" format-version="4.51">
+    <root id="1">
+      <ServerVersion>3.43.0</ServerVersion>
+    </root>
     <collation id="2" parent="1" name="RTRIM"/>
     <collation id="3" parent="1" name="NOCASE"/>
     <collation id="4" parent="1" name="BINARY"/>
@@ -444,8 +446,7 @@
     <routine id="176" parent="1" name="fts5"/>
     <schema id="177" parent="1" name="main">
       <Current>1</Current>
-      <IntrospectionTimestamp>2023-11-11.11:39:04.878</IntrospectionTimestamp>
-      <LocalIntrospectionTimestamp>2023-11-11.10:39:04</LocalIntrospectionTimestamp>
+      <LastIntrospectionLocalTimestamp>2023-11-11.10:39:04</LastIntrospectionLocalTimestamp>
     </schema>
     <argument id="178" parent="16">
       <ArgumentDirection>R</ArgumentDirection>

@@ -154,6 +154,109 @@ def calc_energy(energy: list, interval: float = 0.25, kwh: bool = True) -> list:
     return total_energy
 
 
+def date_time_download() -> dict:
+    date_today = datetime.datetime.now().strftime("%Y-%m-%d")
+    date_and_time = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M")
+    data: dict = {"date": date_today, "datetime": date_and_time}
+    return data
+
+
+@freeze_args
+@lru_cache(maxsize=None)
+def generate_weather_data(data: dict, config_data: dict) -> str:
+    if not os.path.exists(r"uploads"):
+        os.mkdir(r"uploads")
+
+    start_date = datetime.datetime.strptime(data['start_date_weather'], "%Y-%m-%d")
+    end_date = datetime.datetime.strptime(data['end_date_weather'], "%Y-%m-%d")
+
+    weather_date = classes.Weather(
+        config_data['coordinates']['latitude'], config_data['coordinates']['longitude'],
+        datetime.datetime.strftime(start_date, "%d-%m-%Y"),
+        datetime.datetime.strftime(end_date, "%d-%m-%Y")).data
+
+    pv = classes.PVProfit(config_data["pv"]["module_efficiency"], config_data["pv"]["area"],
+                          config_data["pv"]["tilt_angle"], config_data["pv"]["exposure_angle"],
+                          config_data["pv"]["temperature_coefficient"],
+                          config_data["pv"]["nominal_temperature"], config_data["pv"]["mounting_type"])
+
+    power_data: dict = {}
+    energy_data: dict = {}
+    msg: str = ""
+    for date in weather_date.keys():
+        sun = classes.CalcSunPos(config_data['coordinates']['latitude'],
+                                 config_data['coordinates']['longitude'],
+                                 date)
+
+        power_data[date] = {}
+        energy_data_list: list = []
+        for t in weather_date[date].keys():
+            if t != "daily":
+                time_float: float = int(t[:2]) + int(t[3:]) / 100
+                azimuth: float = sun.calc_azimuth(time_float)
+                elevation: floatt = sun.calc_solar_elevation(time_float)
+                incidence = pv.calc_incidence_angle(elevation, azimuth)
+                eff = pv.calc_temp_dependency(weather_date[date][t]["temp"], weather_date[date][t]["radiation"])
+                power_data[date][t] = pv.calc_power(weather_date[date][t]["radiation"], incidence, elevation,
+                                                    eff)
+                energy_data_list.append(power_data[date][t])
+        energy_data[date] = calc_energy(energy_data_list)
+
+    if "excel_weather" in data.keys():
+        if os.path.exists(r"uploads/data.xlsx"):
+            os.remove(r"uploads/data.xlsx")
+        if data["excel_weather"] == "on":
+            df = pd.DataFrame.from_dict(energy_data, orient='index', columns=['energy [kWh]'])
+            df.to_excel('uploads/data.xlsx')
+            msg = "excel"
+
+    if "plot_png_weather" in data.keys():
+        if data["plot_png_weather"] == "on":
+            if os.path.exists(r"uploads/plot.png"):
+                os.remove(r"uploads/plot.png")
+            if len(energy_data.keys()) > 50:
+                x = len(energy_data.keys()) * 0.25
+                y = x * 0.4
+            else:
+                x = 10
+                y = 5
+
+            plt.figure(figsize=(x, y))
+            plt.grid()
+            plt.plot(energy_data.keys(), energy_data.values(), label="Energy[kWh]")
+            plt.xticks(rotation=90, ha="right", fontsize=18)
+            x = len(energy_data.keys())
+            z = max(energy_data.values())
+            z = (z) + (100 if z > 100 else 5)
+            ticks = np.arange(0, z, step=(x // 100 * 10 if z > 100 else 1))
+            plt.yticks(ticks=ticks, ha="right", fontsize=20)
+            plt.legend(loc="upper left", fontsize=20)
+            plt.tight_layout()
+            plt.savefig(r"uploads/plot.png")
+            msg = f"{msg}, plot"
+
+    return msg
+
+
+def unpack_data(data: dict) -> (list, list, list, list):
+    weather_time: list = []
+    power_data: list = []
+
+    market_time: list = []
+    market_price: list = []
+
+    for t in data.keys():
+        if t != "write_time":
+            weather_time.append(t)
+            power_data.append(data[t]["power"])
+
+            if t[3:] == "00":
+                market_time.append(t)
+                market_price.append(data[t]["market_price"])
+
+    return weather_time, power_data, market_time, market_price
+
+
 def test():
     from config import settings as consts
     coordinates = consts["coordinates"]
@@ -188,29 +291,6 @@ def dashboard():
         config_data = tomli.load(f)
 
     return render_template('dashboard.html', config=config_data)
-
-
-def plot_analytics():
-    pass
-
-
-def unpack_data(data: dict) -> (list, list, list, list):
-    weather_time: list = []
-    power_data: list = []
-
-    market_time: list = []
-    market_price: list = []
-
-    for t in data.keys():
-        if t != "write_time":
-            weather_time.append(t)
-            power_data.append(data[t]["power"])
-
-            if t[3:] == "00":
-                market_time.append(t)
-                market_price.append(data[t]["market_price"])
-
-    return weather_time, power_data, market_time, market_price
 
 
 @app.route('/analytics')
@@ -295,7 +375,7 @@ def analytics():
     plt.clf()
     plt.figure(figsize=(60, 25))
     plt.grid()
-    plt.plot(market_time, market_price, label="EUR/kWh")
+    plt.plot(market_time, market_price, label="Preis [ct/kWh]")
     plt.xticks(rotation=90, ha="right", fontsize=30)
     plt.yticks(ticks=np.arange(0, max(market_price) + 5, step=1), ha="right", fontsize=30)
     plt.tight_layout()
@@ -304,83 +384,6 @@ def analytics():
 
     return render_template('analytics.html', name="new_plot", url_weather="/static/plots/output_weather.png",
                            url_market="/static/plots/output_market.png")
-
-
-@freeze_args
-@lru_cache(maxsize=None)
-def generate_weather_data(data: dict, config_data: dict) -> str:
-    if not os.path.exists(r"uploads"):
-        os.mkdir(r"uploads")
-
-    start_date = datetime.datetime.strptime(data['start_date_weather'], "%Y-%m-%d")
-    end_date = datetime.datetime.strptime(data['end_date_weather'], "%Y-%m-%d")
-
-    weather_date = classes.Weather(
-        config_data['coordinates']['latitude'], config_data['coordinates']['longitude'],
-        datetime.datetime.strftime(start_date, "%d-%m-%Y"),
-        datetime.datetime.strftime(end_date, "%d-%m-%Y")).data
-
-    pv = classes.PVProfit(config_data["pv"]["module_efficiency"], config_data["pv"]["area"],
-                          config_data["pv"]["tilt_angle"], config_data["pv"]["exposure_angle"],
-                          config_data["pv"]["temperature_coefficient"],
-                          config_data["pv"]["nominal_temperature"], config_data["pv"]["mounting_type"])
-
-    power_data: dict = {}
-    energy_data: dict = {}
-    msg: str = ""
-    for date in weather_date.keys():
-        sun = classes.CalcSunPos(config_data['coordinates']['latitude'],
-                                 config_data['coordinates']['longitude'],
-                                 date)
-
-        power_data[date] = {}
-        energy_data_list: list = []
-        for t in weather_date[date].keys():
-            if t != "daily":
-                time_float: float = int(t[:2]) + int(t[3:]) / 100
-                azimuth: float = sun.calc_azimuth(time_float)
-                elevation: floatt = sun.calc_solar_elevation(time_float)
-                incidence = pv.calc_incidence_angle(elevation, azimuth)
-                eff = pv.calc_temp_dependency(weather_date[date][t]["temp"], weather_date[date][t]["radiation"])
-                power_data[date][t] = pv.calc_power(weather_date[date][t]["radiation"], incidence, elevation,
-                                                    eff)
-                energy_data_list.append(power_data[date][t])
-        energy_data[date] = calc_energy(energy_data_list)
-
-    if "excel_weather" in data.keys():
-        if os.path.exists(r"uploads/data.xlsx"):
-            os.remove(r"uploads/data.xlsx")
-        if data["excel_weather"] == "on":
-            df = pd.DataFrame.from_dict(energy_data, orient='index', columns=['energy [kWh]'])
-            df.to_excel('uploads/data.xlsx')
-            msg = "excel"
-
-    if "plot_png_weather" in data.keys():
-        if data["plot_png_weather"] == "on":
-            if os.path.exists(r"uploads/plot.png"):
-                os.remove(r"uploads/plot.png")
-            if len(energy_data.keys()) > 50:
-                x = len(energy_data.keys()) * 0.25
-                y = x * 0.4
-            else:
-                x = 10
-                y = 5
-
-            plt.figure(figsize=(x, y))
-            plt.grid()
-            plt.plot(energy_data.keys(), energy_data.values(), label="Energy[kWh]")
-            plt.xticks(rotation=90, ha="right", fontsize=18)
-            x = len(energy_data.keys())
-            z = max(energy_data.values())
-            z = (z) + (100 if z > 100 else 5)
-            ticks = np.arange(0, z, step=(x // 100 * 10 if z > 100 else 1))
-            plt.yticks(ticks=ticks, ha="right", fontsize=20)
-            plt.legend(loc="upper left", fontsize=20)
-            plt.tight_layout()
-            plt.savefig(r"uploads/plot.png")
-            msg = f"{msg}, plot"
-
-    return msg
 
 
 @app.route('/generate_download', methods=['POST'])
@@ -485,13 +488,6 @@ def safe_settings():
             return render_template('set_vals.html',
                                    error='Bitte füllen Sie mindestens Latitude und Longitude aus oder die Adresse',
                                    config=config_data)
-
-
-def date_time_download() -> dict:
-    date_today = datetime.datetime.now().strftime("%Y-%m-%d")
-    date_and_time = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M")
-    data: dict = {"date": date_today, "datetime": date_and_time}
-    return data
 
 
 @app.route('/file_download')
