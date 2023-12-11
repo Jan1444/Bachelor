@@ -18,7 +18,7 @@ class MarketData:
         """
         date_today: str = datetime.datetime.today().strftime("%Y-%m-%d")
         time_start: str = "00:00:00,00"
-        self.session = requests_cache.CachedSession('marketdata.cache', expire_after=datetime.timedelta(hours=1))
+        self.session = requests_cache.CachedSession(r'cache/marketdata.cache', expire_after=datetime.timedelta(hours=1))
         time_start_ms: int = self.convert_time_to_ms(date_today, time_start)
         self.data: dict = self.get_data(start=time_start_ms)
         self.convert_dict(consumer_costs)
@@ -103,7 +103,7 @@ class Weather:
         self.latitude: float = latitude
         self.longitude: float = longitude
         self._expire_time = 1
-        self.session = requests_cache.CachedSession('weatherdata.cache',
+        self.session = requests_cache.CachedSession(r'cache/weatherdata.cache',
                                                     expire_after=datetime.timedelta(hours=self._expire_time))
         weather_data: dict = self.get_weather(start_date, end_date)
         self.data: dict = {}
