@@ -57,6 +57,12 @@ def freeze_all(func):
 
 
 def write_data_to_config(data: dict, toml_file_path: str) -> None:
+    """
+
+    :param data:
+    :param toml_file_path:
+    :return:
+    """
     with open(toml_file_path, 'rb') as f:
         config_data = tomli.load(f)
     if data['latitude'] != "" or data['longitude'] != "":
@@ -82,6 +88,18 @@ def write_data_to_config(data: dict, toml_file_path: str) -> None:
 def write_data_to_file(weather_data: None | dict, sun: None | object, pv: None | object, market: None | object,
                        time: None | dict = None, radiation: None | dict = None, power: None | dict = None,
                        market_price: None | dict = None) -> None:
+    """
+
+    :param weather_data:
+    :param sun:
+    :param pv:
+    :param market:
+    :param time:
+    :param radiation:
+    :param power:
+    :param market_price:
+    :return:
+    """
     data_file_path = r"data/data.toml"
     data: dict = {"write_time": {"time": datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S"),
                                  "format": "%d-%m-%Y %H:%M:%S"}}
@@ -117,6 +135,11 @@ def write_data_to_file(weather_data: None | dict, sun: None | object, pv: None |
 
 
 def read_data_from_file(file_path: str) -> dict:
+    """
+
+    :param file_path:
+    :return:
+    """
     with open(file_path, 'rb') as f:
         data = tomli.load(f)
     return data
@@ -124,6 +147,15 @@ def read_data_from_file(file_path: str) -> dict:
 
 def get_coord(street: str, nr: str, city: str, postalcode: int, country: str) -> (str, str):
     # https://nominatim.org/release-docs/develop/api/Search/
+    """
+
+    :param street:
+    :param nr:
+    :param city:
+    :param postalcode:
+    :param country:
+    :return:
+    """
     street_rep = street.replace(" ", "&20")
     city_rep = city.replace(" ", "&20")
     url = (f"https://nominatim.openstreetmap.org/search?q={street_rep}%20{nr}%20{city_rep}%20{postalcode}%20{country}"
@@ -145,7 +177,14 @@ def get_coord(street: str, nr: str, city: str, postalcode: int, country: str) ->
     return lat, lon
 
 
-def calc_energy(energy: list, interval: float = 0.25, kwh: bool = True) -> list:
+def calc_energy(energy: list, interval: float = 0.25, kwh: bool = True) -> float:
+    """
+
+    :param energy:
+    :param interval:
+    :param kwh:
+    :return:
+    """
     multiplier = 1
     if kwh:
         multiplier = 1000
@@ -155,6 +194,10 @@ def calc_energy(energy: list, interval: float = 0.25, kwh: bool = True) -> list:
 
 
 def date_time_download() -> dict:
+    """
+
+    :return:
+    """
     date_today = datetime.datetime.now().strftime("%Y-%m-%d")
     date_and_time = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M")
     data: dict = {"date": date_today, "datetime": date_and_time}
@@ -164,6 +207,12 @@ def date_time_download() -> dict:
 @freeze_all
 @lru_cache(maxsize=None)
 def generate_weather_data(data: dict, config_data: dict) -> str:
+    """
+
+    :param data:
+    :param config_data:
+    :return:
+    """
     if not os.path.exists(r"uploads"):
         os.mkdir(r"uploads")
 
@@ -239,6 +288,11 @@ def generate_weather_data(data: dict, config_data: dict) -> str:
 
 
 def unpack_data(data: dict) -> (list, list, list, list):
+    """
+
+    :param data:
+    :return:
+    """
     weather_time: list = []
     power_data: list = []
 
@@ -258,6 +312,10 @@ def unpack_data(data: dict) -> (list, list, list, list):
 
 
 def test():
+    """
+
+    :return:
+    """
     from config import settings as consts
     coordinates = consts["coordinates"]
     pv_consts = consts["pv"]
