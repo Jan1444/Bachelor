@@ -7,7 +7,7 @@ from config import settings as consts
 
 def init_classes(latitude: float, longitude: float, module_efficiency: float, module_area: int, tilt_angle: float,
                  exposure_angle: float, mounting_type: int, costs: float) -> (
-classmethod, classmethod, classmethod, classmethod):
+        classmethod, classmethod, classmethod, classmethod):
     """
 
     :param mounting_type:

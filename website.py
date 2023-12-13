@@ -38,22 +38,22 @@ def init_classes(latitude: float, longitude: float, module_efficiency: float, mo
     return weather, market, sun, pv
 
 
-def freeze_args(func):
+def freeze_all(func):
     @wraps(func)
     def wrapped(*args, **kwargs):
-        args = tuple(frozendict(arg) if isinstance(arg, dict) else arg for arg in args)
-        kwargs = {k: frozendict(v) if isinstance(v, dict) else v for k, v in kwargs.items()}
-        return func(*args, **kwargs)
+        def freeze(obj):
+            if isinstance(obj, dict):
+                return frozendict({k: freeze(v) for k, v in obj.items()})
+            elif isinstance(obj, list):
+                return tuple(freeze(v) for v in obj)
+            return obj
+
+        frozen_args = tuple(freeze(arg) for arg in args)
+        frozen_kwargs = {k: freeze(v) for k, v in kwargs.items()}
+
+        return func(*frozen_args, **frozen_kwargs)
 
     return wrapped
-
-
-def freeze_nested(obj):
-    if isinstance(obj, dict):
-        return frozendict({k: freeze_nested(v) for k, v in obj.items()})
-    elif isinstance(obj, list):
-        return tuple(freeze_nested(v) for v in obj)
-    return obj
 
 
 def write_data_to_config(data: dict, toml_file_path: str) -> None:
@@ -161,7 +161,7 @@ def date_time_download() -> dict:
     return data
 
 
-@freeze_args
+@freeze_all
 @lru_cache(maxsize=None)
 def generate_weather_data(data: dict, config_data: dict) -> str:
     if not os.path.exists(r"uploads"):
@@ -194,7 +194,7 @@ def generate_weather_data(data: dict, config_data: dict) -> str:
             if t != "daily":
                 time_float: float = int(t[:2]) + int(t[3:]) / 100
                 azimuth: float = sun.calc_azimuth(time_float)
-                elevation: floatt = sun.calc_solar_elevation(time_float)
+                elevation: float = sun.calc_solar_elevation(time_float)
                 incidence = pv.calc_incidence_angle(elevation, azimuth)
                 eff = pv.calc_temp_dependency(weather_date[date][t]["temp"], weather_date[date][t]["radiation"])
                 power_data[date][t] = pv.calc_power(weather_date[date][t]["radiation"], incidence, elevation,
@@ -343,7 +343,7 @@ def analytics():
                 weather_time.append(t)
                 time_float: float = int(t[:2]) + int(t[3:]) / 100
                 azimuth: float = sun.calc_azimuth(time_float)
-                elevation: floatt = sun.calc_solar_elevation(time_float)
+                elevation: float = sun.calc_solar_elevation(time_float)
                 incidence = pv.calc_incidence_angle(elevation, azimuth)
                 radiation = weather_date[t]["radiation"]
                 radiation_data.append(radiation)
@@ -428,9 +428,7 @@ def download():
                                        error_weather=err_msg_weather, error_market=err_msg_market)
 
         if "excel_weather" in data.keys() or "plot_png_weather" in data.keys():
-            frozen_data = freeze_nested(data)
-            frozen_config_data = freeze_nested(config_data)
-            msg = generate_weather_data(frozen_data, frozen_config_data)
+            msg = generate_weather_data(data, config_data)
 
     return render_template('file_download.html', config=date_now, ret=msg,
                            error_weather=err_msg_weather, error_market=err_msg_market)
