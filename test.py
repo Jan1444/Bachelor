@@ -10,7 +10,7 @@ def load_write_config(data: dict | None = None, path: str | None = None) -> dict
     if data:
         tomli_w.dump(config, open(path, "wb"))
     else:
-        debug.debug_printer("opened config file")
+        debug.printer("opened config file")
         return tomli.load(open(path, "rb"))
 
 
