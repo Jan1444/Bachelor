@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import requests
+from pprint import pprint
 
 import classes
 from config import settings as consts
@@ -7,7 +8,7 @@ from config import settings as consts
 
 def init_classes(latitude: float, longitude: float, module_efficiency: float, module_area: int, tilt_angle: float,
                  exposure_angle: float, mounting_type: int, costs: float) -> (
-        classmethod, classmethod, classmethod, classmethod):
+        classes.Weather, classes.MarketData, classes.CalcSunPos, classes.PVProfit):
     """
 
     :param mounting_type:
@@ -20,11 +21,11 @@ def init_classes(latitude: float, longitude: float, module_efficiency: float, mo
     :param exposure_angle:
     :return:
     """
-    weather: classmethod = classes.Weather(latitude, longitude)
-    market: classmethod = classes.MarketData(costs)
-    sun: classmethod = classes.CalcSunPos(latitude, longitude)
-    pv: classmethod = classes.PVProfit(module_efficiency, module_area, tilt_angle, exposure_angle, -0.35, 25,
-                                       mounting_type)
+    weather: classes.Weather = classes.Weather(latitude, longitude)
+    market: classes.MarketData = classes.MarketData(costs)
+    sun: classes.CalcSunPos = classes.CalcSunPos(latitude, longitude)
+    pv: classes.PVProfit = classes.PVProfit(module_efficiency, module_area, tilt_angle, exposure_angle, -0.35, 25,
+                                            mounting_type)
     return weather, market, sun, pv
 
 
@@ -52,13 +53,14 @@ def get_coord(street: str, nr: str, city: str, postalcode: int, country: str) ->
     return lat, lon
 
 
-def calc_energy(energy: list, interval: float = 0.25) -> list:
+def calc_energy(energy: list, interval: float = 0.25) -> float:
     power_values = list(map(lambda x: x / 1000, energy))
     total_energy = sum((power_values[i] + power_values[i + 1]) / 2 * interval for i in range(len(power_values) - 1))
     return total_energy
 
 
-def test_day_data(weather_data: dict, sun: object, pv: object, market: object) -> (list, list, list, list):
+def test_day_data(weather_data: classes.Weather, sun: classes.CalcSunPos, pv: classes.PVProfit,
+                  market: classes.MarketData) -> (list, list, list, list):
     t_list: list = []
     energy_list: list = []
     market_list: list = []
@@ -107,6 +109,8 @@ def test_day_data(weather_data: dict, sun: object, pv: object, market: object) -
     total_energy = sum((power_values[i] + power_values[i + 1]) / 2 * interval for i in range(len(power_values) - 1))
 
     print(f"Energie über den Tag: {round(total_energy, 2)}kWh")
+
+    pprint(weather_data)
 
     x = t_list
 

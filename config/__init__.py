@@ -1,5 +1,4 @@
 import pathlib
-
 import tomli
 
 path = pathlib.Path(__file__).parent / "config.toml"

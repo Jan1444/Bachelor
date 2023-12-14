@@ -1,28 +1,27 @@
-import asyncio
+import tomli
+import tomli_w
+from pprint import pprint
+import debug
 
 
-async def fetch_data():
-    print("Start fetching")
-    await asyncio.sleep(2)  # Simuliert eine IO-Aufgabe
-    print("Done fetching")
-    return {'data': 123}
+def load_write_config(data: dict | None = None, path: str | None = None) -> dict | None:
+    if path is None:
+        path = 'config/config_test.toml'
+    if data:
+        tomli_w.dump(config, open(path, "wb"))
+    else:
+        debug.debug_printer("opened config file")
+        return tomli.load(open(path, "rb"))
 
 
-async def print_numbers():
-    for i in range(10):
-        print(i)
-        await asyncio.sleep(1)
+if __name__ == '__main__':
 
+    config = load_write_config()
+    pprint(config)
 
-async def main():
-    # Starte beide Coroutinen
-    task1 = asyncio.create_task(fetch_data())
-    task2 = asyncio.create_task(print_numbers())
+    config["trv"].update({"ip": "192.168.178.xxx"})
+    config["trv"].update({"test": "zzz"})
 
-    # Warte bis beide Aufgaben abgeschlossen sind
-    await task1
-    await task2
-
-
-# Starte den Event-Loop
-asyncio.run(main())
+    pprint(config)
+    load_write_config(config)
+    # tomli_w.dump(config, open(path, "wb"))

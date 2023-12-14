@@ -13,3 +13,10 @@ mounting_type = 1
 
 [market]
 consumer_price = 13.35
+
+[ir]
+button = 0
+
+[trv]
+ip = "192.168.178.xxx"
+test = "zzz"

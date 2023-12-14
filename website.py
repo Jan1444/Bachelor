@@ -17,8 +17,8 @@ app = Flask(__name__)
 
 
 def init_classes(latitude: float, longitude: float, module_efficiency: float, module_area: int, tilt_angle: float,
-                 exposure_angle: float, mounting_type: int, costs: float) -> \
-        (classmethod, classmethod, classmethod, classmethod):
+                 exposure_angle: float, mounting_type: int, costs: float) -> (
+        classes.Weather, classes.MarketData, classes.CalcSunPos, classes.PVProfit):
     """
 
     :param mounting_type:
@@ -31,10 +31,11 @@ def init_classes(latitude: float, longitude: float, module_efficiency: float, mo
     :param exposure_angle:
     :return:
     """
-    weather = classes.Weather(latitude, longitude)
-    market = classes.MarketData(costs)
-    sun = classes.CalcSunPos(latitude, longitude)
-    pv = classes.PVProfit(module_efficiency, module_area, tilt_angle, exposure_angle, -0.35, 25, mounting_type)
+    weather: classes.Weather = classes.Weather(latitude, longitude)
+    market: classes.MarketData = classes.MarketData(costs)
+    sun: classes.CalcSunPos = classes.CalcSunPos(latitude, longitude)
+    pv: classes.PVProfit = classes.PVProfit(module_efficiency, module_area, tilt_angle, exposure_angle, -0.35, 25,
+                                            mounting_type)
     return weather, market, sun, pv
 
 
@@ -85,9 +86,9 @@ def write_data_to_config(data: dict, toml_file_path: str) -> None:
         tomli_w.dump(config_data, f)
 
 
-def write_data_to_file(weather_data: None | dict, sun: None | object, pv: None | object, market: None | object,
-                       time: None | dict = None, radiation: None | dict = None, power: None | dict = None,
-                       market_price: None | dict = None) -> None:
+def write_data_to_file(weather_data: None | dict, sun: None | classes.CalcSunPos, pv: None | classes.PVProfit,
+                       market: None | classes.MarketData, time: None | list = None, radiation: None | list = None,
+                       power: None | list = None, market_price: None | list = None) -> None:
     """
 
     :param weather_data:
@@ -123,7 +124,7 @@ def write_data_to_file(weather_data: None | dict, sun: None | object, pv: None |
                 sun_azimuth = sun.calc_azimuth(time_float)
                 incidence = pv.calc_incidence_angle(sun_height, sun_azimuth)
                 curr_eff = pv.calc_temp_dependency(weather_data[t]["temp"], radiation)
-                power = pv.calc_energy(radiation, incidence, sun_height, curr_eff)
+                power = pv.calc_power(radiation, incidence, sun_height, curr_eff)
 
                 data.update({t: {"radiation": radiation, "power": round(power, 3),
                                  "market_price": market.data[zeit]["consumerprice"]}})
@@ -500,7 +501,7 @@ def download_file(name):
 @app.route('/settings')
 def settings():
     toml_file_path = r'config/config_test.toml'
-
+    config_data: dict = {}
     try:
         with open(toml_file_path, 'rb') as f:
             config_data = tomli.load(f)
