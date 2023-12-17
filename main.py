@@ -69,7 +69,7 @@ def test_day_data(weather_data: classes.Weather, sun: classes.CalcSunPos, pv: cl
     count = -3
     for t in weather_data.keys():
         if t != "daily":
-            radiation = float(weather_data[t]["radiation"])
+            radiation = float(weather_data[t]["direct_radiation"])
             pv_temp = pv.calc_pv_temp(weather_data[t]["temp"], 100)
             time_float = float(t[:2]) + float(t[3:]) / 100
             t_list.append(t)
@@ -83,7 +83,7 @@ def test_day_data(weather_data: classes.Weather, sun: classes.CalcSunPos, pv: cl
             pv_eff.append(curr_eff * 100)
             print("time: ", time_float)
             print("pv temp: ", pv_temp)
-            print("radiation: ", radiation)
+            print("direct_radiation: ", radiation)
             print("sun height: ", sun_height)
             print("sun azimuth: ", sun_azimuth)
             print("incidence: ", incidence)

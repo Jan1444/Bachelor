@@ -110,7 +110,7 @@ def write_data_to_file(weather_data: None | dict, sun: None | classes.CalcSunPos
         for i, k in enumerate(time):
             if k != "daily":
                 data.update(
-                    {k: {"radiation": radiation[i], "power": round(power[i], 3), "market_price": market_price[h]}})
+                    {k: {"direct_radiation": radiation[i], "power": round(power[i], 3), "market_price": market_price[h]}})
             if (i - 4) % 4 == 0:
                 h += 1
 
@@ -118,7 +118,7 @@ def write_data_to_file(weather_data: None | dict, sun: None | classes.CalcSunPos
         zeit: int = -1
         for z, t in enumerate(weather_data.keys()):
             if t != "daily":
-                radiation = float(weather_data[t]["radiation"])
+                radiation = float(weather_data[t]["direct_radiation"])
                 time_float = float(t[:2]) + float(t[3:]) / 100
                 sun_height = sun.calc_solar_elevation(time_float)
                 sun_azimuth = sun.calc_azimuth(time_float)
@@ -126,7 +126,7 @@ def write_data_to_file(weather_data: None | dict, sun: None | classes.CalcSunPos
                 curr_eff = pv.calc_temp_dependency(weather_data[t]["temp"], radiation)
                 power = pv.calc_power(radiation, incidence, sun_height, curr_eff)
 
-                data.update({t: {"radiation": radiation, "power": round(power, 3),
+                data.update({t: {"direct_radiation": radiation, "power": round(power, 3),
                                  "market_price": market.data[zeit]["consumerprice"]}})
             if (z - 4) % 4 == 0:
                 zeit += 1
@@ -246,8 +246,8 @@ def generate_weather_data(data: dict, config_data: dict) -> str:
                 azimuth: float = sun.calc_azimuth(time_float)
                 elevation: float = sun.calc_solar_elevation(time_float)
                 incidence = pv.calc_incidence_angle(elevation, azimuth)
-                eff = pv.calc_temp_dependency(weather_date[date][t]["temp"], weather_date[date][t]["radiation"])
-                power_data[date][t] = pv.calc_power(weather_date[date][t]["radiation"], incidence, elevation,
+                eff = pv.calc_temp_dependency(weather_date[date][t]["temp"], weather_date[date][t]["direct_radiation"])
+                power_data[date][t] = pv.calc_power(weather_date[date][t]["direct_radiation"], incidence, elevation,
                                                     eff)
                 energy_data_list.append(power_data[date][t])
         energy_data[date] = calc_energy(energy_data_list)
@@ -404,10 +404,10 @@ def analytics():
                 azimuth: float = sun.calc_azimuth(time_float)
                 elevation: float = sun.calc_solar_elevation(time_float)
                 incidence = pv.calc_incidence_angle(elevation, azimuth)
-                radiation = weather_date[t]["radiation"]
+                radiation = weather_date[t]["direct_radiation"]
                 radiation_data.append(radiation)
                 eff = pv.calc_temp_dependency(weather_date[t]["temp"], radiation)
-                power_data.append(pv.calc_power(weather_date[t]["radiation"], incidence, elevation, eff))
+                power_data.append(pv.calc_power(weather_date[t]["direct_radiation"], incidence, elevation, eff))
 
         energy = calc_energy(power_data, kwh=False)
 
