@@ -17,5 +17,6 @@ mounting_type = 1                # 0: Completely free elevation
 # 5: Integrated on the façade or façades, poor rear ventilation
 # 6: Roof integration, without rear ventilation
 # 7: Façade integration, without rear ventilation
+# Seite 224 Quasching
 [market]
 consumer_price = 13.35  # The price of tax and fees

@@ -98,6 +98,7 @@ class Weather:
         initialize the class
         :param latitude:
         :param longitude:
+        :param start_date: format %d-%m-%Y
         :return: none
         """
         self.latitude: float = latitude
@@ -214,12 +215,12 @@ class CalcSunPos:
     """
     calcs the position of the sun
     """
-
     def __init__(self, latitude, longitude, date: str | None = None) -> None:
         """
         initialize the class
         :param latitude:
         :param longitude:
+        :param date: format %d-%m-%Y
         """
         self.time_last_calc: float | None = None
         self.hour_angle: float | None = None
@@ -379,7 +380,7 @@ class PVProfit:
 
     @lru_cache(maxsize=None)
     def calc_power(self, power_direct_horizontal: float, incidence_angle: float, sun_height: float,
-                   current_efficiency) -> float:
+                   current_efficiency: float) -> float:
         """
         calcs the energy output of the pv panel
         :param power_direct_horizontal: the direct radiation of the weather data
@@ -398,6 +399,30 @@ class PVProfit:
             if power_direct_horizontal is None:
                 print("No radiation")
             return 0
+
+    @lru_cache(maxsize=None)
+    def calc_power_with_dni(self, dni: float, incidence_angle: float) -> float:
+        """
+        Calculates the energy output of the PV panel using Direct Normal Irradiance (DNI)
+        :param incidence_angle: the incidence angle of the sun
+        :param dni: Direct Normal Irradiance in W/m^2
+        :return: Current energy output of the panel in Watts
+        """
+        if incidence_angle == -1:
+            return 0
+
+        try:
+            adjusted_dni = dni * np.cos(np.deg2rad(incidence_angle))
+
+            pv_temperature = self.calc_pv_temp(temperature, adjusted_dni)
+            current_efficiency = self.calc_temp_dependency(pv_temperature, adjusted_dni)
+
+            return adjusted_dni * current_efficiency * self.module_area
+        except (ValueError, TypeError):
+            if dni is None:
+                print("No radiation")
+            return 0
+
 
 
 class ShellyControl:

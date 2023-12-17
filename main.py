@@ -110,8 +110,6 @@ def test_day_data(weather_data: classes.Weather, sun: classes.CalcSunPos, pv: cl
 
     print(f"Energie über den Tag: {round(total_energy, 2)}kWh")
 
-    pprint(weather_data)
-
     x = t_list
 
     plt.plot(x, energy_list, label="Energie")
