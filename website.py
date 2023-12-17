@@ -110,7 +110,8 @@ def write_data_to_file(weather_data: None | dict, sun: None | classes.CalcSunPos
         for i, k in enumerate(time):
             if k != "daily":
                 data.update(
-                    {k: {"direct_radiation": radiation[i], "power": round(power[i], 3), "market_price": market_price[h]}})
+                    {k: {"direct_radiation": radiation[i],
+                         "power": round(power[i], 3), "market_price": market_price[h]}})
             if (i - 4) % 4 == 0:
                 h += 1
 
@@ -277,7 +278,7 @@ def generate_weather_data(data: dict, config_data: dict) -> str:
             plt.xticks(rotation=90, ha="right", fontsize=18)
             x = len(energy_data.keys())
             z = max(energy_data.values())
-            z = (z) + (100 if z > 100 else 5)
+            z = (z + (100 if z > 100 else 5))
             ticks = np.arange(0, z, step=(x // 100 * 10 if z > 100 else 1))
             plt.yticks(ticks=ticks, ha="right", fontsize=20)
             plt.legend(loc="upper left", fontsize=20)
@@ -417,7 +418,7 @@ def analytics():
 
         write_data_to_file(None, None, None, None, weather_time, radiation_data, power_data, market_price)
 
-    for p in power_data:
+    for _ in power_data:
         energy_data.append(energy)
 
     plt.clf()
@@ -543,7 +544,7 @@ def safe_settings():
             return render_template('index.html', config=config_data)
         else:
             return render_template('set_vals.html',
-                                   error='Bitte füllen Sie mindestens Latitude und Longitude aus oder die Adresse',
+                                   error='Bitte füllen Sie mindestens Latitude, Longitude aus oder die Adresse',
                                    config=config_data)
 
 

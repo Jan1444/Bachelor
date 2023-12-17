@@ -14,7 +14,7 @@ class MarketData:
         """
         Initialize the market data class
         :param consumer_costs: The cost of the grid
-        :return: None
+        :return: None.
         """
         date_today: str = datetime.datetime.today().strftime("%Y-%m-%d")
         time_start: str = "00:00:00,00"
@@ -25,17 +25,17 @@ class MarketData:
 
     def __str__(self) -> str:
         """
-        can be used to print easily the data
-        :return: The market as string
+        Can be used to print the data
+        :return: The market as string.
         """
         return str(self.data)
 
     @staticmethod
     def convert_ms_to_time(ms: int) -> str:
         """
-        convert the given ms to a time string (hour and minutes)
+        Convert the given ms to a time string (hour and minutes)
         :param ms: The ms to convert
-        :return: the time in hour and minutes
+        :return: the time in hour and minutes.
         """
         date_time = datetime.datetime.fromtimestamp(ms / 1000).time()
         t = f"{date_time.hour}:00"
@@ -44,21 +44,21 @@ class MarketData:
     @staticmethod
     def convert_time_to_ms(date: str, t: str) -> int:
         """
-        convert the given date and time to milliseconds
+        Convert the given date and time to milliseconds
         :param date: As str
-        :param t: time as string in format %H:%M:%S,%f
-        :return: milliseconds
+        :param t: time as string in a format %H:%M:%S,%f
+        :return: milliseconds.
         """
         dt_obj = int(datetime.datetime.strptime(f"{date} {t}", '%Y-%m-%d %H:%M:%S,%f').timestamp() * 1000)
         return dt_obj
 
     def get_data(self, start: int | None = None, end: int | None = None) -> dict:
         """
-        Gets the data from the awattar api for 24 hours or the given start and end time
+        Gets the data from the awattar api for 24 hours, or the given start and end time
         https://www.awattar.de/services/api
         :param start: start time in millisecond
         :param end: end time in milliseconds
-        :return: json string of the data as dict
+        :return: json string of the data as dict.
         """
         if start and not end:
             url = rf"https://api.awattar.de/v1/marketdata?start={int(start)}"
@@ -73,7 +73,7 @@ class MarketData:
 
     def convert_dict(self, consumer_costs) -> None:
         """
-        converts the millisecond timestamp in the dict to time
+        Converts the millisecond timestamp in the dict to time
         :return: None
         """
         for i, old_data in enumerate(self.data):
@@ -95,10 +95,10 @@ class Weather:
     def __init__(self, latitude: float, longitude: float, start_date: str | None = None, end_date: str | None = None) \
             -> None:
         """
-        initialize the class
+        Initialize the class
         :param latitude:
         :param longitude:
-        :param start_date: format %d-%m-%Y
+        :param start_date: Format %d-%m-%Y
         :return: none
         """
         self.latitude: float = latitude
@@ -121,8 +121,8 @@ class Weather:
 
     def __str__(self) -> str:
         """
-        can be used to easily print the data
-        :return: str of the data
+        Can be used to print the data
+        :return: str of the data.
         """
         return str(self.data)
 
@@ -159,7 +159,7 @@ class Weather:
         """
         Gets the weather for the given latitude and longitude
         :return: A dict with the following variables: direct radiation, temperatur, cloudcover, temperature max,
-                 temperatur min, sunrise, sunset
+                 temperatur min, sunrise, sunset.
         """
         if start_date is None or end_date is None:
             url: str = (f"https://api.open-meteo.com/v1/forecast?latitude={self.latitude}&longitude={self.longitude}&"
@@ -215,14 +215,14 @@ class Weather:
 
 class CalcSunPos:
     """
-    calcs the position of the sun
+    Calcs the position of the sun
     """
     def __init__(self, latitude, longitude, date: str | None = None) -> None:
         """
-        initialize the class
+        Initialize the class
         :param latitude:
         :param longitude:
-        :param date: format %d-%m-%Y
+        :param date: Format %d-%m-%Y
         """
         self.time_last_calc: float | None = None
         self.hour_angle: float | None = None
@@ -251,8 +251,8 @@ class CalcSunPos:
 
     def __str__(self) -> str:
         """
-        can be used to easily print the data
-        :return: str of the data
+        Can be used to print the data
+        :return: str of the data.
         """
         t: float = float(datetime.datetime.now().time().strftime("%H.%M"))
         return (f"Uhrzeit: {str(t)[:2]}:{str(t)[3:]} Uhr\n"
@@ -262,9 +262,9 @@ class CalcSunPos:
     @lru_cache(maxsize=None)
     def calc_azimuth(self, t: float) -> float:
         """
-        calcs the azimuth to the given time
+        Calcs the azimuth to the given time
         :param t:  as float
-        :return: The azimuth in degrees
+        :return: The azimuth in degrees.
         """
         sun_height: float = np.deg2rad(self.calc_solar_elevation(t))
         if self.real_local_time > 12:
@@ -280,9 +280,9 @@ class CalcSunPos:
     @lru_cache(maxsize=None)
     def calc_solar_elevation(self, t: float) -> float:
         """
-        calcs solar elevation to the given time
+        Calcs solar elevation to the given time
         :param t:  as a float
-        :return: The solar elevation in degrees
+        :return: The solar elevation in degrees.
         """
         self.time_last_calc: float = round((int(t)) + ((t - int(t)) * 100 / 60), 2) - 0.25
         self.mid_local_time: float = self.time_last_calc + self.longitude * np.deg2rad(4)
@@ -295,19 +295,19 @@ class CalcSunPos:
 
 class PVProfit:
     """
-    calculates the profit for the pv system
+    Calculates the profit for the pv system
     """
 
     def __init__(self, module_efficiency: float, module_area: int, tilt_angle: float, exposure_angle: float,
                  temperature_coefficient: float, nominal_temperature: float, mounting_type_index: int) -> None:
         """
-        initialize the class
+        Initialize the class
         :param module_efficiency: the module efficiency in percent
         :param module_area: the module area in m^2
         :param tilt_angle: the tilt angle in degrees
         :param exposure_angle: the exposure angle in degrees
         :param temperature_coefficient: the temperature coefficient in %/°C
-        :param nominal_temperature: the nominal temperature in °C
+        :param nominal_temperature: the nominal temperature in °C.
         """
         self.module_efficiency: float = module_efficiency / 100
         self.module_area: int = module_area
@@ -328,8 +328,8 @@ class PVProfit:
 
     def __str__(self) -> str:
         """
-        can be used to easily print the data
-        :return: str of the data
+        Can be used to print the data
+        :return: str of the data.
         """
         val = (f"Die Modul Effizienz ist: {self.module_efficiency * 100}%\n"
                f"Die Modulfläche ist: {self.module_area}m^2\n"
@@ -354,10 +354,10 @@ class PVProfit:
     @lru_cache(maxsize=None)
     def calc_pv_temp(self, temperature: float, radiation: float) -> float:
         """
-        calcs the temperature of the pv system
+        Calcs the temperature of the pv system
         :param temperature: the surrounding temperature in °C
         :param radiation: the current radiation in W/m^2
-        :return: the temperatur of the pv panel in °C
+        :return: the temperatur of the pv panel in °C.
         """
         try:
             return temperature + self.mounting_type * radiation / 1000
@@ -371,10 +371,10 @@ class PVProfit:
     @lru_cache(maxsize=None)
     def calc_temp_dependency(self, temperature: float, radiation: float) -> float:
         """
-        calcs the current efficiency of the pv panel
+        Calcs the current efficiency of the pv panel
         :param temperature: the current surrounding temperatur in °C
         :param radiation: the current radiation in W/m^2
-        :return: the current efficiency as float
+        :return: the current efficiency as float.
         """
         current_efficiency = self.module_efficiency + (self.calc_pv_temp(temperature, radiation)
                                                        - self.nominal_temperature) * self.temperature_coefficient
@@ -384,12 +384,12 @@ class PVProfit:
     def calc_power(self, power_direct_horizontal: float, incidence_angle: float, sun_height: float,
                    current_efficiency: float) -> float:
         """
-        calcs the energy output of the pv panel
-        :param power_direct_horizontal: the direct radiation of the weather data
-        :param incidence_angle: the incidence angle of the sun
-        :param sun_height: the height of the sun
-        :param current_efficiency: the current efficiency of the panel
-        :return: the current energy of the panel
+        Calcs the energy output of the pv panel,
+        :param power_direct_horizontal: the direct radiation of the weather data,
+        :param incidence_angle: the incidence angle of the sun,
+        :param sun_height: the height of the sun,
+        :param current_efficiency: the current efficiency of the panel,
+        :return: the current energy of the panel.
         """
         if incidence_angle == -1:
             return 0
@@ -403,12 +403,13 @@ class PVProfit:
             return 0
 
     @lru_cache(maxsize=None)
-    def calc_power_with_dni(self, dni: float, incidence_angle: float) -> float:
+    def calc_power_with_dni(self, dni: float, incidence_angle: float, temperature: float) -> float:
         """
         Calculates the energy output of the PV panel using Direct Normal Irradiance (DNI)
-        :param incidence_angle: the incidence angle of the sun
+        :param temperature:
+        :param incidence_angle: The incidence angle of the sun
         :param dni: Direct Normal Irradiance in W/m^2
-        :return: Current energy output of the panel in Watts
+        :return: Current energy output of the panel in Watts.
         """
         if incidence_angle == -1:
             return 0
@@ -424,7 +425,6 @@ class PVProfit:
             if dni is None:
                 print("No radiation")
             return 0
-
 
 
 class ShellyControl:
