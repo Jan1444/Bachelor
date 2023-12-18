@@ -88,9 +88,11 @@ def write_data_to_config(data: dict, toml_file_path: str) -> None:
 
 def write_data_to_file(weather_data: None | dict, sun: None | classes.CalcSunPos, pv: None | classes.PVProfit,
                        market: None | classes.MarketData, time: None | list = None, radiation: None | list = None,
-                       power: None | list = None, market_price: None | list = None) -> None:
+                       radiation_dni: None | list = None, power: None | list = None, market_price: None | list = None) \
+                        -> None:
     """
 
+    :param radiation_dni:
     :param weather_data:
     :param sun:
     :param pv:
@@ -105,21 +107,33 @@ def write_data_to_file(weather_data: None | dict, sun: None | classes.CalcSunPos
     data: dict = {"write_time": {"time": datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S"),
                                  "format": "%d-%m-%Y %H:%M:%S"}}
 
-    if time is not None and radiation is not None and power is not None and market_price is not None:
+    if time is not None and radiation is not None  and power is not None and market_price is not None:
         h = -1
         for i, k in enumerate(time):
             if k != "daily":
                 data.update(
                     {k: {"direct_radiation": radiation[i],
-                         "power": round(power[i], 3), "market_price": market_price[h]}})
+                         "power": round(power[i], 3),
+                         "market_price": market_price[h]}})
             if (i - 4) % 4 == 0:
                 h += 1
 
+    elif time is not None and radiation_dni is not None and power is not None and market_price is not None:
+        h = -1
+        for i, k in enumerate(time):
+            if k != "daily":
+                data.update(
+                    {k: {"dni_radiation": radiation_dni[i],
+                         "power": round(power[i], 3),
+                         "market_price": market_price[h]}})
+            if (i - 4) % 4 == 0:
+                h += 1
     else:
         zeit: int = -1
         for z, t in enumerate(weather_data.keys()):
             if t != "daily":
                 radiation = float(weather_data[t]["direct_radiation"])
+                radiation_dni = float(weather_data[t]["dni_radiation"])
                 time_float = float(t[:2]) + float(t[3:]) / 100
                 sun_height = sun.calc_solar_elevation(time_float)
                 sun_azimuth = sun.calc_azimuth(time_float)
@@ -127,7 +141,9 @@ def write_data_to_file(weather_data: None | dict, sun: None | classes.CalcSunPos
                 curr_eff = pv.calc_temp_dependency(weather_data[t]["temp"], radiation)
                 power = pv.calc_power(radiation, incidence, sun_height, curr_eff)
 
-                data.update({t: {"direct_radiation": radiation, "power": round(power, 3),
+                data.update({t: {"direct_radiation": radiation,
+                                 "dni_radiation": radiation_dni,
+                                 "power": round(power, 3),
                                  "market_price": market.data[zeit]["consumerprice"]}})
             if (z - 4) % 4 == 0:
                 zeit += 1
@@ -248,8 +264,7 @@ def generate_weather_data(data: dict, config_data: dict) -> str:
                 elevation: float = sun.calc_solar_elevation(time_float)
                 incidence = pv.calc_incidence_angle(elevation, azimuth)
                 eff = pv.calc_temp_dependency(weather_date[date][t]["temp"], weather_date[date][t]["direct_radiation"])
-                power_data[date][t] = pv.calc_power(weather_date[date][t]["direct_radiation"], incidence, elevation,
-                                                    eff)
+                power_data[date][t] = pv.calc_power(weather_date[date][t]["direct_radiation"], incidence, elevation, eff)
                 energy_data_list.append(power_data[date][t])
         energy_data[date] = calc_energy(energy_data_list)
 
@@ -302,6 +317,7 @@ def unpack_data(data: dict) -> (list, list, list, list):
     market_price: list = []
 
     for t in data.keys():
+        print(t)
         if t != "write_time":
             weather_time.append(t)
             power_data.append(data[t]["power"])
@@ -375,13 +391,18 @@ def analytics():
         if (time_now - time_write).seconds < (60 * 60) and (time_now - time_write).days <= 0:
             old_data = False
 
-            weather_time, power_data, market_time, market_price = unpack_data(data)
+            weather_time, energy_data, market_time, market_price = unpack_data(data)
 
-            energy = calc_energy(power_data, kwh=False)
+            print(len(energy_data))
+            print(len(weather_time))
+            print(old_data)
+            #energy = calc_energy(power_data, kwh=False)
+            power_data=energy_data
+            # TODO: radiation!!
 
     if old_data:
         toml_file_path = 'config/config_test.toml'
-
+        print("a")
         with open(toml_file_path, 'rb') as f:
             config_data = tomli.load(f)
 
@@ -397,6 +418,7 @@ def analytics():
         weather_date = weather.data[today]
 
         radiation_data: list = []
+        radiation_data_dni: list = []
 
         for t in weather_date.keys():
             if t != "daily":
@@ -406,9 +428,15 @@ def analytics():
                 elevation: float = sun.calc_solar_elevation(time_float)
                 incidence = pv.calc_incidence_angle(elevation, azimuth)
                 radiation = weather_date[t]["direct_radiation"]
+                radiation_dni = weather_date[t]["dni_radiation"]
+                print(radiation_dni)
                 radiation_data.append(radiation)
-                eff = pv.calc_temp_dependency(weather_date[t]["temp"], radiation)
-                power_data.append(pv.calc_power(weather_date[t]["direct_radiation"], incidence, elevation, eff))
+                radiation_data_dni.append(radiation_dni)
+
+                #eff = pv.calc_temp_dependency(weather_date[t]["temp"], radiation)
+
+                power_data.append(pv.calc_power_with_dni(radiation_dni, incidence, weather_date[t]["temp"]))
+                # power_data.append(pv.calc_power(radiation, incidence, elevation, eff))
 
         energy = calc_energy(power_data, kwh=False)
 
@@ -416,10 +444,14 @@ def analytics():
             market_time.append(t["start_timestamp"])
             market_price.append(t["consumerprice"])
 
-        write_data_to_file(None, None, None, None, weather_time, radiation_data, power_data, market_price)
+        write_data_to_file(None, None, None, None, time=weather_time, radiation_dni=radiation_data_dni,
+                           power=power_data, market_price=market_price)
 
-    for _ in power_data:
-        energy_data.append(energy)
+        for _ in power_data:
+            energy_data.append(energy)
+
+    print(len(weather_time))
+    print(len(power_data))
 
     plt.clf()
     plt.figure(figsize=(60, 25))

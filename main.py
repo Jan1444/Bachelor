@@ -63,7 +63,7 @@ def calc_energy(energy: list, interval: float = 0.25) -> float:
     return total_energy
 
 
-def test_day_data(weather_data: classes.Weather, sun: classes.CalcSunPos, pv: classes.PVProfit,
+def test_day_data(weather_data: dict, sun: classes.CalcSunPos, pv: classes.PVProfit,
                   market: classes.MarketData) -> (list, list, list, list):
     t_list: list = []
     energy_list: list = []

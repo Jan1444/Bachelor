@@ -4,7 +4,7 @@ longitude = 11.29489     #
 
 [pv]
 tilt_angle = 30                  # The tilt angle in degrees
-area = 20                        # The module area in m^2
+area = 5.16                     # The module area in m^2 (8 Module)
 module_efficiency = 20           # The module efficiency in Percent
 exposure_angle = 0               # The exposure angle in degrees
 temperature_coefficient = -0.35  # The temperature coefficient in percent per degrees
