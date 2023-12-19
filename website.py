@@ -62,7 +62,6 @@ def analytics():
 
     if old_data:
         toml_file_path = 'config/config_test.toml'
-        print("a")
         with open(toml_file_path, 'rb') as f:
             config_data = tomli.load(f)
 
@@ -95,7 +94,6 @@ def analytics():
 
                 power_data.append(energy_dni)
 
-        print(power_data)
         energy = fc.calc_energy(power_data, kwh=False)
 
         for t in market.data:
@@ -242,4 +240,4 @@ def file_download():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)
