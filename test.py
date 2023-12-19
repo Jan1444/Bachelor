@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import tomli
 import tomli_w
 from pprint import pprint
