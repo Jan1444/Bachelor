@@ -4,7 +4,7 @@ longitude = 11.2948653
 
 [pv]
 tilt_angle = 30.0
-area = 20.0
+area = 5.16
 module_efficiency = 20.0
 exposure_angle = 5.0
 temperature_coefficient = -0.35

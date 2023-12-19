@@ -38,6 +38,7 @@ def init_classes(latitude: float, longitude: float, module_efficiency: float, mo
                                             mounting_type)
     return weather, market, sun, pv
 
+
 def freeze_all(func):
     @wraps(func)
     def wrapped(*args, **kwargs):
@@ -160,6 +161,7 @@ def read_data_from_file(file_path: str) -> dict:
     with open(file_path, 'rb') as f:
         data = tomli.load(f)
     return data
+
 
 def get_coord(street: str, nr: str, city: str, postalcode: int, country: str) -> (str, str):
     # https://nominatim.org/release-docs/develop/api/Search/
@@ -324,7 +326,7 @@ def unpack_data(data: dict) -> (list, list, list, list):
         radiation_key = "radiation"
 
     for t in data.keys():
-        print(t)
+
         if t != "write_time":
             weather_time.append(t)
             radiation_data.append(data[t][radiation_key])

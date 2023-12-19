@@ -10,7 +10,6 @@ import tomli
 
 from flask import Flask, render_template, request, send_from_directory
 
-import classes
 import functions as fc
 
 app = Flask(__name__)
@@ -58,8 +57,9 @@ def analytics():
         if (time_now - time_write).seconds < (60 * 60) and (time_now - time_write).days <= 0:
             old_data = False
 
-            weather_time, power_data, energy_data, market_time, market_price = fc.unpack_data(data)
-            # TODO: fixen
+            weather_time, radiation_data, power_data, market_time, market_price = fc.unpack_data(data)
+            energy = fc.calc_energy(power_data, kwh=False)
+
     if old_data:
         toml_file_path = 'config/config_test.toml'
         print("a")
@@ -71,9 +71,9 @@ def analytics():
         market_consts = config_data["market"]
 
         weather, market, sun, pv = fc.init_classes(coordinates["latitude"], coordinates["longitude"],
-                                                pv_consts["module_efficiency"], pv_consts["area"],
-                                                pv_consts["tilt_angle"], pv_consts["exposure_angle"],
-                                                pv_consts["mounting_type"], market_consts["consumer_price"])
+                                                   pv_consts["module_efficiency"], pv_consts["area"],
+                                                   pv_consts["tilt_angle"], pv_consts["exposure_angle"],
+                                                   pv_consts["mounting_type"], market_consts["consumer_price"])
         today = list(weather.data.keys())[0]
         weather_date = weather.data[today]
 
@@ -83,21 +83,19 @@ def analytics():
         for t in weather_date.keys():
             if t != "daily":
                 weather_time.append(t)
-                time_float: float = int(t[:2]) + int(t[3:]) / 100
+                time_float = float(t[:2]) + float(t[3:]) / 100
                 azimuth: float = sun.calc_azimuth(time_float)
                 elevation: float = sun.calc_solar_elevation(time_float)
                 incidence = pv.calc_incidence_angle(elevation, azimuth)
                 radiation = weather_date[t]["direct_radiation"]
                 radiation_dni = weather_date[t]["dni_radiation"]
-                print(radiation_dni)
                 radiation_data.append(radiation)
                 radiation_data_dni.append(radiation_dni)
+                energy_dni = pv.calc_power_with_dni(radiation_dni, incidence, weather_date[t]["temp"])
 
-                # eff = pv.calc_temp_dependency(weather_date[t]["temp"], radiation)
+                power_data.append(energy_dni)
 
-                power_data.append(pv.calc_power_with_dni(radiation_dni, incidence, weather_date[t]["temp"]))
-                # power_data.append(pv.calc_power(radiation, incidence, elevation, eff))
-
+        print(power_data)
         energy = fc.calc_energy(power_data, kwh=False)
 
         for t in market.data:
@@ -105,13 +103,10 @@ def analytics():
             market_price.append(t["consumerprice"])
 
         fc.write_data_to_file(None, None, None, None, time=weather_time, radiation_dni=radiation_data_dni,
-                           power=power_data, market_price=market_price)
+                              power=power_data, market_price=market_price)
 
-        for _ in power_data:
-            energy_data.append(energy)
-
-    print(len(weather_time))
-    print(len(power_data))
+    for _ in power_data:
+        energy_data.append(energy)
 
     plt.clf()
     plt.figure(figsize=(60, 25))
