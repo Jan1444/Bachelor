@@ -2,362 +2,18 @@
 
 import datetime
 import os
-from functools import lru_cache, wraps
 
 import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
-import requests
+
 import tomli
-import tomli_w
+
 from flask import Flask, render_template, request, send_from_directory
-from frozendict import frozendict
 
 import classes
+import functions as fc
 
 app = Flask(__name__)
-
-
-def init_classes(latitude: float, longitude: float, module_efficiency: float, module_area: int, tilt_angle: float,
-                 exposure_angle: float, mounting_type: int, costs: float) -> (
-        classes.Weather, classes.MarketData, classes.CalcSunPos, classes.PVProfit):
-    """
-
-    :param mounting_type:
-    :param costs:
-    :param latitude:
-    :param longitude:
-    :param module_efficiency:
-    :param module_area:
-    :param tilt_angle:
-    :param exposure_angle:
-    :return:
-    """
-    weather: classes.Weather = classes.Weather(latitude, longitude)
-    market: classes.MarketData = classes.MarketData(costs)
-    sun: classes.CalcSunPos = classes.CalcSunPos(latitude, longitude)
-    pv: classes.PVProfit = classes.PVProfit(module_efficiency, module_area, tilt_angle, exposure_angle, -0.35, 25,
-                                            mounting_type)
-    return weather, market, sun, pv
-
-
-def freeze_all(func):
-    @wraps(func)
-    def wrapped(*args, **kwargs):
-        def freeze(obj):
-            if isinstance(obj, dict):
-                return frozendict({k: freeze(v) for k, v in obj.items()})
-            elif isinstance(obj, list):
-                return tuple(freeze(v) for v in obj)
-            return obj
-
-        frozen_args = tuple(freeze(arg) for arg in args)
-        frozen_kwargs = {k: freeze(v) for k, v in kwargs.items()}
-
-        return func(*frozen_args, **frozen_kwargs)
-
-    return wrapped
-
-
-def write_data_to_config(data: dict, toml_file_path: str) -> None:
-    """
-
-    :param data:
-    :param toml_file_path:
-    :return:
-    """
-    with open(toml_file_path, 'rb') as f:
-        config_data = tomli.load(f)
-    if data['latitude'] != "" or data['longitude'] != "":
-        config_data['coordinates']['latitude'] = float(data['latitude'])
-        config_data['coordinates']['longitude'] = float(data['longitude'])
-    else:
-        lat, lon = get_coord(data['Straße'], data['Nr'], data['Stadt'], data['PLZ'], data['Land'])
-        config_data['coordinates']['latitude'] = lat
-        config_data['coordinates']['longitude'] = lon
-    config_data['pv']['tilt_angle'] = float(data['tilt_angle'])
-    config_data['pv']['area'] = float(data['area'])
-    config_data['pv']['module_efficiency'] = float(data['module_efficiency'])
-    config_data['pv']['exposure_angle'] = float(data['exposure_angle'])
-    config_data['pv']['temperature_coefficient'] = float(data['temperature_coefficient'])
-    config_data['pv']['nominal_temperature'] = float(data['nominal_temperature'])
-    config_data['pv']['mounting_type'] = int(data['mounting_type'])
-    config_data['market']['consumer_price'] = float(data['consumer_price'])
-
-    with open(toml_file_path, 'wb') as f:
-        tomli_w.dump(config_data, f)
-
-
-def write_data_to_file(weather_data: None | dict, sun: None | classes.CalcSunPos, pv: None | classes.PVProfit,
-                       market: None | classes.MarketData, time: None | list = None, radiation: None | list = None,
-                       radiation_dni: None | list = None, power: None | list = None, market_price: None | list = None) \
-        -> None:
-    """
-
-    :param radiation_dni:
-    :param weather_data:
-    :param sun:
-    :param pv:
-    :param market:
-    :param time:
-    :param radiation:
-    :param power:
-    :param market_price:
-    :return:
-    """
-    data_file_path = r"data/data.toml"
-    data: dict = {"write_time": {"time": datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S"),
-                                 "format": "%d-%m-%Y %H:%M:%S"}}
-
-    if time is not None and radiation is not None and power is not None and market_price is not None:
-        h = -1
-        for i, k in enumerate(time):
-            if k != "daily":
-                data.update(
-                    {k: {"direct_radiation": radiation[i],
-                         "power": round(power[i], 3),
-                         "market_price": market_price[h]}})
-            if (i - 4) % 4 == 0:
-                h += 1
-
-    elif time is not None and radiation_dni is not None and power is not None and market_price is not None:
-        h = -1
-        for i, k in enumerate(time):
-            if k != "daily":
-                data.update(
-                    {k: {"dni_radiation": radiation_dni[i],
-                         "power": round(power[i], 3),
-                         "market_price": market_price[h]}})
-            if (i - 4) % 4 == 0:
-                h += 1
-    else:
-        zeit: int = -1
-        for z, t in enumerate(weather_data.keys()):
-            if t != "daily":
-                radiation = float(weather_data[t]["direct_radiation"])
-                radiation_dni = float(weather_data[t]["dni_radiation"])
-                time_float = float(t[:2]) + float(t[3:]) / 100
-                sun_height = sun.calc_solar_elevation(time_float)
-                sun_azimuth = sun.calc_azimuth(time_float)
-                incidence = pv.calc_incidence_angle(sun_height, sun_azimuth)
-                curr_eff = pv.calc_temp_dependency(weather_data[t]["temp"], radiation)
-                power = pv.calc_power(radiation, incidence, sun_height, curr_eff)
-
-                data.update({t: {"direct_radiation": radiation,
-                                 "dni_radiation": radiation_dni,
-                                 "power": round(power, 3),
-                                 "market_price": market.data[zeit]["consumerprice"]}})
-            if (z - 4) % 4 == 0:
-                zeit += 1
-
-    with open(data_file_path, 'wb') as f:
-        tomli_w.dump(data, f)
-
-
-def read_data_from_file(file_path: str) -> dict:
-    """
-
-    :param file_path:
-    :return:
-    """
-    with open(file_path, 'rb') as f:
-        data = tomli.load(f)
-    return data
-
-
-def get_coord(street: str, nr: str, city: str, postalcode: int, country: str) -> (str, str):
-    # https://nominatim.org/release-docs/develop/api/Search/
-    """
-
-    :param street:
-    :param nr:
-    :param city:
-    :param postalcode:
-    :param country:
-    :return:
-    """
-    street_rep = street.replace(" ", "&20")
-    city_rep = city.replace(" ", "&20")
-    url = (f"https://nominatim.openstreetmap.org/search?q={street_rep}%20{nr}%20{city_rep}%20{postalcode}%20{country}"
-           f"&format=json&addressdetails=1")
-    req = requests.request("GET", url).json()
-    if len(req) > 1:
-        for result in req:
-            if "address" in result.keys():
-                if street in result["address"].values():
-                    if city in result["address"].values():
-                        if nr in result["address"].values():
-                            if postalcode in result["address"].values():
-                                lat = float(req[0]["lat"])
-                                lon = float(req[0]["lon"])
-                                return lat, lon
-
-    lat = float(req[0]["lat"])
-    lon = float(req[0]["lon"])
-    return lat, lon
-
-
-def calc_energy(energy: list, interval: float = 0.25, kwh: bool = True) -> float:
-    """
-
-    :param energy:
-    :param interval:
-    :param kwh:
-    :return:
-    """
-    multiplier = 1
-    if kwh:
-        multiplier = 1000
-    power_values = list(map(lambda x: x / multiplier, energy))
-    total_energy = sum((power_values[i] + power_values[i + 1]) / 2 * interval for i in range(len(power_values) - 1))
-    return total_energy
-
-
-def date_time_download() -> dict:
-    """
-
-    :return:
-    """
-    date_today = datetime.datetime.now().strftime("%Y-%m-%d")
-    date_and_time = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M")
-    data: dict = {"date": date_today, "datetime": date_and_time}
-    return data
-
-
-@freeze_all
-@lru_cache(maxsize=None)
-def generate_weather_data(data: dict, config_data: dict) -> str:
-    """
-
-    :param data:
-    :param config_data:
-    :return:
-    """
-    if not os.path.exists(r"uploads"):
-        os.mkdir(r"uploads")
-
-    start_date = datetime.datetime.strptime(data['start_date_weather'], "%Y-%m-%d")
-    end_date = datetime.datetime.strptime(data['end_date_weather'], "%Y-%m-%d")
-
-    weather_date = classes.Weather(
-        config_data['coordinates']['latitude'], config_data['coordinates']['longitude'],
-        datetime.datetime.strftime(start_date, "%d-%m-%Y"),
-        datetime.datetime.strftime(end_date, "%d-%m-%Y")).data
-
-    pv = classes.PVProfit(config_data["pv"]["module_efficiency"], config_data["pv"]["area"],
-                          config_data["pv"]["tilt_angle"], config_data["pv"]["exposure_angle"],
-                          config_data["pv"]["temperature_coefficient"],
-                          config_data["pv"]["nominal_temperature"], config_data["pv"]["mounting_type"])
-
-    power_data: dict = {}
-    energy_data: dict = {}
-    msg: str = ""
-    for date in weather_date.keys():
-        sun = classes.CalcSunPos(config_data['coordinates']['latitude'],
-                                 config_data['coordinates']['longitude'],
-                                 date)
-
-        power_data[date] = {}
-        energy_data_list: list = []
-        for t in weather_date[date].keys():
-            if t != "daily":
-                time_float: float = int(t[:2]) + int(t[3:]) / 100
-                azimuth: float = sun.calc_azimuth(time_float)
-                elevation: float = sun.calc_solar_elevation(time_float)
-                incidence = pv.calc_incidence_angle(elevation, azimuth)
-                eff = pv.calc_temp_dependency(weather_date[date][t]["temp"], weather_date[date][t]["direct_radiation"])
-                power_data[date][t] = pv.calc_power(weather_date[date][t]["direct_radiation"], incidence, elevation,
-                                                    eff)
-                energy_data_list.append(power_data[date][t])
-        energy_data[date] = calc_energy(energy_data_list)
-
-    if "excel_weather" in data.keys():
-        if os.path.exists(r"uploads/data.xlsx"):
-            os.remove(r"uploads/data.xlsx")
-        if data["excel_weather"] == "on":
-            df = pd.DataFrame.from_dict(energy_data, orient='index', columns=['energy [kWh]'])
-            df.to_excel('uploads/data.xlsx')
-            msg = "excel"
-
-    if "plot_png_weather" in data.keys():
-        if data["plot_png_weather"] == "on":
-            if os.path.exists(r"uploads/plot.png"):
-                os.remove(r"uploads/plot.png")
-            if len(energy_data.keys()) > 50:
-                x = len(energy_data.keys()) * 0.25
-                y = x * 0.4
-            else:
-                x = 10
-                y = 5
-
-            plt.figure(figsize=(x, y))
-            plt.grid()
-            plt.plot(energy_data.keys(), energy_data.values(), label="Energy[kWh]")
-            plt.xticks(rotation=90, ha="right", fontsize=18)
-            x = len(energy_data.keys())
-            z = max(energy_data.values())
-            z = (z + (100 if z > 100 else 5))
-            ticks = np.arange(0, z, step=(x // 100 * 10 if z > 100 else 1))
-            plt.yticks(ticks=ticks, ha="right", fontsize=20)
-            plt.legend(loc="upper left", fontsize=20)
-            plt.tight_layout()
-            plt.savefig(r"uploads/plot.png")
-            msg = f"{msg}, plot"
-
-    return msg
-
-
-def unpack_data(data: dict) -> (list, list, list, list):
-    """
-
-    :param data:
-    :return:
-    """
-    weather_time: list = []
-    radiation_data: list = []
-    power_data: list = []
-
-    market_time: list = []
-    market_price: list = []
-
-    radiation_key: str = ""
-
-    if "dni_radiation" in data["00:00"].keys():
-        radiation_key = "dni_radiation"
-    elif "radiation" in data["00:00"].keys():
-        radiation_key = "radiation"
-
-    for t in data.keys():
-        print(t)
-        if t != "write_time":
-            weather_time.append(t)
-            radiation_data.append(data[t][radiation_key])
-            power_data.append(data[t]["power"])
-            if t[3:] == "00":
-                market_time.append(t)
-                market_price.append(data[t]["market_price"])
-
-    return weather_time, radiation_data, power_data, market_time, market_price
-
-
-def test():
-    """
-
-    :return:
-    """
-    from config import settings as consts
-    coordinates = consts["coordinates"]
-    pv_consts = consts["pv"]
-    market_consts = consts["market"]
-
-    w, m, sun, pv = init_classes(coordinates["latitude"], coordinates["longitude"],
-                                 pv_consts["module_efficiency"], pv_consts["area"],
-                                 pv_consts["tilt_angle"], pv_consts["exposure_angle"],
-                                 pv_consts["mounting_type"], market_consts["consumer_price"])
-
-    w = w.data[list(w.data.keys())[0]]
-
-    return w, m, sun, pv
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -394,7 +50,7 @@ def analytics():
     old_data: bool = True
 
     if os.path.exists(r"data/data.toml"):
-        data = read_data_from_file(r"data/data.toml")
+        data = fc.read_data_from_file(r"data/data.toml")
 
         time_write = datetime.datetime.strptime(data["write_time"]["time"], data["write_time"]["format"])
         time_now = datetime.datetime.now()
@@ -402,7 +58,7 @@ def analytics():
         if (time_now - time_write).seconds < (60 * 60) and (time_now - time_write).days <= 0:
             old_data = False
 
-            weather_time, power_data, energy_data, market_time, market_price = unpack_data(data)
+            weather_time, power_data, energy_data, market_time, market_price = fc.unpack_data(data)
             # TODO: fixen
     if old_data:
         toml_file_path = 'config/config_test.toml'
@@ -414,7 +70,7 @@ def analytics():
         pv_consts = config_data["pv"]
         market_consts = config_data["market"]
 
-        weather, market, sun, pv = init_classes(coordinates["latitude"], coordinates["longitude"],
+        weather, market, sun, pv = fc.init_classes(coordinates["latitude"], coordinates["longitude"],
                                                 pv_consts["module_efficiency"], pv_consts["area"],
                                                 pv_consts["tilt_angle"], pv_consts["exposure_angle"],
                                                 pv_consts["mounting_type"], market_consts["consumer_price"])
@@ -442,13 +98,13 @@ def analytics():
                 power_data.append(pv.calc_power_with_dni(radiation_dni, incidence, weather_date[t]["temp"]))
                 # power_data.append(pv.calc_power(radiation, incidence, elevation, eff))
 
-        energy = calc_energy(power_data, kwh=False)
+        energy = fc.calc_energy(power_data, kwh=False)
 
         for t in market.data:
             market_time.append(t["start_timestamp"])
             market_price.append(t["consumerprice"])
 
-        write_data_to_file(None, None, None, None, time=weather_time, radiation_dni=radiation_data_dni,
+        fc.write_data_to_file(None, None, None, None, time=weather_time, radiation_dni=radiation_data_dni,
                            power=power_data, market_price=market_price)
 
         for _ in power_data:
@@ -494,7 +150,7 @@ def download():
         config_data = tomli.load(f)
 
     if request.method == 'POST':
-        date_now = date_time_download()
+        date_now = fc.date_time_download()
         data = request.form.to_dict()
         print(data)
         if "excel_weather" in data.keys() or "plot_png_weather" in data.keys():
@@ -524,7 +180,7 @@ def download():
                                        error_weather=err_msg_weather, error_market=err_msg_market)
 
         if "excel_weather" in data.keys() or "plot_png_weather" in data.keys():
-            msg = generate_weather_data(data, config_data)
+            msg = fc.generate_weather_data(data, config_data)
 
     return render_template('file_download.html', config=date_now, ret=msg,
                            error_weather=err_msg_weather, error_market=err_msg_market)
@@ -576,7 +232,7 @@ def safe_settings():
         if ((data['latitude'] != "" and data['longitude'] != "") or (data['Straße'] != "" and data['Nr'] != "" and
                                                                      data['Stadt'] != "" and data['PLZ'] != "" and
                                                                      data['Land'])):
-            write_data_to_config(data, toml_file_path)
+            fc.write_data_to_config(data, toml_file_path)
             return render_template('index.html', config=config_data)
         else:
             return render_template('set_vals.html',
@@ -586,7 +242,7 @@ def safe_settings():
 
 @app.route('/file_download')
 def file_download():
-    data = date_time_download()
+    data = fc.date_time_download()
     return render_template('file_download.html', config=data)
 
 
