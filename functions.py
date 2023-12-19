@@ -73,6 +73,7 @@ def write_data_to_config(data: dict, toml_file_path: str) -> None:
         lat, lon = get_coord(data['Straße'], data['Nr'], data['Stadt'], data['PLZ'], data['Land'])
         config_data['coordinates']['latitude'] = lat
         config_data['coordinates']['longitude'] = lon
+
     config_data['pv']['tilt_angle'] = float(data['tilt_angle'])
     config_data['pv']['area'] = float(data['area'])
     config_data['pv']['module_efficiency'] = float(data['module_efficiency'])
@@ -104,17 +105,25 @@ def write_data_to_file(weather_data: None | dict, sun: None | classes.CalcSunPos
     :return:
     """
     data_file_path = r"data/data.toml"
-    data: dict = {"write_time": {"time": datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S"),
-                                 "format": "%d-%m-%Y %H:%M:%S"}}
+    data: dict = {
+        "write_time": {
+            "time": datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S"),
+            "format": "%d-%m-%Y %H:%M:%S"
+        }
+    }
 
     if time is not None and radiation is not None and power is not None and market_price is not None:
         h = -1
         for i, k in enumerate(time):
             if k != "daily":
-                data.update(
-                    {k: {"direct_radiation": radiation[i],
-                         "power": round(power[i], 3),
-                         "market_price": market_price[h]}})
+                data.update({
+                    k: {
+                        "direct_radiation": radiation[i],
+                        "power": round(power[i], 3),
+                        "market_price": market_price[h]
+                    }
+                })
+
             if (i - 4) % 4 == 0:
                 h += 1
 
@@ -122,10 +131,13 @@ def write_data_to_file(weather_data: None | dict, sun: None | classes.CalcSunPos
         h = -1
         for i, k in enumerate(time):
             if k != "daily":
-                data.update(
-                    {k: {"dni_radiation": radiation_dni[i],
-                         "power": round(power[i], 3),
-                         "market_price": market_price[h]}})
+                data.update({
+                    k: {"dni_radiation": radiation_dni[i],
+                        "power": round(power[i], 3),
+                        "market_price": market_price[h]
+                        }
+                })
+
             if (i - 4) % 4 == 0:
                 h += 1
     else:
@@ -141,10 +153,15 @@ def write_data_to_file(weather_data: None | dict, sun: None | classes.CalcSunPos
                 curr_eff = pv.calc_temp_dependency(weather_data[t]["temp"], radiation)
                 power = pv.calc_power(radiation, incidence, sun_height, curr_eff)
 
-                data.update({t: {"direct_radiation": radiation,
-                                 "dni_radiation": radiation_dni,
-                                 "power": round(power, 3),
-                                 "market_price": market.data[zeit]["consumerprice"]}})
+                data.update({
+                    t: {
+                        "direct_radiation": radiation,
+                        "dni_radiation": radiation_dni,
+                        "power": round(power, 3),
+                        "market_price": market.data[zeit]["consumerprice"]
+                    }
+                })
+
             if (z - 4) % 4 == 0:
                 zeit += 1
 
@@ -218,7 +235,10 @@ def date_time_download() -> dict:
     """
     date_today = datetime.datetime.now().strftime("%Y-%m-%d")
     date_and_time = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M")
-    data: dict = {"date": date_today, "datetime": date_and_time}
+    data: dict = {
+        "date": date_today,
+        "datetime": date_and_time
+    }
     return data
 
 
