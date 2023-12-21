@@ -10,6 +10,7 @@ exposure_angle = 5.0
 temperature_coefficient = -0.35
 nominal_temperature = 25.0
 mounting_type = 1
+converter_power = 600
 
 [market]
 consumer_price = 13.35

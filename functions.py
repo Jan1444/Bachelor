@@ -57,14 +57,13 @@ def freeze_all(func):
     return wrapped
 
 
-def write_data_to_config(data: dict, toml_file_path: str) -> None:
+def write_data_to_config(data: dict) -> None:
     """
 
     :param data:
-    :param toml_file_path:
     :return:
     """
-    with open(toml_file_path, 'rb') as f:
+    with open(consts.config_file_Path, 'rb') as f:
         config_data = tomli.load(f)
     if data['latitude'] != "" or data['longitude'] != "":
         config_data['coordinates']['latitude'] = float(data['latitude'])
@@ -73,17 +72,19 @@ def write_data_to_config(data: dict, toml_file_path: str) -> None:
         lat, lon = get_coord(data['Straße'], data['Nr'], data['Stadt'], data['PLZ'], data['Land'])
         config_data['coordinates']['latitude'] = lat
         config_data['coordinates']['longitude'] = lon
+    pv = config_data['pv']
+    market = config_data['market']
+    pv['tilt_angle'] = float(data['tilt_angle'])
+    pv['area'] = float(data['area'])
+    pv['module_efficiency'] = float(data['module_efficiency'])
+    pv['converter_power'] = float(data['converter_power'])
+    pv['exposure_angle'] = float(data['exposure_angle'])
+    pv['temperature_coefficient'] = float(data['temperature_coefficient'])
+    pv['nominal_temperature'] = float(data['nominal_temperature'])
+    pv['mounting_type'] = int(data['mounting_type'])
+    market['consumer_price'] = float(data['consumer_price'])
 
-    config_data['pv']['tilt_angle'] = float(data['tilt_angle'])
-    config_data['pv']['area'] = float(data['area'])
-    config_data['pv']['module_efficiency'] = float(data['module_efficiency'])
-    config_data['pv']['exposure_angle'] = float(data['exposure_angle'])
-    config_data['pv']['temperature_coefficient'] = float(data['temperature_coefficient'])
-    config_data['pv']['nominal_temperature'] = float(data['nominal_temperature'])
-    config_data['pv']['mounting_type'] = int(data['mounting_type'])
-    config_data['market']['consumer_price'] = float(data['consumer_price'])
-
-    with open(toml_file_path, 'wb') as f:
+    with open(consts.config_file_Path, 'wb') as f:
         tomli_w.dump(config_data, f)
 
 

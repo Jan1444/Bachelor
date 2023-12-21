@@ -37,6 +37,13 @@ def dashboard():
 
 @app.route('/analytics')
 def analytics():
+    with open(consts.config_file_Path, 'rb') as f:
+        config_data = tomli.load(f)
+
+    coordinates = config_data["coordinates"]
+    pv_consts = config_data["pv"]
+    market_consts = config_data["market"]
+
     power_data: list = []
     weather_time: list = []
 
@@ -61,14 +68,6 @@ def analytics():
             energy = fc.calc_energy(power_data, kwh=False)
 
     if old_data:
-        toml_file_path = consts.config_file_Path
-        with open(toml_file_path, 'rb') as f:
-            config_data = tomli.load(f)
-
-        coordinates = config_data["coordinates"]
-        pv_consts = config_data["pv"]
-        market_consts = config_data["market"]
-
         weather, market, sun, pv = fc.init_classes(coordinates["latitude"], coordinates["longitude"],
                                                    pv_consts["module_efficiency"], pv_consts["area"],
                                                    pv_consts["tilt_angle"], pv_consts["exposure_angle"],
@@ -112,7 +111,7 @@ def analytics():
     plt.plot(weather_time, power_data, label="Power [W]")
     plt.plot(weather_time, energy_data, label="Energy [Wh]")
     plt.xticks(rotation=90, ha="right", fontsize=30)
-    plt.yticks(ticks=np.arange(0, max(max(power_data), max(energy_data)) + 100, step=100), ha="right", fontsize=30)
+    plt.yticks(ticks=np.arange(0, (pv_consts["converter_power"] + 51), step=50), ha="right", fontsize=30)
     plt.tight_layout()
     plt.legend(loc="center left", fontsize=30)
     plt.savefig(f'{consts.plot_path}output_weather.png')
@@ -202,16 +201,14 @@ def settings():
 @app.route('/save_settings', methods=['POST'])
 def safe_settings():
     if request.method == 'POST':
-        toml_file_path = consts.config_file_Path
-        with open(toml_file_path, 'rb') as f:
-            config_data = tomli.load(f)
+        config_data = tomli.load(open(consts.config_file_Path, 'rb'))
 
         data = request.form.to_dict()
 
         if ((data['latitude'] != "" and data['longitude'] != "") or (data['Straße'] != "" and data['Nr'] != "" and
                                                                      data['Stadt'] != "" and data['PLZ'] != "" and
                                                                      data['Land'])):
-            fc.write_data_to_config(data, toml_file_path)
+            fc.write_data_to_config(data)
             return render_template('index.html', config=config_data)
         else:
             return render_template('set_vals.html',
