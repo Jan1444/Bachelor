@@ -101,6 +101,12 @@
                 <td></td>
             </tr>
             <tr>
+                <td><label for="converter_power">Wechselrichter Leistung [W]:</label></td>
+                <td><input id="converter_power" minlength="1" name="converter_power"
+                           type="text" value="{{ config['market']['consumer_price'] }}"></td>
+                <td></td>
+            </tr>
+            <tr>
                 <td><label for="exposure_angle">Ausrichtungswinkel [°]:</label></td>
                 <td><input id="exposure_angle" minlength="1" name="exposure_angle"
                            type="text" value="{{ config['pv']['exposure_angle'] }}"></td>

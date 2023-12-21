@@ -12,7 +12,7 @@ import tomli
 import tomli_w
 
 from frozendict import frozendict
-
+import consts
 import classes
 
 
@@ -251,8 +251,8 @@ def generate_weather_data(data: dict, config_data: dict) -> str:
     :param config_data:
     :return:
     """
-    if not os.path.exists(r"uploads"):
-        os.mkdir(r"uploads")
+    if not os.path.exists(consts.uploads_file_Path):
+        os.mkdir(consts.uploads_file_Path)
 
     start_date = datetime.datetime.strptime(data['start_date_weather'], "%Y-%m-%d")
     end_date = datetime.datetime.strptime(data['end_date_weather'], "%Y-%m-%d")
@@ -290,17 +290,17 @@ def generate_weather_data(data: dict, config_data: dict) -> str:
         energy_data[date] = calc_energy(energy_data_list)
 
     if "excel_weather" in data.keys():
-        if os.path.exists(r"uploads/data.xlsx"):
-            os.remove(r"uploads/data.xlsx")
+        if os.path.exists(rf"{consts.uploads_file_Path}data.xlsx"):
+            os.remove(rf"{consts.uploads_file_Path}data.xlsx")
         if data["excel_weather"] == "on":
             df = pd.DataFrame.from_dict(energy_data, orient='index', columns=['energy [kWh]'])
-            df.to_excel('uploads/data.xlsx')
+            df.to_excel('{consts.uploads_file_Path}data.xlsx')
             msg = "excel"
 
     if "plot_png_weather" in data.keys():
         if data["plot_png_weather"] == "on":
-            if os.path.exists(r"uploads/plot.png"):
-                os.remove(r"uploads/plot.png")
+            if os.path.exists(rf"{consts.uploads_file_Path}plot.png"):
+                os.remove(rf"{consts.uploads_file_Path}plot.png")
             if len(energy_data.keys()) > 50:
                 x = len(energy_data.keys()) * 0.25
                 y = x * 0.4
@@ -310,7 +310,7 @@ def generate_weather_data(data: dict, config_data: dict) -> str:
 
             plt.figure(figsize=(x, y))
             plt.grid()
-            plt.plot(energy_data.keys(), energy_data.values(), label="Energy[kWh]")
+            plt.plot(list(energy_data.keys()), list(energy_data.values()), label="Energy[kWh]")
             plt.xticks(rotation=90, ha="right", fontsize=18)
             x = len(energy_data.keys())
             z = max(energy_data.values())
@@ -319,7 +319,7 @@ def generate_weather_data(data: dict, config_data: dict) -> str:
             plt.yticks(ticks=ticks, ha="right", fontsize=20)
             plt.legend(loc="upper left", fontsize=20)
             plt.tight_layout()
-            plt.savefig(r"uploads/plot.png")
+            plt.savefig(rf"{consts.uploads_file_Path}plot.png")
             msg = f"{msg}, plot"
 
     return msg

@@ -11,13 +11,13 @@ import tomli
 from flask import Flask, render_template, request, send_from_directory
 
 import functions as fc
-
+import consts
 app = Flask(__name__)
 
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    toml_file_path = r'config/config_test.toml'
+    toml_file_path = consts.config_file_Path
     with open(toml_file_path, 'rb') as f:
         config_data = tomli.load(f)
 
@@ -26,7 +26,7 @@ def index():
 
 @app.route('/dashboard')
 def dashboard():
-    toml_file_path = 'config/config_test.toml'
+    toml_file_path = consts.config_file_Path
 
     # TOML-Datei lesen
     with open(toml_file_path, 'rb') as f:
@@ -48,8 +48,8 @@ def analytics():
 
     old_data: bool = True
 
-    if os.path.exists(r"data/data.toml"):
-        data = fc.read_data_from_file(r"data/data.toml")
+    if os.path.exists(consts.data_file_Path):
+        data = fc.read_data_from_file(consts.data_file_Path)
 
         time_write = datetime.datetime.strptime(data["write_time"]["time"], data["write_time"]["format"])
         time_now = datetime.datetime.now()
@@ -61,7 +61,7 @@ def analytics():
             energy = fc.calc_energy(power_data, kwh=False)
 
     if old_data:
-        toml_file_path = 'config/config_test.toml'
+        toml_file_path = consts.config_file_Path
         with open(toml_file_path, 'rb') as f:
             config_data = tomli.load(f)
 
@@ -115,7 +115,7 @@ def analytics():
     plt.yticks(ticks=np.arange(0, max(max(power_data), max(energy_data)) + 100, step=100), ha="right", fontsize=30)
     plt.tight_layout()
     plt.legend(loc="center left", fontsize=30)
-    plt.savefig('static/plots/output_weather.png')
+    plt.savefig(f'{consts.plot_path}output_weather.png')
 
     plt.clf()
     plt.figure(figsize=(60, 25))
@@ -125,7 +125,7 @@ def analytics():
     plt.yticks(ticks=np.arange(0, max(market_price) + 5, step=1), ha="right", fontsize=30)
     plt.tight_layout()
     plt.legend(loc="center left", fontsize=30)
-    plt.savefig('static/plots/output_market.png')
+    plt.savefig(f'{consts.plot_path}output_market.png')
 
     return render_template('analytics.html', name="new_plot", url_weather="/static/plots/output_weather.png",
                            url_market="/static/plots/output_market.png")
@@ -133,7 +133,7 @@ def analytics():
 
 @app.route('/generate_download', methods=['POST'])
 def download():
-    toml_file_path: str = r'config/config_test.toml'
+    toml_file_path: str = consts.config_file_Path
     msg: str = ""
     err_msg_weather: str = ""
     err_msg_market: str = ""
@@ -145,7 +145,7 @@ def download():
     if request.method == 'POST':
         date_now = fc.date_time_download()
         data = request.form.to_dict()
-        print(data)
+
         if "excel_weather" in data.keys() or "plot_png_weather" in data.keys():
             if data['start_date_weather'] == "":
                 err_msg_weather = "Bitte Start Datum ausfüllen"
@@ -154,7 +154,7 @@ def download():
                 t = datetime.datetime.now() - datetime.datetime.strptime(data['start_date_weather'], "%Y-%m-%d")
                 if t.total_seconds() < 0:
                     err_msg_weather = "Das Startdatum muss kleiner sein als das Enddatum"
-            print(err_msg_weather)
+
             if err_msg_weather != "":
                 return render_template('file_download.html', config=date_now, ret=msg,
                                        error_weather=err_msg_weather, error_market=err_msg_market)
@@ -186,7 +186,7 @@ def download_file(name):
 
 @app.route('/settings')
 def settings():
-    toml_file_path = r'config/config_test.toml'
+    toml_file_path = consts.config_file_Path
     config_data: dict = {}
     try:
         with open(toml_file_path, 'rb') as f:
@@ -194,21 +194,7 @@ def settings():
 
     except FileNotFoundError:
         open(toml_file_path, "x")
-        config_data = {
-            "coordinates": {
-                "latitude": "",
-                "longitude": ""
-            },
-            "pv": {
-                "tilt_angle": "",
-                "area": "",
-                "module_efficiency": "",
-                "exposure_angle": ""
-            },
-            "market": {
-                "consumer_price": "",
-            }
-        }
+        config_data = consts.config_data
     finally:
         return render_template('set_vals.html', config=config_data)
 
@@ -216,7 +202,7 @@ def settings():
 @app.route('/save_settings', methods=['POST'])
 def safe_settings():
     if request.method == 'POST':
-        toml_file_path = r'config/config_test.toml'
+        toml_file_path = consts.config_file_Path
         with open(toml_file_path, 'rb') as f:
             config_data = tomli.load(f)
 
@@ -240,4 +226,4 @@ def file_download():
 
 
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(debug=True)
