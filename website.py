@@ -12,6 +12,7 @@ from flask import Flask, render_template, request, send_from_directory
 
 import functions as fc
 import consts
+
 app = Flask(__name__)
 
 
@@ -89,9 +90,12 @@ def analytics():
                 radiation_dni = weather_date[t]["dni_radiation"]
                 radiation_data.append(radiation)
                 radiation_data_dni.append(radiation_dni)
-                energy_dni = pv.calc_power_with_dni(radiation_dni, incidence, weather_date[t]["temp"])
+                power_dni = pv.calc_power_with_dni(radiation_dni, incidence, weather_date[t]["temp"])
 
-                power_data.append(energy_dni)
+                if power_dni > pv_consts["converter_power"]:
+                    power_dni = pv_consts["converter_power"]
+
+                power_data.append(power_dni)
 
         energy = fc.calc_energy(power_data, kwh=False)
 
@@ -126,8 +130,8 @@ def analytics():
     plt.legend(loc="center left", fontsize=30)
     plt.savefig(f'{consts.plot_path}output_market.png')
 
-    return render_template('analytics.html', name="new_plot", url_weather="/static/plots/output_weather.png",
-                           url_market="/static/plots/output_market.png")
+    return render_template('analytics.html', name="new_plot", url_weather=f"{consts.plot_path}output_weather.png",
+                           url_market=f"{consts.plot_path}output_market.png")
 
 
 @app.route('/generate_download', methods=['POST'])
