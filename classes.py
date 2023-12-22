@@ -219,6 +219,7 @@ class CalcSunPos:
     """
     Calcs the position of the sun
     """
+
     def __init__(self, latitude, longitude, date: str | None = None) -> None:
         """
         Initialize the class
@@ -427,6 +428,26 @@ class PVProfit:
             if dni is None:
                 print("No radiation")
             return 0
+
+
+class RequiredHeatingPower:
+    # https://www.bosch-homecomfort.com/de/de/wohngebaeude/wissen/heizungsratgeber/heizleistung-berechnen/
+    def __init__(self):
+        u_value: dict = {
+            "Fenster": {
+                "Holzrahmen": {
+                    "Einfachverglasung": {
+                        [range(1918, 1983)]: 5
+                    },
+                    "Doppelverglasung": {
+                        [range(1918, 1994)]: 2.7
+                    },
+
+                }
+            },
+        }
+
+        pass
 
 
 class ShellyControl:
