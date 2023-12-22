@@ -17,8 +17,21 @@ config_data: Final[dict] = {
         "converter_power": "",
         "exposure_angle": ""
     },
+
+    "converter": {
+        "max_power": ""
+    },
+
     "market": {
-        "consumer_price": "",
+        "consumer_price": ""
+    },
+
+    "shelly": {
+        "ip_address": ""
+    },
+
+    "ir_remote": {
+
     }
 }
 
