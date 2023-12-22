@@ -10,14 +10,14 @@ exposure_angle = 0.0
 temperature_coefficient = -0.35
 nominal_temperature = 25.0
 mounting_type = 1
-converter_power = 800.0
+
+[converter]
+max_power = 800.0
 
 [market]
 consumer_price = 13.35
 
-[ir]
-button = 0
+[shelly]
+ip_address = "192.168.178.91"
 
-[trv]
-ip = "192.168.178.89"
-test = "zzz"
+[ir_remote]

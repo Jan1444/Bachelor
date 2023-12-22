@@ -72,17 +72,26 @@ def write_data_to_config(data: dict) -> None:
         lat, lon = get_coord(data['Straße'], data['Nr'], data['Stadt'], data['PLZ'], data['Land'])
         config_data['coordinates']['latitude'] = lat
         config_data['coordinates']['longitude'] = lon
+
     pv = config_data['pv']
     market = config_data['market']
+    converter = config_data['converter']
+    shelly = config_data['shelly']
+    ir_remote = config_data['ir_remote']
+
     pv['tilt_angle'] = float(data['tilt_angle'])
     pv['area'] = float(data['area'])
     pv['module_efficiency'] = float(data['module_efficiency'])
-    pv['converter_power'] = float(data['converter_power'])
     pv['exposure_angle'] = float(data['exposure_angle'])
     pv['temperature_coefficient'] = float(data['temperature_coefficient'])
     pv['nominal_temperature'] = float(data['nominal_temperature'])
     pv['mounting_type'] = int(data['mounting_type'])
+
+    converter['max_power'] = float(data['converter_power'])
+
     market['consumer_price'] = float(data['consumer_price'])
+
+    shelly['ip_address'] = str(data['ip_address'])
 
     with open(consts.config_file_Path, 'wb') as f:
         tomli_w.dump(config_data, f)

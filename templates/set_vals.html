@@ -55,6 +55,11 @@
                     <p style="color: red;">{{ error }}</p>
                 {% endif %}
             <tr>
+                <td class="Box1" colspan="3">
+                    <b>Standort</b>
+                </td>
+            </tr>
+            <tr>
                 <td><label for="latitude">Breitengrad [°]:</label></td>
                 <td><input id="latitude" minlength="2" name="latitude" type="text"
                            value="{{ config['coordinates']['latitude'] }}"
@@ -84,6 +89,11 @@
                 </td>
             </tr>
             <tr>
+                <td class="Box1" colspan="3">
+                    <b>PV-Anlage</b>
+                </td>
+            </tr>
+            <tr>
                 <td><label for="tilt_angle">Neigungswinkel [°]:</label></td>
                 <td><input id="tilt_angle" minlength="2" name="tilt_angle" type="text"
                            value="{{ config['pv']['tilt_angle'] }}"></td>
@@ -100,12 +110,7 @@
                            type="text" value="{{ config['pv']['module_efficiency'] }}"></td>
                 <td></td>
             </tr>
-            <tr>
-                <td><label for="converter_power">Wechselrichter Leistung [W]:</label></td>
-                <td><input id="converter_power" minlength="1" name="converter_power"
-                           type="text" value="{{ config['pv']['converter_power'] }}"></td>
-                <td></td>
-            </tr>
+
             <tr>
                 <td><label for="exposure_angle">Ausrichtungswinkel [°]:</label></td>
                 <td><input id="exposure_angle" minlength="1" name="exposure_angle"
@@ -145,9 +150,47 @@
                 <td></td>
             </tr>
             <tr>
+                <td class="Box1" colspan="3">
+                    <b>Wechselrichter</b>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="converter_power">Wechselrichter Leistung [W]:</label></td>
+                <td><input id="converter_power" minlength="1" name="converter_power"
+                           type="text" value="{{ config['converter']['max_power'] }}"></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td class="Box1" colspan="3">
+                    <b>Strompreis</b>
+                </td>
+            </tr>
+            <tr>
                 <td><label for="consumer_price">Strompreis [ct]:</label></td>
                 <td><input id="consumer_price" minlength="1" name="consumer_price"
                            type="text" value="{{ config['market']['consumer_price'] }}"></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td class="Box1" colspan="3">
+                    <b>Shelly-TRV</b>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="ip_address">IP Adresse:</label></td>
+                <td><input id="ip_address" minlength="13" name="ip_address"
+                           type="text" value="{{ config['shelly']['ip_address'] }}"></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td class="Box1" colspan="3">
+                    <b>IR-Remote</b>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="ir">IR Button XXX:</label></td>
+                <td><input id="ir" minlength="1" name="ir"
+                           type="text" value="{{ config['ir_remote']['consumer_price'] }}"></td>
                 <td></td>
             </tr>
             <tr>
