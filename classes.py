@@ -4,7 +4,10 @@ import datetime
 from functools import lru_cache
 
 import numpy as np
+import requests
 import requests_cache
+
+import debug
 
 
 class MarketData:
@@ -456,42 +459,67 @@ class ShellyTRVControl:
 
     def get_status(self):
         url = f"http://{self.ip_address}/status"
-        response = requests.get(url, "GET")
-        if response.status_code == 200:
-            data = response.json()
-            return data
-        return None
+        try:
+            response = requests.get(url, timeout=5)
+            if response.status_code == 200:
+                data = response.json()
+                return data
+            return None
+        except (requests.exceptions.ConnectTimeout, OSError) as exceptions:
+            print("No Shelly TRV reached")
+            debug.printer(exceptions)
+            return None
 
     def get_settings(self):
         url = f"http://{self.ip_address}/settings"
-        response = requests.get(url, "GET")
-        if response.status_code == 200:
-            data = response.json()
-            return data
-        return None
+        try:
+            response = requests.get(url, timeout=5)
+            if response.status_code == 200:
+                data = response.json()
+                return data
+            return None
+        except (requests.exceptions.ConnectTimeout, OSError) as exceptions:
+            print("No Shelly TRV reached")
+            debug.printer(exceptions)
+            return None
 
     def get_thermostat(self):
         url = f"http://{self.ip_address}/thermostats/0"
-        response = requests.get(url, "GET")
-        if response.status_code == 200:
-            data = response.json()
-            return data
-        return None
+        try:
+            response = requests.get(url, timeout=5)
+            if response.status_code == 200:
+                data = response.json()
+                return data
+            return None
+        except (requests.exceptions.ConnectTimeout, OSError) as exceptions:
+            print("No Shelly TRV reached")
+            debug.printer(exceptions)
+            return None
 
     def set_valve_pos(self, position):
         url = f"http://{self.ip_address}/thermostat/0?pos={position}"
-        response = requests.get(url, "GET")
-        if response.status_code == 200:
-            data = response.json()
-            if data["pos"] == position:
-                return True
-        return False
+        try:
+            response = requests.get(url, timeout=5)
+            if response.status_code == 200:
+                data = response.json()
+                if data["pos"] == position:
+                    return True
+            return False
+        except (requests.exceptions.ConnectTimeout, OSError) as exceptions:
+            print("No Shelly TRV reached")
+            debug.printer(exceptions)
+            return False
 
     def set_temperature(self, temperature):
         url = f"http://{self.ip_address}/thermostat/0?target_t_enabled=1&target_t={temperature}"
-        response = requests.get(url, "GET")
-        if response.status_code == 200:
-            data = response.json()
-            if data["target_t"]["value"] == temperature:
-                return True
-        return False
+        try:
+            response = requests.get(url, timeout=5)
+            if response.status_code == 200:
+                data = response.json()
+                if data["target_t"]["value"] == temperature:
+                    return True
+            return False
+        except (requests.exceptions.ConnectTimeout, OSError) as exceptions:
+            print("No Shelly TRV reached")
+            debug.printer(exceptions)
+            return False
