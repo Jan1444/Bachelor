@@ -1,5 +1,5 @@
 [write_time]
-time = "22-12-2023 10:20:50"
+time = "22-12-2023 14:48:32"
 format = "%d-%m-%Y %H:%M:%S"
 
 ["00:00"]
@@ -213,28 +213,28 @@ power = 0.0
 market_price = 19.034
 
 ["10:30"]
-dni_radiation = 0.0
-power = 0.0
+dni_radiation = 4.4
+power = 4.35
 market_price = 19.034
 
 ["10:45"]
-dni_radiation = 16.5
-power = 16.746
+dni_radiation = 20.7
+power = 20.962
 market_price = 19.034
 
 ["11:00"]
 dni_radiation = 27.3
-power = 27.996
+power = 28.07
 market_price = 19.034
 
 ["11:15"]
-dni_radiation = 29.8
-power = 31.169
+dni_radiation = 3.7
+power = 3.937
 market_price = 19.008
 
 ["11:30"]
-dni_radiation = 3.6
-power = 3.883
+dni_radiation = 0.0
+power = 0.0
 market_price = 19.008
 
 ["11:45"]
@@ -248,33 +248,33 @@ power = 0.0
 market_price = 19.008
 
 ["12:15"]
-dni_radiation = 3.4
-power = 3.743
+dni_radiation = 0.0
+power = 0.0
 market_price = 19.067
 
 ["12:30"]
-dni_radiation = 3.4
-power = 3.73
+dni_radiation = 0.0
+power = 0.0
 market_price = 19.067
 
 ["12:45"]
-dni_radiation = 6.9
-power = 7.494
+dni_radiation = 3.5
+power = 3.828
 market_price = 19.067
 
 ["13:00"]
-dni_radiation = 14.1
-power = 15.034
+dni_radiation = 31.7
+power = 33.377
 market_price = 19.067
 
 ["13:15"]
-dni_radiation = 25.3
-power = 26.327
+dni_radiation = 43.4
+power = 44.59
 market_price = 18.897
 
 ["13:30"]
-dni_radiation = 7.5
-power = 7.699
+dni_radiation = 15.0
+power = 15.296
 market_price = 18.897
 
 ["13:45"]
