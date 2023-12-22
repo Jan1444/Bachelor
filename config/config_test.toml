@@ -19,5 +19,5 @@ consumer_price = 13.35
 button = 0
 
 [trv]
-ip = "192.168.178.xxx"
+ip = "192.168.178.89"
 test = "zzz"
