@@ -325,7 +325,7 @@ def date_time_download() -> dict:
 
 @freeze_all
 @lru_cache(maxsize=None)
-def generate_weather_data(data: dict, config_data: dict) -> str:
+def generate_weather_data(data: dict, config_data: dict) -> list[str]:
     """
 
     :param data:
@@ -335,53 +335,58 @@ def generate_weather_data(data: dict, config_data: dict) -> str:
     if not os.path.exists(consts.uploads_file_Path):
         os.mkdir(consts.uploads_file_Path)
 
+    config_coordinates = config_data["coordinates"]
+    config_pv = config_data["pv"]
+
     start_date = datetime.datetime.strptime(data['start_date_weather'], "%Y-%m-%d")
     end_date = datetime.datetime.strptime(data['end_date_weather'], "%Y-%m-%d")
 
     weather_date = classes.Weather(
-        config_data['coordinates']['latitude'], config_data['coordinates']['longitude'],
+        config_coordinates['latitude'], config_coordinates['longitude'],
         datetime.datetime.strftime(start_date, "%d-%m-%Y"),
         datetime.datetime.strftime(end_date, "%d-%m-%Y")).data
 
-    pv = classes.PVProfit(config_data["pv"]["module_efficiency"], config_data["pv"]["area"],
-                          config_data["pv"]["tilt_angle"], config_data["pv"]["exposure_angle"],
-                          config_data["pv"]["temperature_coefficient"],
-                          config_data["pv"]["nominal_temperature"], config_data["pv"]["mounting_type"])
+    pv = classes.PVProfit(config_pv["module_efficiency"], config_pv["area"],
+                          config_pv["tilt_angle"], config_pv["exposure_angle"],
+                          config_pv["temperature_coefficient"],
+                          config_pv["nominal_temperature"], config_pv["mounting_type"])
 
     power_data: dict = {}
     energy_data: dict = {}
-    msg: str = ""
+    msg: list[str] = []
+
     for date in weather_date.keys():
-        sun = classes.CalcSunPos(config_data['coordinates']['latitude'],
-                                 config_data['coordinates']['longitude'],
+        sun = classes.CalcSunPos(config_coordinates['latitude'],
+                                 config_coordinates['longitude'],
                                  date)
 
-        power_data[date] = {}
-        energy_data_list: list = []
+        power_data[date]: dict = {}
+        energy_data_list: list[float] = []
         for t in weather_date[date].keys():
             if t != "daily":
                 time_float: float = int(t[:2]) + int(t[3:]) / 100
                 azimuth: float = sun.calc_azimuth(time_float)
                 elevation: float = sun.calc_solar_elevation(time_float)
-                incidence = pv.calc_incidence_angle(elevation, azimuth)
-                eff = pv.calc_temp_dependency(weather_date[date][t]["temp"], weather_date[date][t]["direct_radiation"])
+                incidence: float = pv.calc_incidence_angle(elevation, azimuth)
+                eff: float = pv.calc_temp_dependency(weather_date[date][t]["temp"],
+                                                     weather_date[date][t]["direct_radiation"])
                 power_data[date][t] = pv.calc_power(weather_date[date][t]["direct_radiation"], incidence, elevation,
                                                     eff)
                 energy_data_list.append(power_data[date][t])
         energy_data[date] = calc_energy(energy_data_list)
 
     if "excel_weather" in data.keys():
-        if os.path.exists(rf"{consts.uploads_file_Path}data.xlsx"):
-            os.remove(rf"{consts.uploads_file_Path}data.xlsx")
+        if os.path.exists(rf"{consts.uploads_file_Path}weather_data.xlsx"):
+            os.remove(rf"{consts.uploads_file_Path}weather_data.xlsx")
         if data["excel_weather"] == "on":
             df = pd.DataFrame.from_dict(energy_data, orient='index', columns=['energy [kWh]'])
-            df.to_excel('{consts.uploads_file_Path}data.xlsx')
-            msg = "excel"
+            df.to_excel(f'{consts.uploads_file_Path}weather_data.xlsx')
+            msg.append("excel_weather")
 
     if "plot_png_weather" in data.keys():
         if data["plot_png_weather"] == "on":
-            if os.path.exists(rf"{consts.uploads_file_Path}plot.png"):
-                os.remove(rf"{consts.uploads_file_Path}plot.png")
+            if os.path.exists(rf"{consts.uploads_file_Path}weahter_plot.png"):
+                os.remove(rf"{consts.uploads_file_Path}weather_plot.png")
             if len(energy_data.keys()) > 50:
                 x = len(energy_data.keys()) * 0.25
                 y = x * 0.4
@@ -400,8 +405,76 @@ def generate_weather_data(data: dict, config_data: dict) -> str:
             plt.yticks(ticks=ticks, ha="right", fontsize=20)
             plt.legend(loc="upper left", fontsize=20)
             plt.tight_layout()
-            plt.savefig(rf"{consts.uploads_file_Path}plot.png")
-            msg = f"{msg}, plot"
+            plt.savefig(rf"{consts.uploads_file_Path}weather_plot.png")
+            msg.append("plot_weather")
+
+    if "excel_market" in data.keys():
+        if os.path.exists(rf"{consts.uploads_file_Path}market_data.xlsx"):
+            os.remove(rf"{consts.uploads_file_Path}market_data.xlsx")
+        if data["excel_market"] == "on":
+            df = pd.DataFrame.from_dict(energy_data, orient='index', columns=['price [ct]'])
+            df.to_excel(f'{consts.uploads_file_Path}market_data.xlsx')
+            msg.append("excel_market")
+
+    return msg
+
+
+@freeze_all
+@lru_cache(maxsize=None)
+def generate_market_data(data: dict, config_data: dict) -> list[str]:
+    """
+
+    :param data:
+    :param config_data:
+    :return:
+    """
+    if not os.path.exists(consts.uploads_file_Path):
+        os.mkdir(consts.uploads_file_Path)
+
+    market_datas = classes.MarketData(config_data["market"]["consumer_price"], data['start_date_market'], data['end_date_market']).data
+
+    msg: list[str] = []
+    price_data: list[float] = []
+    time_data: list[float] = []
+    data_dict: dict = {}
+
+    for i, market_data in enumerate(market_datas):
+        time_data.append(f"{i} {market_data['start_timestamp']}")
+        price_data.append(market_data['consumerprice'])
+        data_dict.update({market_data['start_timestamp']: market_data['consumerprice']})
+
+    if "excel_market" in data.keys():
+        if os.path.exists(rf"{consts.uploads_file_Path}market_data.xlsx"):
+            os.remove(rf"{consts.uploads_file_Path}market_data.xlsx")
+        if data["excel_market"] == "on":
+            df = pd.DataFrame.from_dict(data_dict, orient='index', columns=['price [ct]'])
+            df.to_excel(f'{consts.uploads_file_Path}market_data.xlsx')
+            msg.append("excel_market")
+
+    if "plot_png_market" in data.keys():
+        if data["plot_png_market"] == "on":
+            if os.path.exists(rf"{consts.uploads_file_Path}plot_market.png"):
+                os.remove(rf"{consts.uploads_file_Path}plot_market.png")
+            if len(price_data) > 50:
+                x = len(price_data) * 0.25
+                y = x * 0.4
+            else:
+                x = 10
+                y = 5
+
+            plt.figure(figsize=(x, y))
+            plt.grid()
+            plt.plot(time_data, price_data, label="price [ct]")
+            plt.xticks(rotation=90, ha="right", fontsize=18)
+            x = len(price_data)
+            z = max(price_data)
+            z = (z + (100 if z > 100 else 5))
+            ticks = np.arange(0, z, step=(x // 100 * 10 if z > 100 else 1))
+            plt.yticks(ticks=ticks, ha="right", fontsize=20)
+            plt.legend(loc="upper left", fontsize=20)
+            plt.tight_layout()
+            plt.savefig(rf"{consts.uploads_file_Path}market_plot.png")
+            msg.append("plot_market")
 
     return msg
 

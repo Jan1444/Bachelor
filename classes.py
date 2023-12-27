@@ -15,17 +15,35 @@ class MarketData:
     Gets the market data to the given time interval
     """
 
-    def __init__(self, consumer_costs) -> None:
+    def __init__(self, consumer_costs, start_time: None | str = None, end_time: None | str = None) -> None:
         """
         Initialize the market data class
         :param consumer_costs: The cost of the grid
         :return: None.
         """
-        date_today: str = datetime.datetime.today().strftime("%Y-%m-%d")
         time_start: str = "00:00:00,00"
         self.session = requests_cache.CachedSession(r'cache/marketdata.cache', expire_after=datetime.timedelta(hours=1))
-        time_start_ms: int = self.convert_time_to_ms(date_today, time_start)
-        self.data: dict = self.get_data(start=time_start_ms)
+
+        if start_time is None and end_time is None:
+            date_today: str = datetime.datetime.today().strftime("%Y-%m-%d")
+            time_start_ms: int = self.convert_time_to_ms(date_today, time_start)
+            self.data: dict = self.get_data(start=time_start_ms)
+        else:
+            time_start: str = datetime.datetime.strptime(start_time, "%Y-%m-%dT%H:%M")
+            time_end: str = datetime.datetime.strptime(end_time, "%Y-%m-%dT%H:%M")
+
+            date_start = time_start.strftime('%Y-%m-%d')
+            date_end = time_end.strftime('%Y-%m-%d')
+
+            time_start = time_start.strftime('%H:%M:%S,%f')
+            time_end = time_end.strftime('%H:%M:%S,%f')
+
+            time_start_ms: int = self.convert_time_to_ms(date_start, time_start)
+            end_time_ms: int = self.convert_time_to_ms(date_end, time_end)
+
+            self.data: dict = self.get_data(start=time_start_ms, end=end_time_ms)
+
+
         self.convert_dict(consumer_costs)
 
     def __str__(self) -> str:
@@ -43,7 +61,7 @@ class MarketData:
         :return: the time in hour and minutes.
         """
         date_time = datetime.datetime.fromtimestamp(ms / 1000).time()
-        t = f"{date_time.hour}:00"
+        t = f"{str(date_time.hour).zfill(2)}:00"
         return t
 
     @staticmethod
@@ -74,6 +92,7 @@ class MarketData:
             url = rf"https://api.awattar.de/v1/marketdata?start={int(start)}&end={int(end)}"
         else:
             url = r"https://api.awattar.de/v1/marketdata"
+        print(url)
         return self.session.get(url).json()['data']
 
     def convert_dict(self, consumer_costs) -> None:

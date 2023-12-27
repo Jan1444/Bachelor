@@ -133,6 +133,8 @@ def analytics():
 def download():
     toml_file_path: str = consts.config_file_Path
     msg: str = ""
+    msg_market: str = ""
+    msg_weather: str = ""
     err_msg_weather: str = ""
     err_msg_market: str = ""
     date_now: dict = {}
@@ -171,10 +173,13 @@ def download():
                                        error_weather=err_msg_weather, error_market=err_msg_market)
 
         if "excel_weather" in data.keys() or "plot_png_weather" in data.keys():
-            msg = fc.generate_weather_data(data, config_data)
+            msg_weather = fc.generate_weather_data(data, config_data)
 
-    return render_template('file_download.html', config=date_now, ret=msg,
-                           error_weather=err_msg_weather, error_market=err_msg_market)
+        if "excel_market" in data.keys() or "plot_png_market" in data.keys():
+            msg_market = fc.generate_market_data(data, config_data)
+
+    return render_template('file_download.html', config=date_now, ret_weather=msg_weather,
+                           ret_market=msg_market, error_weather=err_msg_weather, error_market=err_msg_market)
 
 
 @app.route('/uploads/<name>')
