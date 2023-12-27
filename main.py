@@ -74,6 +74,7 @@ def test_day_data(weather_data: dict, sun: classes.CalcSunPos, pv: classes.PVPro
     pv_eff: list = []
     zeit = 0
     count = -3
+    print(weather_data)
     for t in weather_data.keys():
         if t != "daily":
             radiation = float(weather_data[t]["direct_radiation"])
@@ -120,7 +121,7 @@ def test_day_data(weather_data: dict, sun: classes.CalcSunPos, pv: classes.PVPro
     power_values = list(map(lambda z: z / 1000, energy_list_dni))
     total_energy = sum((power_values[i] + power_values[i + 1]) / 2 * interval for i in range(len(power_values) - 1))
 
-    print(f"Energie über den Tag: {round(total_energy, 2)}kWh")
+    print(f"Energie über den Tag: {round(total_energy, 10)}kWh")
 
     x = t_list
 

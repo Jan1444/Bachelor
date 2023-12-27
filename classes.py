@@ -473,7 +473,7 @@ class ShellyTRVControl:
     def get_settings(self):
         url = f"http://{self.ip_address}/settings"
         try:
-            response = requests.get(url, timeout=5)
+            response = requests.get(url, timeout=8)
             if response.status_code == 200:
                 data = response.json()
                 return data
