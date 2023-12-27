@@ -290,6 +290,8 @@ def get_coord(street: str, nr: str, city: str, postalcode: int, country: str) ->
     return lat, lon
 
 
+@freeze_all
+@lru_cache(maxsize=None)
 def calc_energy(energy: list, interval: float = 0.25, kwh: bool = True) -> float:
     """
 
