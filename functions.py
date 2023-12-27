@@ -404,6 +404,8 @@ def generate_weather_data(data: dict, config_data: dict) -> str:
     return msg
 
 
+@freeze_all
+@lru_cache(maxsize=None)
 def unpack_data(data: dict) -> (list[str], list[float], list[float], list[float]):
     """
 
@@ -417,24 +419,34 @@ def unpack_data(data: dict) -> (list[str], list[float], list[float], list[float]
     market_time: list[float] = []
     market_price: list[float] = []
 
-    radiation_key: str = ""
+    error_key: int = 0
 
-    if "dni_radiation" in data["00:00"].keys():
-        radiation_key = "dni_radiation"
-    elif "radiation" in data["00:00"].keys():
-        radiation_key = "radiation"
+    try:
+        if "dni_radiation" in data["00:00"].keys():
+            radiation_key = "dni_radiation"
+        elif "radiation" in data["00:00"].keys():
+            radiation_key = "radiation"
+        else:
+            raise KeyError("No key: dni_radiation or radiation")
+    except KeyError as error:
+        print(error)
+        return -1, -1, -1, -1
 
-    for t in data.keys():
+    try:
 
-        if t != "write_time":
-            weather_time.append(t)
-            radiation_data.append(data[t][radiation_key])
-            power_data.append(data[t]["power"])
-            if t[3:] == "00":
-                market_time.append(t)
-                market_price.append(data[t]["market_price"])
-
-    return weather_time, radiation_data, power_data, market_time, market_price
+        for t in data.keys():
+            if t != "write_time":
+                weather_time.append(t)
+                radiation_data.append(data[t][radiation_key])
+                power_data.append(data[t]["power"])
+                if t[3:] == "00":
+                    market_time.append(t)
+                    market_price.append(data[t]["market_price"])
+                error_key += 1
+        return weather_time, radiation_data, power_data, market_time, market_price
+    except KeyError as error:
+        print(f"No key: {error}")
+        print(f"In line: {error_key * 5 + 7}")
 
 
 if __name__ == "__main__":
@@ -617,4 +629,13 @@ if __name__ == "__main__":
 
     print("Test generate_weather_data")
 
+
+
+
     print("Test unpack_data")
+    data_test: dict = tomli.load(open(r"data/data.toml", "rb"))
+    ret = unpack_data(data_test)
+    if ret != (-1, -1, -1, -1):
+        print('✅', "PASS")
+    else:
+        print('❌', "FAIL")

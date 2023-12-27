@@ -5,7 +5,7 @@ format = "%d-%m-%Y %H:%M:%S"
 ["00:00"]
 dni_radiation = 0.0
 power = 0
-market_price = 17.314
+market_price = 15.888
 
 ["00:15"]
 dni_radiation = 0.0
