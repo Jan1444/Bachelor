@@ -7,6 +7,17 @@
     border-bottom: 1px dotted black;
 }
 
+#main-container {
+    width: 100%;
+    background: linear-gradient(#051f30, #000000);
+    display: grid;
+    grid-template-columns: auto 100%;
+    align-items: start;
+    justify-content: start;
+    overflow: hidden;
+    grid-template-rows: 150px 100px
+}
+
 /* Tooltip-Text */
 .tooltip .tooltiptext {
     visibility: hidden;
@@ -74,6 +85,15 @@ table {
 .BoxContent {
     grid-row-start: 2;
     grid-row-end: 2;
+    grid-column-start: 2;
+    grid-column-end: 2;
+    width: 50%;
+    padding: 2px 0px 0px 0px;
+}
+
+.BoxContent2 {
+    grid-row-start: 3;
+    grid-row-end: 3;
     grid-column-start: 2;
     grid-column-end: 2;
     width: 50%;

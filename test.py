@@ -23,7 +23,7 @@ def load_write_config(data: dict | None = None, path: str | None = None) -> dict
 
 if __name__ == '__main__':
     # 'https://re.jrc.ec.europa.eu/pvg_tools/de/#api_5.2'
-    path = r"/Users/jan/Downloads/Timeseries_49.520_11.295_SA2_0deg_0deg_2005_2020.json"
+    path = r"uploads/Timeseries_49.520_11.295_SA2_0deg_0deg_2020_2020.json"
     data = json.load(open(path, "rb+"))
     print(data["inputs"]["location"].keys())
 

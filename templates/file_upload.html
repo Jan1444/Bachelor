@@ -52,7 +52,7 @@
         </tr>
     </table>
 
-    <form action="/upload_file" class="BoxContent" method="Post" enctype=multipart/form-data>
+    <form action="/upload_file" class="BoxContent" method="post" enctype=multipart/form-data>
         <!--Wetter Daten-->
         <table>
             {% if error_weather or error_market %}
@@ -64,6 +64,7 @@
                     <b>
                         Sonnen Daten
                     </b>
+                    <a href="https://re.jrc.ec.europa.eu/pvg_tools/de/#api_5.2" target="_blank">download-site</a>
                 </td>
             </tr>
             <tr>
@@ -85,8 +86,32 @@
             </tr>
             <tr>
                 <td></td>
-                <td><button type="submit">Upload</button></td>
+                <td>
+                    {% if not name %}
+                    <button type="submit">Upload</button>
+                    {% endif %}
+                </td>
+
                 <td></td>
+                <td></td>
+            </tr>
+        </table>
+    </form>
+    <form action="/analyze_file" method="post" class="BoxContent2">
+        <table>
+            <tr>
+                <td></td>
+                <td>
+                    {% if name %}
+                        <button type="submit">Analyze</button>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if error %}
+                        <text>{{ error }}</text>
+                    {% endif %}
+                </td>
+
                 <td></td>
             </tr>
         </table>
