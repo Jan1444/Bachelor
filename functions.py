@@ -439,9 +439,9 @@ def generate_market_data(data: dict, config_data: dict) -> list[str]:
     data_dict: dict = {}
 
     for i, market_data in enumerate(market_datas):
-        time_data.append(f"{i} {market_data['start_timestamp']}")
+        time_data.append(f"{market_data['date']} {market_data['start_timestamp']}")
         price_data.append(market_data['consumerprice'])
-        data_dict.update({market_data['start_timestamp']: market_data['consumerprice']})
+        data_dict.update({f"{market_data['date']} {market_data['start_timestamp']}": market_data['consumerprice']})
 
     if "excel_market" in data.keys():
         if os.path.exists(rf"{consts.uploads_file_Path}market_data.xlsx"):

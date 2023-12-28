@@ -43,7 +43,6 @@ class MarketData:
 
             self.data: dict = self.get_data(start=time_start_ms, end=end_time_ms)
 
-
         self.convert_dict(consumer_costs)
 
     def __str__(self) -> str:
@@ -60,9 +59,11 @@ class MarketData:
         :param ms: The ms to convert
         :return: the time in hour and minutes.
         """
-        date_time = datetime.datetime.fromtimestamp(ms / 1000).time()
-        t = f"{str(date_time.hour).zfill(2)}:00"
-        return t
+        time = datetime.datetime.fromtimestamp(ms / 1000).time()
+        date = datetime.datetime.fromtimestamp(ms / 1000).date()
+        t = f"{str(time.hour).zfill(2)}:00"
+        d = f"{str(date.day).zfill(2)}-{str(date.month).zfill(2)}-{str(date.year)}"
+        return t, d
 
     @staticmethod
     def convert_time_to_ms(date: str, t: str) -> int:
@@ -101,8 +102,8 @@ class MarketData:
         :return: None
         """
         for i, old_data in enumerate(self.data):
-            self.data[i]['start_timestamp'] = self.convert_ms_to_time(old_data['start_timestamp'])
-            self.data[i]['end_timestamp'] = self.convert_ms_to_time(old_data['end_timestamp'])
+            self.data[i]['start_timestamp'], self.data[i]['date'] = self.convert_ms_to_time(old_data['start_timestamp'])
+            self.data[i]['end_timestamp'] = self.convert_ms_to_time(old_data['end_timestamp'])[0]
             self.data[i]['marketprice'] = round(old_data['marketprice'] / 10, 3)
             self.data[i]['consumerprice'] = round(((old_data['marketprice'] + consumer_costs) * 1.19), 3)
             self.data[i]['unit'] = 'ct/kWh'
