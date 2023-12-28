@@ -332,8 +332,8 @@ def generate_weather_data(data: dict, config_data: dict) -> list[str]:
     :param config_data:
     :return:
     """
-    if not os.path.exists(consts.uploads_file_Path):
-        os.mkdir(consts.uploads_file_Path)
+    if not os.path.exists(consts.downloads_file_Path):
+        os.mkdir(consts.downloads_file_Path)
 
     config_coordinates = config_data["coordinates"]
     config_pv = config_data["pv"]
@@ -376,17 +376,17 @@ def generate_weather_data(data: dict, config_data: dict) -> list[str]:
         energy_data[date] = calc_energy(energy_data_list)
 
     if "excel_weather" in data.keys():
-        if os.path.exists(rf"{consts.uploads_file_Path}weather_data.xlsx"):
-            os.remove(rf"{consts.uploads_file_Path}weather_data.xlsx")
+        if os.path.exists(rf"{consts.downloads_file_Path}weather_data.xlsx"):
+            os.remove(rf"{consts.downloads_file_Path}weather_data.xlsx")
         if data["excel_weather"] == "on":
             df = pd.DataFrame.from_dict(energy_data, orient='index', columns=['energy [kWh]'])
-            df.to_excel(f'{consts.uploads_file_Path}weather_data.xlsx')
+            df.to_excel(f'{consts.downloads_file_Path}weather_data.xlsx')
             msg.append("excel_weather")
 
     if "plot_png_weather" in data.keys():
         if data["plot_png_weather"] == "on":
-            if os.path.exists(rf"{consts.uploads_file_Path}weahter_plot.png"):
-                os.remove(rf"{consts.uploads_file_Path}weather_plot.png")
+            if os.path.exists(rf"{consts.downloads_file_Path}weahter_plot.png"):
+                os.remove(rf"{consts.downloads_file_Path}weather_plot.png")
             if len(energy_data.keys()) > 50:
                 x = len(energy_data.keys()) * 0.25
                 y = x * 0.4
@@ -405,15 +405,15 @@ def generate_weather_data(data: dict, config_data: dict) -> list[str]:
             plt.yticks(ticks=ticks, ha="right", fontsize=20)
             plt.legend(loc="upper left", fontsize=20)
             plt.tight_layout()
-            plt.savefig(rf"{consts.uploads_file_Path}weather_plot.png")
+            plt.savefig(rf"{consts.downloads_file_Path}weather_plot.png")
             msg.append("plot_weather")
 
     if "excel_market" in data.keys():
-        if os.path.exists(rf"{consts.uploads_file_Path}market_data.xlsx"):
-            os.remove(rf"{consts.uploads_file_Path}market_data.xlsx")
+        if os.path.exists(rf"{consts.downloads_file_Path}market_data.xlsx"):
+            os.remove(rf"{consts.downloads_file_Path}market_data.xlsx")
         if data["excel_market"] == "on":
             df = pd.DataFrame.from_dict(energy_data, orient='index', columns=['price [ct]'])
-            df.to_excel(f'{consts.uploads_file_Path}market_data.xlsx')
+            df.to_excel(f'{consts.downloads_file_Path}market_data.xlsx')
             msg.append("excel_market")
 
     return msg
@@ -428,8 +428,8 @@ def generate_market_data(data: dict, config_data: dict) -> list[str]:
     :param config_data:
     :return:
     """
-    if not os.path.exists(consts.uploads_file_Path):
-        os.mkdir(consts.uploads_file_Path)
+    if not os.path.exists(consts.downloads_file_Path):
+        os.mkdir(consts.downloads_file_Path)
 
     market_datas = classes.MarketData(config_data["market"]["consumer_price"], data['start_date_market'], data['end_date_market']).data
 
@@ -444,17 +444,17 @@ def generate_market_data(data: dict, config_data: dict) -> list[str]:
         data_dict.update({f"{market_data['date']} {market_data['start_timestamp']}": market_data['consumerprice']})
 
     if "excel_market" in data.keys():
-        if os.path.exists(rf"{consts.uploads_file_Path}market_data.xlsx"):
-            os.remove(rf"{consts.uploads_file_Path}market_data.xlsx")
+        if os.path.exists(rf"{consts.downloads_file_Path}market_data.xlsx"):
+            os.remove(rf"{consts.downloads_file_Path}market_data.xlsx")
         if data["excel_market"] == "on":
             df = pd.DataFrame.from_dict(data_dict, orient='index', columns=['price [ct]'])
-            df.to_excel(f'{consts.uploads_file_Path}market_data.xlsx')
+            df.to_excel(f'{consts.downloads_file_Path}market_data.xlsx')
             msg.append("excel_market")
 
     if "plot_png_market" in data.keys():
         if data["plot_png_market"] == "on":
-            if os.path.exists(rf"{consts.uploads_file_Path}plot_market.png"):
-                os.remove(rf"{consts.uploads_file_Path}plot_market.png")
+            if os.path.exists(rf"{consts.downloads_file_Path}plot_market.png"):
+                os.remove(rf"{consts.downloads_file_Path}plot_market.png")
             if len(price_data) > 50:
                 x = len(price_data) * 0.25
                 y = x * 0.4
@@ -473,7 +473,7 @@ def generate_market_data(data: dict, config_data: dict) -> list[str]:
             plt.yticks(ticks=ticks, ha="right", fontsize=20)
             plt.legend(loc="upper left", fontsize=20)
             plt.tight_layout()
-            plt.savefig(rf"{consts.uploads_file_Path}market_plot.png")
+            plt.savefig(rf"{consts.downloads_file_Path}market_plot.png")
             msg.append("plot_market")
 
     return msg

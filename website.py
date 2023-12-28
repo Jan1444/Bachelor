@@ -8,12 +8,18 @@ import numpy as np
 
 import tomli
 
-from flask import Flask, render_template, request, send_from_directory
+from flask import Flask, render_template, request, send_from_directory, flash, redirect, url_for
+from werkzeug.utils import secure_filename
 
 import functions as fc
 import consts
 
+UPLOAD_FOLDER = 'uploads'
+ALLOWED_EXTENSIONS = {'json'}
+
 app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.secret_key = os.urandom(24)
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -44,6 +50,7 @@ def analytics():
     coordinates = config_data["coordinates"]
     pv_consts = config_data["pv"]
     market_consts = config_data["market"]
+    converter_consts = config_data["converter"]
 
     power_data: list = []
     weather_time: list = []
@@ -87,8 +94,8 @@ def analytics():
             radiation_data_dni.append(radiation_dni)
             power_dni = pv.calc_power_with_dni(radiation_dni, incidence, weather_date[t]["temp"])
 
-            if power_dni > pv_consts["converter_power"]:
-                power_dni = pv_consts["converter_power"]
+            if power_dni > converter_consts["max_power"]:
+                power_dni = converter_consts["max_power"]
 
             power_data.append(power_dni)
 
@@ -110,7 +117,7 @@ def analytics():
     plt.plot(weather_time, power_data, label="Power [W]")
     plt.plot(weather_time, energy_data, label="Energy [Wh]")
     plt.xticks(rotation=90, ha="right", fontsize=30)
-    plt.yticks(ticks=np.arange(0, (pv_consts["converter_power"] + 51), step=50), ha="right", fontsize=30)
+    plt.yticks(ticks=np.arange(0, (converter_consts["max_power"] + 51), step=50), ha="right", fontsize=30)
     plt.tight_layout()
     plt.legend(loc="center left", fontsize=30)
     plt.savefig(f'{consts.plot_path}output_weather.png')
@@ -182,9 +189,13 @@ def download():
                            ret_market=msg_market, error_weather=err_msg_weather, error_market=err_msg_market)
 
 
-@app.route('/uploads/<name>')
+@app.route('/downloads/<name>')
 def download_file(name):
-    return send_from_directory("uploads", name)
+    return send_from_directory("downloads", name)
+
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 @app.route('/settings')
@@ -224,6 +235,36 @@ def safe_settings():
 def file_download():
     data = fc.date_time_download()
     return render_template('file_download.html', config=data)
+
+
+@app.route('/file_upload')
+def file_upload():
+    return render_template('file_upload.html')
+
+
+@app.route('/upload_file', methods=['GET', 'POST'])
+def upload_file():
+    if request.method == 'POST':
+        if 'upload_file_json' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+        file = request.files['upload_file_json']
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            return render_template('file_upload.html', name=filename)
+        elif not allowed_file(file.filename):
+            print('A')
+            filename = secure_filename(file.filename)
+            ending = filename.rsplit('.', 1)[1].lower()
+            err = f".{ending} ist nicht erlaubt. Nur {ALLOWED_EXTENSIONS} ist zulässig"
+            print(err)
+            return render_template('file_upload.html',
+                                   err_ending=err)
+    return render_template('file_upload.html')
 
 
 if __name__ == '__main__':

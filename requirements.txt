@@ -7,3 +7,5 @@ Requests>=2.31.0
 requests_cache>=1.1.1
 tomli>=2.0.1
 tomli_w>=1.0.0
+
+Werkzeug~=3.0.1
