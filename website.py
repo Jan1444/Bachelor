@@ -271,66 +271,7 @@ def upload_file():
 
 @app.route('/analyze_file', methods=['GET', 'POST'])
 def analyze_file():
-    config_data: dict = fc.read_data_from_file(consts.config_file_Path)
-
-    config_pv: dict = config_data["pv"]
-
-    path = rf"uploads/{os.listdir("uploads")[0]}"
-    data = json.load(open(path, "rb+"))
-
-    location: dict = data["inputs"]["location"]
-    meteo_data: dict = data["inputs"]["meteo_data"]
-    pv_alignment: dict = data["inputs"]["mounting_system"]["fixed"]
-    datas: dict = data["outputs"]["hourly"]
-
-    lat: float = location["latitude"]
-    lon: float = location["longitude"]
-    ele: float = location["elevation"]
-
-    slope: float = pv_alignment["slope"]["value"]
-    azimuth: float = pv_alignment["azimuth"]["value"]
-
-    rad_database: str = meteo_data["radiation_db"]
-    meteo_database: str = meteo_data["meteo_db"]
-    year_min: str = meteo_data["year_min"]
-    year_max: str = meteo_data["year_max"]
-
-    if "Gb(i)" not in datas[0]:
-        return render_template('file_upload.html', error="Bitte wählen Sie 'Einstrahlungskomponenten' aus")
-
-    if slope == 0 and azimuth == 0:
-        for data in datas:
-            date = datetime.datetime.strptime(data["time"], "%Y%m%d:%H%M").strftime("%d-%m-%Y")
-            time = float(datetime.datetime.strptime(data["time"], "%Y%m%d:%H%M").strftime("%H.%M"))
-
-            sun: classes.CalcSunPos = classes.CalcSunPos(lat, lon, date)
-            azimuth: float = sun.calc_azimuth(time)
-            elevation: float = sun.calc_solar_elevation(time)
-
-            pv: classes.PVProfit = classes.PVProfit(config_pv["module_efficiency"], config_pv["area"],
-                                                    config_pv["tilt_angle"], config_pv["exposure_angle"],
-                                                    config_pv["temperature_coefficient"],
-                                                    config_pv["nominal_temperature"],
-                                                    config_pv["mounting_type"])
-
-            incidence = pv.calc_incidence_angle(elevation, azimuth)
-            eff = pv.calc_temp_dependency(20, data["Gb(i)"])
-            power = pv.calc_power(data["Gb(i)"], incidence, elevation, eff)
-            print(power)
-
-    elif slope == config_pv["tilt_angle"] and azimuth == config_pv["exposure_angle"]:
-        print("Werte passen")
-        pass
-
-    else:
-        for data in datas:
-            date = datetime.datetime.strptime(data["time"], "%Y%m%d:%H%M").strftime("%d-%m-%Y")
-            sun: classes.CalcSunPos = classes.CalcSunPos(lat, lon, date)
-            time = float(datetime.datetime.strptime(data["time"], "%Y%m%d:%H%M").strftime("%H.%M"))
-            z = sun.adjust_for_new_angle(data["Gb(i)"], slope, azimuth, config_pv["tilt_angle"],
-                                         config_pv["exposure_angle"], time)
-            print(abs(z))
-
+    fc.data_analyzer()
     return render_template('file_upload.html')
 
 

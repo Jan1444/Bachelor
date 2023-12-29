@@ -11,6 +11,7 @@ import requests
 import tomli
 import tomli_w
 from frozendict import frozendict
+import json
 
 import classes
 import consts
@@ -431,7 +432,8 @@ def generate_market_data(data: dict, config_data: dict) -> list[str]:
     if not os.path.exists(consts.downloads_file_Path):
         os.mkdir(consts.downloads_file_Path)
 
-    market_datas = classes.MarketData(config_data["market"]["consumer_price"], data['start_date_market'], data['end_date_market']).data
+    market_datas = classes.MarketData(config_data["market"]["consumer_price"], data['start_date_market'],
+                                      data['end_date_market']).data
 
     msg: list[str] = []
     price_data: list[float] = []
@@ -522,6 +524,108 @@ def unpack_data(data: dict) -> (list[str], list[float], list[float], list[float]
     except KeyError as error:
         print(f"No key: {error}")
         print(f"In line: {error_key * 5 + 7}")
+
+
+
+@lru_cache(maxsize=None)
+def data_analyzer(path: None | str = None):
+    config_data: dict = read_data_from_file(consts.config_file_Path)
+
+    config_pv: dict = config_data["pv"]
+    if path is None:
+        path = rf"uploads/{os.listdir("uploads")[0]}"
+
+    data = json.load(open(path, "rb+"))
+
+    location: dict = data["inputs"]["location"]
+    meteo_data: dict = data["inputs"]["meteo_data"]
+    pv_alignment: dict = data["inputs"]["mounting_system"]["fixed"]
+    datas: dict = data["outputs"]["hourly"]
+
+    lat: float = location["latitude"]
+    lon: float = location["longitude"]
+    ele: float = location["elevation"]
+
+    slope: float = pv_alignment["slope"]["value"]
+    azimuth: float = pv_alignment["azimuth"]["value"]
+
+    rad_database: str = meteo_data["radiation_db"]
+    meteo_database: str = meteo_data["meteo_db"]
+    year_min: str = meteo_data["year_min"]
+    year_max: str = meteo_data["year_max"]
+
+    pv: classes.PVProfit = classes.PVProfit(config_pv["module_efficiency"], config_pv["area"],
+                                            config_pv["tilt_angle"], config_pv["exposure_angle"],
+                                            config_pv["temperature_coefficient"],
+                                            config_pv["nominal_temperature"],
+                                            config_pv["mounting_type"])
+
+    if "Gb(i)" not in datas[0]:
+        return render_template('file_upload.html', error="Bitte wählen Sie 'Einstrahlungskomponenten' aus")
+
+    if slope == 0 and azimuth == 0:
+        for data in datas:
+            date = datetime.datetime.strptime(data["time"], "%Y%m%d:%H%M").strftime("%d-%m-%Y")
+            time = float(datetime.datetime.strptime(data["time"], "%Y%m%d:%H%M").strftime("%H.%M"))
+
+            sun: classes.CalcSunPos = classes.CalcSunPos(lat, lon, date)
+            azimuth: float = sun.calc_azimuth(time)
+            elevation: float = sun.calc_solar_elevation(time)
+
+            incidence = pv.calc_incidence_angle(elevation, azimuth)
+            eff = pv.calc_temp_dependency(20, data["Gb(i)"])
+            power = pv.calc_power(data["Gb(i)"], incidence, elevation, eff)
+
+            if data["Gb(i)"] > 0:
+                print("-" * 20)
+                print(f"{date} {time}: ", end="")
+                print(power)
+        print(1)
+
+    elif slope == config_pv["tilt_angle"] and azimuth == config_pv["exposure_angle"]:
+        for data in datas:
+            date = datetime.datetime.strptime(data["time"], "%Y%m%d:%H%M").strftime("%d-%m-%Y")
+            time = float(datetime.datetime.strptime(data["time"], "%Y%m%d:%H%M").strftime("%H.%M"))
+
+            sun: classes.CalcSunPos = classes.CalcSunPos(lat, lon, date)
+
+            z = sun.adjust_for_new_angle(data["Gb(i)"], slope, azimuth, config_pv["tilt_angle"],
+                                         config_pv["exposure_angle"], time)
+
+            azimuth: float = sun.calc_azimuth(time)
+            elevation: float = sun.calc_solar_elevation(time)
+
+            incidence = pv.calc_incidence_angle(elevation, azimuth)
+            eff = pv.calc_temp_dependency(20, abs(z))
+            power = pv.calc_power(abs(z), incidence, elevation, eff)
+
+            if data["Gb(i)"] > 0:
+                print("-" * 20)
+                print(f"{date} {time}: ", end="")
+                print(power)
+        print(2)
+
+    else:
+        for data in datas:
+            date = datetime.datetime.strptime(data["time"], "%Y%m%d:%H%M").strftime("%d-%m-%Y")
+            time = float(datetime.datetime.strptime(data["time"], "%Y%m%d:%H%M").strftime("%H.%M"))
+
+            sun: classes.CalcSunPos = classes.CalcSunPos(lat, lon, date)
+            z = sun.adjust_for_new_angle(data["Gb(i)"], slope, azimuth, config_pv["tilt_angle"],
+                                         config_pv["exposure_angle"], time)
+            azimuth: float = sun.calc_azimuth(time)
+            elevation: float = sun.calc_solar_elevation(time)
+
+            incidence = pv.calc_incidence_angle(elevation, azimuth)
+            eff = pv.calc_temp_dependency(20, abs(z))
+
+            power = pv.calc_power(abs(z), incidence, elevation, eff)
+
+            if data["Gb(i)"] > 1:
+                print("-" * 20)
+                print(f"{date} {time}: ", end="")
+                print(power)
+        print(3)
 
 
 if __name__ == "__main__":
@@ -704,8 +808,9 @@ if __name__ == "__main__":
 
     print("Test generate_weather_data")
 
+    print("Test data_analyzer")
 
-
+    data_analyzer()
 
     print("Test unpack_data")
     data_test: dict = tomli.load(open(r"data/data.toml", "rb"))

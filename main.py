@@ -3,6 +3,7 @@
 import matplotlib.pyplot as plt
 import requests
 from pprint import pprint
+from functools import lru_cache
 
 import classes
 from config import settings as consts
@@ -59,12 +60,14 @@ def get_coord(street: str, nr: str, city: str, postalcode: int, country: str) ->
         return None, None
 
 
+@lru_cache(maxsize=None)
 def calc_energy(energy: list, interval: float = 0.25) -> float:
     power_values = list(map(lambda x: x / 1000, energy))
     total_energy = sum((power_values[i] + power_values[i + 1]) / 2 * interval for i in range(len(power_values) - 1))
     return total_energy
 
 
+@lru_cache(maxsize=None)
 def test_day_data(weather_data: dict, sun: classes.CalcSunPos, pv: classes.PVProfit,
                   market: classes.MarketData) -> (list, list, list, list):
     t_list: list = []
