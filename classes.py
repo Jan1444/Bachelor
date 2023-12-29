@@ -318,27 +318,25 @@ class CalcSunPos:
                                       + np.sin(self.latitude) * np.sin(self.sun_declination))
         return np.rad2deg(sun_height)
 
-    def adjust_for_new_angle(self, original_gb, original_tilt_angle, original_azimuth_angle,
-                             new_tilt_angle, new_azimuth_angle, time):
-        def calc_incidence_angle(sun_elevation, sun_azimuth, tilt_angle, panel_azimuth):
+    @lru_cache(maxsize=None)
+    def adjust_for_new_angle(self, original_gb, original_tilt_angle, original_azimuth_angle, new_tilt_angle,
+                             new_azimuth_angle, time):
+        @lru_cache(maxsize=None)
+        def calc_incidence_angle(elevation_sun, azimuth_sun, tilt_angle, panel_azimuth):
             return np.rad2deg(
                 np.arccos(
-                    np.cos(np.deg2rad(sun_elevation)) * np.sin(np.deg2rad(tilt_angle)) *
-                    np.cos(np.deg2rad(sun_azimuth - panel_azimuth)) + np.sin(np.deg2rad(sun_elevation)) *
+                    np.cos(np.deg2rad(elevation_sun)) * np.sin(np.deg2rad(tilt_angle)) *
+                    np.cos(np.deg2rad(azimuth_sun - panel_azimuth)) + np.sin(np.deg2rad(elevation_sun)) *
                     np.cos(np.deg2rad(tilt_angle))
                 )
             )
 
         sun_azimuth = self.calc_azimuth(time)
         sun_elevation = self.calc_solar_elevation(time)
-
         incidence_angle_original = calc_incidence_angle(sun_elevation, sun_azimuth, original_tilt_angle,
                                                         original_azimuth_angle)
-
         gb_horizontal = original_gb / np.cos(np.deg2rad(incidence_angle_original))
-
         incidence_angle_new = calc_incidence_angle(sun_elevation, sun_azimuth, new_tilt_angle, new_azimuth_angle)
-
         adjusted_gb = gb_horizontal * np.cos(np.deg2rad(incidence_angle_new))
 
         return adjusted_gb

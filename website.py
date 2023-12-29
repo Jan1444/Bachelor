@@ -309,7 +309,8 @@ def analyze_file():
 
             pv: classes.PVProfit = classes.PVProfit(config_pv["module_efficiency"], config_pv["area"],
                                                     config_pv["tilt_angle"], config_pv["exposure_angle"],
-                                                    config_pv["temperature_coefficient"], config_pv["nominal_temperature"],
+                                                    config_pv["temperature_coefficient"],
+                                                    config_pv["nominal_temperature"],
                                                     config_pv["mounting_type"])
 
             incidence = pv.calc_incidence_angle(elevation, azimuth)
@@ -317,8 +318,18 @@ def analyze_file():
             power = pv.calc_power(data["Gb(i)"], incidence, elevation, eff)
             print(power)
 
+    elif slope == config_pv["tilt_angle"] and azimuth == config_pv["exposure_angle"]:
+        print("Werte passen")
+        pass
+
     else:
-        print("Not 0")
+        for data in datas:
+            date = datetime.datetime.strptime(data["time"], "%Y%m%d:%H%M").strftime("%d-%m-%Y")
+            sun: classes.CalcSunPos = classes.CalcSunPos(lat, lon, date)
+            time = float(datetime.datetime.strptime(data["time"], "%Y%m%d:%H%M").strftime("%H.%M"))
+            z = sun.adjust_for_new_angle(data["Gb(i)"], slope, azimuth, config_pv["tilt_angle"],
+                                         config_pv["exposure_angle"], time)
+            print(abs(z))
 
     return render_template('file_upload.html')
 
