@@ -482,139 +482,139 @@ class RequiredHeatingPower:
     class Room:
         @dataclasses.dataclass
         class Wall1:
-            u_wert: float
-            area: float
-            temp_diff: float
+            u_wert: float = 0.0
+            area: float = 0.0
+            temp_diff: float = 0.0
 
             @dataclasses.dataclass
             class Window1:
-                u_wert: float
-                area: float
+                u_wert: float = 0.0
+                area: float = 0.0
 
             @dataclasses.dataclass
             class Window2:
-                u_wert: float
-                area: float
+                u_wert: float = 0.0
+                area: float = 0.0
 
             @dataclasses.dataclass
             class Window3:
-                u_wert: float
-                area: float
+                u_wert: float = 0.0
+                area: float = 0.0
 
             @dataclasses.dataclass
             class Window4:
-                u_wert: float
-                area: float
+                u_wert: float = 0.0
+                area: float = 0.0
 
             @dataclasses.dataclass
             class Door:
-                u_wert: float
-                area: float
+                u_wert: float = 0.0
+                area: float = 0.0
 
         @dataclasses.dataclass
         class Wall2:
-            u_wert: float
-            area: float
-            temp_diff: float
+            u_wert: float = 0.0
+            area: float = 0.0
+            temp_diff: float = 0.0
 
             @dataclasses.dataclass
             class Window1:
-                u_wert: float
-                area: float
+                u_wert: float = 0.0
+                area: float = 0.0
 
             @dataclasses.dataclass
             class Window2:
-                u_wert: float
-                area: float
+                u_wert: float = 0.0
+                area: float = 0.0
 
             @dataclasses.dataclass
             class Window3:
-                u_wert: float
-                area: float
+                u_wert: float = 0.0
+                area: float = 0.0
 
             @dataclasses.dataclass
             class Window4:
-                u_wert: float
-                area: float
+                u_wert: float = 0.0
+                area: float = 0.0
 
             @dataclasses.dataclass
             class Door:
-                u_wert: float
-                area: float
+                u_wert: float = 0.0
+                area: float = 0.0
 
         @dataclasses.dataclass
         class Wall3:
-            u_wert: float
-            area: float
-            temp_diff: float
+            u_wert: float = 0.0
+            area: float = 0.0
+            temp_diff: float = 0.0
 
             @dataclasses.dataclass
             class Window1:
-                u_wert: float
-                area: float
+                u_wert: float = 0.0
+                area: float = 0.0
 
             @dataclasses.dataclass
             class Window2:
-                u_wert: float
-                area: float
+                u_wert: float = 0.0
+                area: float = 0.0
 
             @dataclasses.dataclass
             class Window3:
-                u_wert: float
-                area: float
+                u_wert: float = 0.0
+                area: float = 0.0
 
             @dataclasses.dataclass
             class Window4:
-                u_wert: float
-                area: float
+                u_wert: float = 0.0
+                area: float = 0.0
 
             @dataclasses.dataclass
             class Door:
-                u_wert: float
-                area: float
+                u_wert: float = 0.0
+                area: float = 0.0
 
         @dataclasses.dataclass
         class Wall4:
-            u_wert: float
-            area: float
-            temp_diff: float
+            u_wert: float = 0.0
+            area: float = 0.0
+            temp_diff: float = 0.0
 
             @dataclasses.dataclass
             class Window1:
-                u_wert: float
-                area: float
+                u_wert: float = 0.0
+                area: float = 0.0
 
             @dataclasses.dataclass
             class Window2:
-                u_wert: float
-                area: float
+                u_wert: float = 0.0
+                area: float = 0.0
 
             @dataclasses.dataclass
             class Window3:
-                u_wert: float
-                area: float
+                u_wert: float = 0.0
+                area: float = 0.0
 
             @dataclasses.dataclass
             class Window4:
-                u_wert: float
-                area: float
+                u_wert: float = 0.0
+                area: float = 0.0
 
             @dataclasses.dataclass
             class Door:
-                u_wert: float
-                area: float
+                u_wert: float = 0.0
+                area: float = 0.0
 
         @dataclasses.dataclass
         class Floor:
-            u_wert: float
-            area: float
-            temp_diff: float
+            u_wert: float = 0.0
+            area: float = 0.0
+            temp_diff: float = 0.0
 
         @dataclasses.dataclass
         class ceiling:
-            u_wert: float
-            area: float
-            temp_diff: float
+            u_wert: float = 0.0
+            area: float = 0.0
+            temp_diff: float = 0.0
 
     def __init__(self):
         self.u_value: dict = {
