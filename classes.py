@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+import dataclasses
 import datetime
 from functools import lru_cache
 
@@ -478,8 +478,146 @@ class PVProfit:
 
 class RequiredHeatingPower:
     # https://www.bosch-homecomfort.com/de/de/wohngebaeude/wissen/heizungsratgeber/heizleistung-berechnen/
+    @dataclasses.dataclass
+    class Room:
+        @dataclasses.dataclass
+        class Wall1:
+            u_wert: float
+            area: float
+            temp_diff: float
+
+            @dataclasses.dataclass
+            class Window1:
+                u_wert: float
+                area: float
+
+            @dataclasses.dataclass
+            class Window2:
+                u_wert: float
+                area: float
+
+            @dataclasses.dataclass
+            class Window3:
+                u_wert: float
+                area: float
+
+            @dataclasses.dataclass
+            class Window4:
+                u_wert: float
+                area: float
+
+            @dataclasses.dataclass
+            class Door:
+                u_wert: float
+                area: float
+
+        @dataclasses.dataclass
+        class Wall2:
+            u_wert: float
+            area: float
+            temp_diff: float
+
+            @dataclasses.dataclass
+            class Window1:
+                u_wert: float
+                area: float
+
+            @dataclasses.dataclass
+            class Window2:
+                u_wert: float
+                area: float
+
+            @dataclasses.dataclass
+            class Window3:
+                u_wert: float
+                area: float
+
+            @dataclasses.dataclass
+            class Window4:
+                u_wert: float
+                area: float
+
+            @dataclasses.dataclass
+            class Door:
+                u_wert: float
+                area: float
+
+        @dataclasses.dataclass
+        class Wall3:
+            u_wert: float
+            area: float
+            temp_diff: float
+
+            @dataclasses.dataclass
+            class Window1:
+                u_wert: float
+                area: float
+
+            @dataclasses.dataclass
+            class Window2:
+                u_wert: float
+                area: float
+
+            @dataclasses.dataclass
+            class Window3:
+                u_wert: float
+                area: float
+
+            @dataclasses.dataclass
+            class Window4:
+                u_wert: float
+                area: float
+
+            @dataclasses.dataclass
+            class Door:
+                u_wert: float
+                area: float
+
+        @dataclasses.dataclass
+        class Wall4:
+            u_wert: float
+            area: float
+            temp_diff: float
+
+            @dataclasses.dataclass
+            class Window1:
+                u_wert: float
+                area: float
+
+            @dataclasses.dataclass
+            class Window2:
+                u_wert: float
+                area: float
+
+            @dataclasses.dataclass
+            class Window3:
+                u_wert: float
+                area: float
+
+            @dataclasses.dataclass
+            class Window4:
+                u_wert: float
+                area: float
+
+            @dataclasses.dataclass
+            class Door:
+                u_wert: float
+                area: float
+
+        @dataclasses.dataclass
+        class Floor:
+            u_wert: float
+            area: float
+            temp_diff: float
+
+        @dataclasses.dataclass
+        class ceiling:
+            u_wert: float
+            area: float
+            temp_diff: float
+
     def __init__(self):
-        u_value: dict = {
+        self.u_value: dict = {
             "Fenster": {
                 "Holzrahmen": {
                     "Einfachverglasung": {
@@ -782,6 +920,79 @@ class RequiredHeatingPower:
             }
         }
 
+    @staticmethod
+    def calc_heating_power(room: Room):
+        wall_1: float = (
+                (
+                        room.Wall1.area - room.Wall1.Door.area - room.Wall1.Window1.area -
+                        room.Wall1.Window2.area - room.Wall1.Window3.area - room.Wall1.Window4.area
+                ) * room.Wall1.u_wert * room.Wall1.temp_diff
+        )
+
+        wall_1_window_1: float = room.Wall1.Window1.area * room.Wall1.Window1.u_wert * room.Wall1.temp_diff
+        wall_1_window_2: float = room.Wall1.Window2.area * room.Wall1.Window2.u_wert * room.Wall1.temp_diff
+        wall_1_window_3: float = room.Wall1.Window3.area * room.Wall1.Window3.u_wert * room.Wall1.temp_diff
+        wall_1_window_4: float = room.Wall1.Window4.area * room.Wall1.Window4.u_wert * room.Wall1.temp_diff
+
+        wall_1_door: float = room.Wall1.Door.area * room.Wall1.Door.u_wert * room.Wall1.temp_diff
+
+        wall_2: float = (
+                (
+                        room.Wall1.area - room.Wall1.Door.area - room.Wall1.Window1.area -
+                        room.Wall1.Window2.area - room.Wall1.Window3.area - room.Wall1.Window4.area
+                ) * room.Wall1.u_wert * room.Wall1.temp_diff
+        )
+
+        wall_2_window_1: float = room.Wall2.Window1.area * room.Wall2.Window1.u_wert * room.Wall2.temp_diff
+        wall_2_window_2: float = room.Wall2.Window2.area * room.Wall2.Window2.u_wert * room.Wall2.temp_diff
+        wall_2_window_3: float = room.Wall2.Window3.area * room.Wall2.Window3.u_wert * room.Wall2.temp_diff
+        wall_2_window_4: float = room.Wall2.Window4.area * room.Wall2.Window4.u_wert * room.Wall2.temp_diff
+
+        wall_2_door: float = room.Wall2.Door.area * room.Wall2.Door.u_wert * room.Wall2.temp_diff
+
+        wall_3: float = (
+                (
+                        room.Wall3.area - room.Wall3.Door.area - room.Wall3.Window1.area -
+                        room.Wall3.Window2.area - room.Wall3.Window3.area - room.Wall3.Window4.area
+                ) * room.Wall3.u_wert * room.Wall3.temp_diff
+        )
+
+        wall_3_window_1: float = room.Wall3.Window1.area * room.Wall3.Window1.u_wert * room.Wall3.temp_diff
+        wall_3_window_2: float = room.Wall3.Window2.area * room.Wall3.Window2.u_wert * room.Wall3.temp_diff
+        wall_3_window_3: float = room.Wall3.Window3.area * room.Wall3.Window3.u_wert * room.Wall3.temp_diff
+        wall_3_window_4: float = room.Wall3.Window4.area * room.Wall3.Window4.u_wert * room.Wall3.temp_diff
+
+        wall_3_door: float = room.Wall3.Door.area * room.Wall3.Door.u_wert * room.Wall3.temp_diff
+
+        wall_4: float = (
+                (
+                        room.Wall4.area - room.Wall4.Door.area - room.Wall4.Window1.area -
+                        room.Wall4.Window2.area - room.Wall4.Window3.area - room.Wall4.Window4.area
+                ) * room.Wall4.u_wert * room.Wall4.temp_diff
+        )
+
+        wall_4_window_1: float = room.Wall4.Window1.area * room.Wall4.Window1.u_wert * room.Wall4.temp_diff
+        wall_4_window_2: float = room.Wall4.Window2.area * room.Wall4.Window2.u_wert * room.Wall4.temp_diff
+        wall_4_window_3: float = room.Wall4.Window3.area * room.Wall4.Window3.u_wert * room.Wall4.temp_diff
+        wall_4_window_4: float = room.Wall4.Window4.area * room.Wall4.Window4.u_wert * room.Wall4.temp_diff
+
+        wall_4_door: float = room.Wall4.Door.area * room.Wall4.Door.u_wert * room.Wall4.temp_diff
+
+        floor: float = room.Floor.area * room.Floor.u_wert * room.Floor.temp_diff
+
+        ceiling: float = room.ceiling.area * room.ceiling.u_wert * room.Floor.temp_diff
+
+        heating_power: float = (wall_1 + wall_1_window_1 + wall_1_window_2 + wall_1_window_3 + wall_1_window_4 +
+                                wall_1_door +
+                                wall_2 + wall_2_window_1 + wall_2_window_2 + wall_2_window_3 + wall_2_window_4 +
+                                wall_2_door +
+                                wall_3 + wall_3_window_1 + wall_3_window_2 + wall_3_window_3 + wall_3_window_4 +
+                                wall_3_door +
+                                wall_4 + wall_4_window_1 + wall_4_window_2 + wall_4_window_3 + wall_4_window_4 +
+                                wall_4_door +
+                                floor + ceiling)
+
+        return heating_power
 
 
 class ShellyTRVControl:
