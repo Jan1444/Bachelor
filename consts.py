@@ -3,7 +3,7 @@ from typing import Final
 config_file_Path: Final[str] = r'config/config_test.toml'
 data_file_Path: Final[str] = r'data/data.toml'
 downloads_file_Path: Final[str] = r'downloads/'
-downloads_file_Path: Final[str] = r'uploads/'
+uploads_file_Path: Final[str] = r'uploads/'
 plot_path: Final[str] = r'static/plots/'
 
 config_data: Final[dict] = {

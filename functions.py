@@ -526,9 +526,8 @@ def unpack_data(data: dict) -> (list[str], list[float], list[float], list[float]
         print(f"In line: {error_key * 5 + 7}")
 
 
-
 @lru_cache(maxsize=None)
-def data_analyzer(path: None | str = None):
+def data_analyzer(path: None | str = None) -> int:
     config_data: dict = read_data_from_file(consts.config_file_Path)
 
     config_pv: dict = config_data["pv"]
@@ -554,6 +553,9 @@ def data_analyzer(path: None | str = None):
     year_min: str = meteo_data["year_min"]
     year_max: str = meteo_data["year_max"]
 
+    power_data: list = []
+    date_time_data: list = []
+
     pv: classes.PVProfit = classes.PVProfit(config_pv["module_efficiency"], config_pv["area"],
                                             config_pv["tilt_angle"], config_pv["exposure_angle"],
                                             config_pv["temperature_coefficient"],
@@ -561,71 +563,85 @@ def data_analyzer(path: None | str = None):
                                             config_pv["mounting_type"])
 
     if "Gb(i)" not in datas[0]:
-        return render_template('file_upload.html', error="Bitte wählen Sie 'Einstrahlungskomponenten' aus")
+        print(datas[0])
+        return -1
 
     if slope == 0 and azimuth == 0:
         for data in datas:
-            date = datetime.datetime.strptime(data["time"], "%Y%m%d:%H%M").strftime("%d-%m-%Y")
-            time = float(datetime.datetime.strptime(data["time"], "%Y%m%d:%H%M").strftime("%H.%M"))
+            date: str = datetime.datetime.strptime(data["time"], "%Y%m%d:%H%M").strftime("%d-%m-%Y")
+            time: float = float(datetime.datetime.strptime(data["time"], "%Y%m%d:%H%M").strftime("%H.%M"))
 
             sun: classes.CalcSunPos = classes.CalcSunPos(lat, lon, date)
             azimuth: float = sun.calc_azimuth(time)
             elevation: float = sun.calc_solar_elevation(time)
 
-            incidence = pv.calc_incidence_angle(elevation, azimuth)
-            eff = pv.calc_temp_dependency(20, data["Gb(i)"])
-            power = pv.calc_power(data["Gb(i)"], incidence, elevation, eff)
+            incidence: float = pv.calc_incidence_angle(elevation, azimuth)
+            eff: float = pv.calc_temp_dependency(20, data["Gb(i)"])
+            power: float = pv.calc_power(data["Gb(i)"], incidence, elevation, eff)
 
-            if data["Gb(i)"] > 0:
-                print("-" * 20)
-                print(f"{date} {time}: ", end="")
-                print(power)
-        print(1)
+            date_time: str = datetime.datetime.strptime(data["time"], "%Y%m%d:%H%M").strftime("%d-%m-%Y - %H:%M")
+
+            power_data.append(round(power, 2))
+            date_time_data.append(date_time)
 
     elif slope == config_pv["tilt_angle"] and azimuth == config_pv["exposure_angle"]:
         for data in datas:
-            date = datetime.datetime.strptime(data["time"], "%Y%m%d:%H%M").strftime("%d-%m-%Y")
-            time = float(datetime.datetime.strptime(data["time"], "%Y%m%d:%H%M").strftime("%H.%M"))
+            date: str = datetime.datetime.strptime(data["time"], "%Y%m%d:%H%M").strftime("%d-%m-%Y")
+            time: float = float(datetime.datetime.strptime(data["time"], "%Y%m%d:%H%M").strftime("%H.%M"))
 
             sun: classes.CalcSunPos = classes.CalcSunPos(lat, lon, date)
 
-            z = sun.adjust_for_new_angle(data["Gb(i)"], slope, azimuth, config_pv["tilt_angle"],
-                                         config_pv["exposure_angle"], time)
+            adj_data: float = sun.adjust_for_new_angle(data["Gb(i)"], slope, azimuth, config_pv["tilt_angle"],
+                                                       config_pv["exposure_angle"], time)
 
             azimuth: float = sun.calc_azimuth(time)
             elevation: float = sun.calc_solar_elevation(time)
 
-            incidence = pv.calc_incidence_angle(elevation, azimuth)
-            eff = pv.calc_temp_dependency(20, abs(z))
-            power = pv.calc_power(abs(z), incidence, elevation, eff)
+            incidence: float = pv.calc_incidence_angle(elevation, azimuth)
+            eff: float = pv.calc_temp_dependency(20, abs(adj_data))
+            power: float = pv.calc_power(abs(adj_data), incidence, elevation, eff)
 
-            if data["Gb(i)"] > 0:
-                print("-" * 20)
-                print(f"{date} {time}: ", end="")
-                print(power)
-        print(2)
+            date_time: str = datetime.datetime.strptime(data["time"], "%Y%m%d:%H%M").strftime("%d-%m-%Y - %H:%M")
+
+            power_data.append(round(power, 2))
+            date_time_data.append(date_time)
 
     else:
         for data in datas:
-            date = datetime.datetime.strptime(data["time"], "%Y%m%d:%H%M").strftime("%d-%m-%Y")
-            time = float(datetime.datetime.strptime(data["time"], "%Y%m%d:%H%M").strftime("%H.%M"))
+            date: str = datetime.datetime.strptime(data["time"], "%Y%m%d:%H%M").strftime("%d-%m-%Y")
+            time: float = float(datetime.datetime.strptime(data["time"], "%Y%m%d:%H%M").strftime("%H.%M"))
 
             sun: classes.CalcSunPos = classes.CalcSunPos(lat, lon, date)
-            z = sun.adjust_for_new_angle(data["Gb(i)"], slope, azimuth, config_pv["tilt_angle"],
-                                         config_pv["exposure_angle"], time)
+            adj_data: float = sun.adjust_for_new_angle(data["Gb(i)"], slope, azimuth, config_pv["tilt_angle"],
+                                                       config_pv["exposure_angle"], time)
             azimuth: float = sun.calc_azimuth(time)
             elevation: float = sun.calc_solar_elevation(time)
 
-            incidence = pv.calc_incidence_angle(elevation, azimuth)
-            eff = pv.calc_temp_dependency(20, abs(z))
+            incidence: float = pv.calc_incidence_angle(elevation, azimuth)
+            eff: float = pv.calc_temp_dependency(20, abs(adj_data))
 
-            power = pv.calc_power(abs(z), incidence, elevation, eff)
+            power: float = pv.calc_power(abs(adj_data), incidence, elevation, eff)
 
-            if data["Gb(i)"] > 1:
-                print("-" * 20)
-                print(f"{date} {time}: ", end="")
-                print(power)
-        print(3)
+            date_time: str = datetime.datetime.strptime(data["time"], "%Y%m%d:%H%M").strftime("%d-%m-%Y - %H:%M")
+
+            power_data.append(round(power, 2))
+            date_time_data.append(date_time)
+
+    max_energy: float = max(power_data)
+    time_max_energy: str = date_time_data[power_data.index(max_energy)]
+    average_energy: float = round(calc_energy(power_data, 1, True) / (year_max + 1 - year_min), 2)
+
+    plt.clf()
+    plt.figure(figsize=(20, 6))
+    plt.grid(True)
+    plt.plot(date_time_data, power_data, '-', linewidth=0.5, alpha=0.5)
+    plt.xticks(np.linspace(0, len(date_time_data), 100), rotation=90, ha='right', fontsize=8)
+    plt.tight_layout()
+    plt.margins(0.01)
+    plt.savefig(f"{consts.downloads_file_Path}plot_uploaded_data.png", dpi=300)
+
+    return (lat, lon, ele, rad_database, meteo_database, year_min, year_max, power_data, date_time_data,
+            max_energy, time_max_energy, average_energy)
 
 
 if __name__ == "__main__":

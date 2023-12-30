@@ -67,7 +67,6 @@ def calc_energy(energy: list, interval: float = 0.25) -> float:
     return total_energy
 
 
-@lru_cache(maxsize=None)
 def test_day_data(weather_data: dict, sun: classes.CalcSunPos, pv: classes.PVProfit,
                   market: classes.MarketData) -> (list, list, list, list):
     t_list: list = []

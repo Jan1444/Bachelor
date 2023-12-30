@@ -266,13 +266,25 @@ def upload_file():
             ending = filename.rsplit('.', 1)[1].lower()
             err = f".{ending} ist nicht erlaubt. Nur {ALLOWED_EXTENSIONS} ist zulässig"
             return render_template('file_upload.html', err_ending=err)
-    return render_template('file_upload.html')
+    return render_template('file_upload.html', data=None)
 
 
 @app.route('/analyze_file', methods=['GET', 'POST'])
 def analyze_file():
-    fc.data_analyzer()
-    return render_template('file_upload.html')
+    ret = fc.data_analyzer()
+    if ret == -1:
+        return render_template('file_upload.html', error="Bitte wählen Sie 'Einstrahlungskomponenten' aus")
+
+    return_data: dict = {}
+    name_list: list = ["lat", "lon", "ele", "rad_database", "meteo_database", "year_min", "year_max", "power_data",
+                       "date_time_data", "max_energy", "time_max_energy", "average_energy"]
+
+    for i, element in enumerate(ret):
+        return_data.update({name_list[i]: element})
+
+    zipped_data = zip(ret[7], ret[8])
+
+    return render_template('analyzed_data.html', data=return_data, power_time_data=zipped_data)
 
 
 if __name__ == '__main__':

@@ -20,7 +20,7 @@
     <link href="{{ url_for('static', filename='favicon/site.webmanifest') }}" rel="manifest">
     <link color="#5bbad5" href="{{ url_for('static', filename='favicon/safari-pinned-tab.svg') }}" rel="mask-icon">
     <!--Stylesheet-->
-    <link href="{{ url_for('static', filename='css/style_file_upload.css') }}" rel="stylesheet" type="text/css">
+    <link href="{{ url_for('static', filename='css/style_analyze_data.css') }}" rel="stylesheet" type="text/css">
     <!--Title-->
     <title>Photovoltaik-Upload</title>
 </head>
@@ -47,87 +47,22 @@
         <tr>
             <td>
                 <img class="HeaderImage" src="{{ url_for('static', filename='favicon/android-chrome-512x512.png') }}">
-                <h1 class="Headerh1">Datei Upload</h1>
+                <h1 class="Headerh1">Analysierte Daten</h1>
             </td>
         </tr>
     </table>
-
-    <form action="/upload_file" class="BoxContent" method="post" enctype=multipart/form-data>
-        <!--Wetter Daten-->
-        <table>
-            {% if error_weather or error_market %}
-            <p style="color: red;">{{ error_weather }}</p>
-            <p style="color: red;">{{ error_market }}</p>
-            {% endif %}
+    <table class="BoxData">
             <tr>
                 <td class="Box1" colspan="4">
                     <b>
                         Sonnen Daten
                     </b>
-                    <a href="https://re.jrc.ec.europa.eu/pvg_tools/de/#api_5.2" target="_blank">download-site</a>
                 </td>
             </tr>
-            <tr>
-                <td><label for="upload_file_json">Upload Datei</label></td>
-                <td><input id="upload_file_json" name="upload_file_json" type="file"></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td>{% if name %}
-                    <text>Datei erfolgreich hochgeladen</text>
-                    {% endif %}
-                    {% if err_ending %}
-                    <text>{{ err_ending }}</text>
-                    {% endif %}</td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td>
-                    {% if not name %}
-                    <button type="submit">Upload</button>
-                    {% endif %}
-                </td>
-
-                <td></td>
-                <td></td>
-            </tr>
-        </table>
-    </form>
-    <form action="/analyze_file" method="post" class="BoxContent2">
-        <table>
-            <tr>
-                <td></td>
-                <td>
-                    {% if name %}
-                        <button type="submit">Analyze</button>
-                    {% endif %}
-                </td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td></td>
-                <td>
-                    {% if error %}
-                        <br><text>{{ error }}</text>
-                    {% endif %}
-                </td>
-
-                <td></td>
-            </tr>
-        </table>
-    </form>
-
-    <table class="BoxData">
             {% if data %}
             <tr>
                 <td colspan="2">
-                    <a>Daten für Zeitraum {{ data["year_min"] }} - {{ data["year_max"] }}</a>
+                    <a>Daten für Zeitraum Januar {{ data["year_min"] }} - Dezember {{ data["year_max"] }}</a>
                 </td>
             </tr>
             <tr>

@@ -6,18 +6,6 @@
     display: inline-block;
     border-bottom: 1px dotted black;
 }
-
-#main-container {
-    width: 100%;
-    background: linear-gradient(#051f30, #000000);
-    display: grid;
-    grid-template-columns: auto 100%;
-    align-items: start;
-    justify-content: start;
-    overflow: hidden;
-    grid-template-rows: 150px 150px 100px calc(100vh - (150px + 150px + 100px))
-}
-
 /* Tooltip-Text */
 .tooltip .tooltiptext {
     visibility: hidden;
