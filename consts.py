@@ -33,6 +33,51 @@ config_data: Final[dict] = {
 
     "ir_remote": {
 
+    },
+
+    "house": {
+        'house_year': '',
+        'window1_frame': '',
+        'window1_year': '',
+        'window1_width': '',
+        'window1_height': '',
+        'wall1': '',
+        'wall1_width': '',
+        'wall1_height': '',
+        'door_wall1': '',
+        'door_wall1_width': '',
+        'door_wall1_height': '',
+        'window4_frame': '',
+        'window4_year': '',
+        'window4_width': '',
+        'window4_height': '',
+        'ceiling': '',
+        'window2_frame': '',
+        'window2_year': '',
+        'window2_width': '',
+        'window2_height': '',
+        'wall4': '',
+        'wall4_width': '',
+        'wall4_height': '',
+        'wall2': '',
+        'wall2_width': '',
+        'wall2_height': '',
+        'door_wall4': '',
+        'door_wall4_width': '',
+        'door_wall4_height': '',
+        'floor': '',
+        'door_wall2': '',
+        'door_wall2_width': '',
+        'door_wall2_height': '',
+        'window3_frame': '',
+        'window3_year': '',
+        'window3_width': '',
+        'window3_height': '',
+        'wall3': '',
+        'wall3_width': '',
+        'door_wall3': '',
+        'door_wall3_width': '',
+        'door_wall3_height': ''
     }
 }
 

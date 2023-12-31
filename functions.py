@@ -90,6 +90,7 @@ def write_data_to_config(data: dict, path: str = None) -> int:
         converter = config_data['converter']
         shelly = config_data['shelly']
         ir_remote = config_data['ir_remote']
+        house = config_data['house']
 
         pv['tilt_angle'] = float(data['tilt_angle'])
         pv['area'] = float(data['area'])
@@ -104,6 +105,64 @@ def write_data_to_config(data: dict, path: str = None) -> int:
         market['consumer_price'] = float(data['consumer_price'])
 
         shelly['ip_address'] = str(data['ip_address'])
+
+        house['house_year'] = int(data['house_year'])
+
+        house['window1_frame'] = str(data['window1_frame'])
+        house['window1_year'] = int(data['window1_year'])
+        house['window1_width'] = float(data['window1_width'])
+        house['window1_height'] = float(data['window1_height'])
+
+        house['wall1'] = str(data['wall1'])
+        house['wall1_width'] = float(data['wall1_width'])
+        house['wall1_height'] = float(data['wall1_height'])
+
+        house['door_wall1'] = bool(data['door_wall1'])
+        house['door_wall1_width'] = float(data['door_wall1_width'])
+        house['door_wall1_height'] = float(data['door_wall1_height'])
+
+        house['window2_frame'] = str(data['window2_frame'])
+        house['window2_year'] = int(data['window2_year'])
+        house['window2_width'] = float(data['window2_width'])
+        house['window2_height'] = float(data['window2_height'])
+
+        house['wall2'] = str(data['wall2'])
+        house['wall2_width'] = float(data['wall2_width'])
+        house['wall2_height'] = float(data['wall2_height'])
+
+        house['door_wall2'] = bool(data['door_wall2'])
+        house['door_wall2_width'] = float(data['door_wall2_width'])
+        house['door_wall2_height'] = float(data['door_wall2_height'])
+
+        house['window3_frame'] = str(data['window3_frame'])
+        house['window3_year'] = int(data['window3_year'])
+        house['window3_width'] = float(data['window3_width'])
+        house['window3_height'] = float(data['window3_height'])
+
+        house['wall3'] = str(data['wall3'])
+        house['wall3_width'] = float(data['wall3_width'])
+        house['wall3_height'] = float(data['wall3_height'])
+        house['construction_wall3'] = str(data['construction_wall3'])
+
+        house['door_wall3'] = bool(data['door_wall3'])
+        house['door_wall3_width'] = float(data['door_wall3_width'])
+        house['door_wall3_height'] = float(data['door_wall3_height'])
+
+        house['window4_frame'] = str(data['window4_frame'])
+        house['window4_year'] = int(data['window4_year'])
+        house['window4_width'] = float(data['window4_width'])
+        house['window4_height'] = float(data['window4_height'])
+
+        house['ceiling'] = str(data['ceiling'])
+        house['floor'] = str(data['floor'])
+
+        house['wall4'] = str(data['wall4'])
+        house['wall4_width'] = float(data['wall4_width'])
+        house['wall4_height'] = float(data['wall4_height'])
+
+        house['door_wall4'] = bool(data['door_wall4'])
+        house['door_wall4_width'] = float(data['door_wall4_width'])
+        house['door_wall4_height'] = float(data['door_wall4_height'])
 
         tomli_w.dump(config_data, open(path, 'wb'))
 

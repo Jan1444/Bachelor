@@ -206,7 +206,7 @@
                     <tr>
                         <td>
                             <label for="house_year" class="felder">Hausbaujahr:</label>
-                            <input id="house_year" minlength="1" name="house_year" type="number" value="" class="felder">
+                            <input id="house_year" minlength="1" name="house_year" type="number" value="{{ config['house']['house_year'] }}" class="felder">
                         </td>
                         <td class="border_bottom">
                             <label for="window1_frame" class="felder">Fensterrahmen:</label>
@@ -217,15 +217,15 @@
                                 <option value="Metallrahmen">Metallrahmen</option>
                             </select>
                             <label for="window1_glazing" class="felder">Verglasung:</label>
-                            <select id="window1_glazing" class="felder">
+                            <select id="window1_glazing" name="window1_glazing" class="felder">
                                 <option value="">Verglasung wählen</option>
                             </select>
                             <label for="window1_year" class="felder">Fensterbaujahr:</label>
-                            <input id="window1_year" minlength="1" name="window1_year" type="number" value="" class="felder">
+                            <input id="window1_year" minlength="1" name="window1_year" step="0.1" min="0" type="number" value="{{ config['house']['window1_year'] }}" class="felder">
                             <label for="window1_width" class="felder">Fensterbreite [m]:</label>
-                            <input id="window1_width" minlength="1" name="window1_width" type="number" value="" class="felder">
+                            <input id="window1_width" minlength="1" name="window1_width" step="0.1" min="0" type="number" value="{{ config['house']['window1_width'] }}" class="felder">
                             <label for="window1_height" class="felder">Fensterhöhe [m]:</label>
-                            <input id="window1_height" minlength="1" name="window1_height" type="number" value="" class="felder">
+                            <input id="window1_height" minlength="1" name="window1_height" step="0.1" min="0" type="number" value="{{ config['house']['window1_height'] }}" class="felder">
                         </td>
                         <td class="border_bottom">
                             <label for="wall1" class="felder">Wand:</label>
@@ -237,13 +237,13 @@
                                     Innenwand gegen unbeheizte Kellergeschosse</option>
                             </select>
                             <label for="construction_wall1" class="felder">Bauweise:</label>
-                            <select id="construction_wall1" class="felder">
+                            <select id="construction_wall1" name="construction_wall1" class="felder">
                                 <option value="">Bauweise wählen</option>
                             </select>
                             <label for="wall1_width" class="felder">Wandbreite [m]:</label>
-                            <input id="wall1_width" minlength="1" name="wall1_width" type="number" value="" class="felder">
+                            <input id="wall1_width" minlength="1" name="wall1_width" step="0.1" min="0" type="number" value="{{ config['house']['wall1_width'] }}" class="felder">
                             <label for="wall1_height" class="felder">Wandhöhe [m]:</label>
-                            <input id="wall1_height" minlength="1" name="wall1_height" type="number" value="" class="felder">
+                            <input id="wall1_height" minlength="1" name="wall1_height" step="0.1" min="0" type="number" value="{{ config['house']['wall1_height'] }}" class="felder">
                         </td>
                         <td class="border_bottom">
                             <label for="door_wall1" class="felder">Tür:</label>
@@ -252,9 +252,9 @@
                                 <option value="False">Nein</option>
                             </select>
                             <label for="door_wall1_width" class="felder">Türbreite [m]:</label>
-                            <input id="door_wall1_width" minlength="1" name="door_wall1_width" type="number" value="" class="felder">
+                            <input id="door_wall1_width" minlength="1" name="door_wall1_width" step="0.1" min="0" type="number" value="{{ config['house']['door_wall1_width'] }}" class="felder">
                             <label for="door_wall1_height" class="felder">Türhöhe [m]:</label>
-                            <input id="door_wall1_height" minlength="1" name="door_wall1_height" type="number" value="" class="felder">
+                            <input id="door_wall1_height" minlength="1" name="door_wall1_height" step="0.1" min="0" type="number" value="{{ config['house']['door_wall1_height'] }}" class="felder">
                         </td>
                         <td></td>
                         <td></td>
@@ -269,15 +269,15 @@
                                 <option value="Metallrahmen">Metallrahmen</option>
                             </select>
                             <label for="window4_glazing" class="felder">Verglasung:</label>
-                            <select id="window4_glazing" class="felder">
+                            <select id="window4_glazing" name="window4_glazing" class="felder">
                                 <option value="">Verglasung wählen</option>
                             </select>
                             <label for="window4_year" class="felder">Fensterbaujahr:</label>
-                            <input id="window4_year" minlength="1" name="window4_year" type="number" value="" class="felder">
+                            <input id="window4_year" minlength="1" name="window4_year" step="0.1" min="0" type="number" value="{{ config['house']['window4_year'] }}" class="felder">
                             <label for="window4_width" class="felder">Fensterbreite [m]:</label>
-                            <input id="window4_width" minlength="1" name="window4_width" type="number" value="" class="felder">
+                            <input id="window4_width" minlength="1" name="window4_width" step="0.1" min="0" type="number" value="{{ config['house']['window4_width'] }}" class="felder">
                             <label for="window4_height" class="felder">Fensterhöhe [m]:</label>
-                            <input id="window4_height" minlength="1" name="window4_height" type="number" value="" class="felder">
+                            <input id="window4_height" minlength="1" name="window4_height" step="0.1" min="0" type="number" value="{{ config['house']['window4_height'] }}" class="felder">
                         </td>
                         <td class="border_left"></td>
                         <td>
@@ -290,7 +290,7 @@
                                     Innenwand gegen unbeheizte Kellergeschosse</option>
                             </select>
                             <label for="construction_ceiling" class="felder">Bauweise:</label>
-                            <select id="construction_ceiling" class="felder">
+                            <select id="construction_ceiling" name="construction_ceiling" class="felder">
                                 <option value="">Bauweise wählen</option>
                             </select>
                         </td>
@@ -306,15 +306,15 @@
                                 <option value="Metallrahmen">Metallrahmen</option>
                             </select>
                             <label for="window2_glazing" class="felder">Verglasung:</label>
-                            <select id="window2_glazing" class="felder">
+                            <select id="window2_glazing" name="window2_glazing" class="felder">
                                 <option value="">Verglasung wählen</option>
                             </select>
                             <label for="window2_year" class="felder">Fensterbaujahr:</label>
-                            <input id="window2_year" minlength="1" name="window2_year" type="number" value="" class="felder">
+                            <input id="window2_year" minlength="1" name="window2_year" step="0.1" min="0" type="number" value="{{ config['house']['window2_year'] }}" class="felder">
                             <label for="window2_width" class="felder">Fensterbreite [m]:</label>
-                            <input id="window2_width" minlength="1" name="window2_width" type="number" value="" class="felder">
+                            <input id="window2_width" minlength="1" name="window2_width" step="0.1" min="0" type="number" value="{{ config['house']['window2_width'] }}" class="felder">
                             <label for="window2_height" class="felder">Fensterhöhe [m]:</label>
-                            <input id="window2_height" minlength="1" name="window2_height" type="number" value="" class="felder">
+                            <input id="window2_height" minlength="1" name="window2_height" step="0.1" min="0" type="number" value="{{ config['house']['window2_height'] }}" class="felder">
                         </td>
                         <td></td>
                     </tr>
@@ -329,13 +329,13 @@
                                     Innenwand gegen unbeheizte Kellergeschosse</option>
                             </select>
                             <label for="construction_wall4" class="felder">Bauweise:</label>
-                            <select id="construction_wall4" class="felder">
+                            <select id="construction_wall4" name="construction_wall4" class="felder">
                                 <option value="">Bauweise wählen</option>
                             </select>
                             <label for="wall4_width" class="felder">Wandbreite [m]:</label>
-                            <input id="wall4_width" minlength="1" name="wall4_width" type="number" value="" class="felder">
+                            <input id="wall4_width" minlength="1" name="wall4_width" step="0.1" min="0" type="number" value="{{ config['house']['wall4_width'] }}" class="felder">
                             <label for="wall4_height" class="felder">Wandhöhe [m]:</label>
-                            <input id="wall4_height" minlength="1" name="wall4_height" type="number" value="" class="felder">
+                            <input id="wall4_height" minlength="1" name="wall4_height" step="0.1" min="0" type="number" value="{{ config['house']['wall4_height'] }}" class="felder">
                         </td>
                         <td class="border_left">
                         </td>
@@ -352,13 +352,13 @@
                                     Innenwand gegen unbeheizte Kellergeschosse</option>
                             </select>
                             <label for="construction_wall2" class="felder">Bauweise:</label>
-                            <select id="construction_wall2" class="felder">
+                            <select id="construction_wall2" name="construction_wall2" class="felder">
                                 <option value="">Bauweise wählen</option>
                             </select>
                             <label for="wall2_width" class="felder">Wandbreite [m]:</label>
-                            <input id="wall2_width" minlength="1" name="wall2_width" type="number" value="" class="felder">
+                            <input id="wall2_width" minlength="1" name="wall2_width" value="{{ config['house']['wall2_width'] }}" type="number" class="felder">
                             <label for="wall2_height" class="felder">Wandhöhe [m]:</label>
-                            <input id="wall2_height" minlength="1" name="wall2_height" type="number" value="" class="felder">
+                            <input id="wall2_height" minlength="1" name="wall2_height" value="{{ config['house']['wall2_height'] }}" type="number" class="felder">
                         </td>
                         <td></td>
                     </tr>
@@ -370,9 +370,9 @@
                                 <option value="False">Nein</option>
                             </select>
                             <label for="door_wall4_width" class="felder">Türbreite [m]:</label>
-                            <input id="door_wall4_width" minlength="1" name="door_wall4_width" type="number" value="" class="felder">
+                            <input id="door_wall4_width" minlength="1" name="door_wall4_width" step="0.1" min="0" type="number" value="{{ config['house']['door_wall4_width'] }}" class="felder">
                             <label for="door_wall4_height" class="felder">Türhöhe [m]:</label>
-                            <input id="door_wall4_height" minlength="1" name="door_wall4_height" type="number" value="" class="felder">
+                            <input id="door_wall4_height" minlength="1" name="door_wall4_height" step="0.1" min="0" type="number" value="{{ config['house']['door_wall4_height'] }}" class="felder">
                         </td>
                         <td class="border_left"></td>
                         <td>
@@ -385,7 +385,7 @@
                                     Innenwand gegen unbeheizte Kellergeschosse</option>
                             </select>
                             <label for="construction_floor" class="felder">Bauweise:</label>
-                            <select id="construction_floor" class="felder">
+                            <select id="construction_floor" name="construction_floor" class="felder">
                                 <option value="">Bauweise wählen</option>
                             </select>
                         </td>
@@ -398,9 +398,9 @@
                                 <option value="False">Nein</option>
                             </select>
                             <label for="door_wall2_width" class="felder">Türbreite [m]:</label>
-                            <input id="door_wall2_width" minlength="1" name="door_wall2_width" type="number" value="" class="felder">
+                            <input id="door_wall2_width" minlength="1" name="door_wall2_width" step="0.1" min="0" type="number" value="{{ config['house']['door_wall2_width'] }}" class="felder">
                             <label for="door_wall2_height" class="felder">Türhöhe [m]:</label>
-                            <input id="door_wall2_height" minlength="1" name="door_wall2_height" type="number" value="" class="felder">
+                            <input id="door_wall2_height" minlength="1" name="door_wall2_height" step="0.1" min="0" type="number" value="{{ config['house']['door_wall2_height'] }}" class="felder">
                         </td>
                         <td></td>
                     </tr>
@@ -415,33 +415,42 @@
                                 <option value="Metallrahmen">Metallrahmen</option>
                             </select>
                             <label for="window3_glazing" class="felder">Verglasung:</label>
-                            <select id="window3_glazing" class="felder">
+                            <select id="window3_glazing" name="window3_glazing" class="felder">
                                 <option value="">Verglasung wählen</option>
                             </select>
                             <label for="window3_year" class="felder">Fensterbaujahr:</label>
-                            <input id="window3_year" minlength="1" name="window3_year" type="number" value="" class="felder">
+                            <input id="window3_year" minlength="1" name="window3_year" step="0.1" min="0" type="number" value="{{ config['house']['window3_year'] }}" class="felder">
                             <label for="window3_width" class="felder">Fensterbreite [m]:</label>
-                            <input id="window3_width" minlength="1" name="window3_width" type="number" value="" class="felder">
+                            <input id="window3_width" minlength="1" name="window3_width" step="0.1" min="0" type="number" value="{{ config['house']['window3_width'] }}" class="felder">
                             <label for="window3_height" class="felder">Fensterhöhe [m]:</label>
-                            <input id="window3_height" minlength="1" name="window3_height" type="number" value="" class="felder">
+                            <input id="window3_height" minlength="1" name="window3_height" step="0.1" min="0" type="number" value="{{ config['house']['window3_height'] }}" class="felder">
                         </td>
                         <td class="border_top">
                             <label for="wall3" class="felder">Wand:</label>
                             <select name="wall3" id="wall3" class="felder" onchange="updateWall3Dropdown()">
                                 <option value="">Wand typ wählen</option>
-                                <option value="Außenwand">Außenwand</option>
-                                <option value="Wand gegen Erdreich">Wand gegen Erdreich</option>
-                                <option value="Innenwand gegen unbeheizte Kellergeschosse">
+                                <option {% if config['house']['wall3'] == "Außenwand" %} selected="selected" {% endif %}
+                                value="Außenwand">Außenwand</option>
+                                <option {% if config['house']['wall3'] == "Wand gegen Erdreich" %} selected="selected" {% endif %}
+                                value="Wand gegen Erdreich">Wand gegen Erdreich</option>
+                                <option {% if config['house']['wall3'] == "Innenwand gegen unbeheizte Kellergeschosse" %} selected="selected" {% endif %}
+                                value="Innenwand gegen unbeheizte Kellergeschosse">
                                     Innenwand gegen unbeheizte Kellergeschosse</option>
                             </select>
                             <label for="construction_wall3" class="felder">Bauweise:</label>
-                            <select id="construction_wall3" class="felder">
+                            <select id="construction_wall3" name="construction_wall3" class="felder">
                                 <option value="">Bauweise wählen</option>
+                                {% if config['house']['wall3'] == "Außenwand" %}
+                                    <option {% if config['house']['construction_wall3'] == "Massivbauweise" %} selected="selected" {% endif %}
+                                    value="Massivbauweise">Massivbauweise</option>
+                                    <option {% if config['house']['construction_wall3'] == "Holzkonstruktion" %} selected="selected" {% endif %}
+                                    value="Holzkonstruktion">Holzkonstruktion</option>
+                                {% endif %}
                             </select>
                             <label for="wall3_width" class="felder">Wandbreite [m]:</label>
-                            <input id="wall3_width" minlength="1" name="wall3_width" type="number" value="" class="felder">
+                            <input id="wall3_width" minlength="1" name="wall3_width" step="0.1" min="0" type="number" value="{{ config['house']['wall3_width'] }}" class="felder">
                             <label for="wall3_height" class="felder">Wandhöhe [m]:</label>
-                            <input id="wall3_height" minlength="1" name="wall1_height" type="number" value="" class="felder">
+                            <input id="wall3_height" minlength="1" name="wall1_height" step="0.1" min="0" type="number" value="{{ config['house']['wall1_height'] }}" class="felder">
                         </td>
                         <td class="border_top">
                             <label for="door_wall3" class="felder">Tür:</label>
@@ -450,9 +459,9 @@
                                 <option value="False">Nein</option>
                             </select>
                             <label for="door_wall3_width" class="felder">Türbreite [m]:</label>
-                            <input id="door_wall3_width" minlength="1" name="door_wall3_width" type="number" value="" class="felder">
+                            <input id="door_wall3_width" minlength="1" name="door_wall3_width" step="0.1" min="0" type="number" value="{{ config['house']['door_wall3_width'] }}" class="felder">
                             <label for="door_wall3_height" class="felder">Türhöhe [m]:</label>
-                            <input id="door_wall3_height" minlength="1" name="door_wall3_height" type="number" value="" class="felder">
+                            <input id="door_wall3_height" minlength="1" name="door_wall3_height" step="0.1" min="0" type="number" value="{{ config['house']['door_wall3_height'] }}" class="felder">
                         </td>
                         <td></td>
                         <td></td>

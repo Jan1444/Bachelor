@@ -21,3 +21,52 @@ consumer_price = 13.35
 ip_address = "192.168.178.95"
 
 [ir_remote]
+
+[house]
+house_year = 0
+window1_frame = ""
+window1_year = 0
+window1_width = 0.0
+window1_height = 0.7
+wall1 = ""
+wall1_width = 0.0
+wall1_height = 0.0
+door_wall1 = true
+door_wall1_width = 0.0
+door_wall1_height = 0.0
+window4_frame = ""
+window4_year = 0
+window4_width = 0.0
+window4_height = 0.0
+ceiling = ""
+window2_frame = ""
+window2_year = 0
+window2_width = 0.0
+window2_height = 0.0
+wall4 = ""
+wall4_width = 0.0
+wall4_height = 0.0
+wall2 = ""
+wall2_width = 0.0
+wall2_height = 0.0
+door_wall4 = true
+door_wall4_width = 0.0
+door_wall4_height = 0.0
+floor = ""
+door_wall2 = true
+door_wall2_width = 0.0
+door_wall2_height = 0.0
+window3_frame = ""
+window3_year = 0
+window3_width = 0.0
+window3_height = 0.0
+wall3 = ""
+wall3_width = 0.0
+door_wall3 = true
+door_wall3_width = 0.0
+door_wall3_height = 0.0
+construction_wall3 = ""
+
+
+
+
