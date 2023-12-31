@@ -8,10 +8,11 @@ import numpy as np
 
 import tomli
 
-from flask import Flask, render_template, request, send_from_directory, flash, redirect, url_for
+from flask import Flask, render_template, request, send_from_directory, flash, redirect, url_for, jsonify
 from werkzeug.utils import secure_filename
 
 import classes
+import debug
 import functions as fc
 import consts
 
@@ -223,6 +224,8 @@ def safe_settings():
 
         data = request.form.to_dict()
 
+        debug.printer(data)
+
         if ((data['latitude'] != "" and data['longitude'] != "") or (data['Straße'] != "" and data['Nr'] != "" and
                                                                      data['Stadt'] != "" and data['PLZ'] != "" and
                                                                      data['Land'])):
@@ -285,6 +288,47 @@ def analyze_file():
     zipped_data = zip(ret[7], ret[8])
 
     return render_template('analyzed_data.html', data=return_data, power_time_data=zipped_data)
+
+
+@app.route('/get_window/<frame>')
+def get_window(frame):
+    door_data = {
+        'Holzrahmen': ['Einfachverglasung', 'Doppelverglasung', 'Isolierverglasung'],
+        'Kunststoffrahmen': ['Isolierverglasung'],
+        'Metallrahmen': ['Isolierverglasung']
+    }
+    return jsonify(door_data.get(frame, []))
+
+
+@app.route('/get_wall/<wall>')
+def get_wall(wall):
+    wall_data = {
+        'Außenwand': ['Massivbauweise', 'Holzkonstruktion'],
+        'Wand gegen Erdreich': ['Massivbauweise', 'Holzkonstruktion'],
+        'Innenwand gegen unbeheizte Kellergeschosse': ['Massivbauweise', 'Holzkonstruktion']
+    }
+    return jsonify(wall_data.get(wall, []))
+
+
+@app.route('/get_floor/<floor>')
+def get_floor(floor):
+    floor_data = {
+        'Außenwand': ['Massivbauweise', 'Holzkonstruktion'],
+        'Wand gegen Erdreich': ['Massivbauweise', 'Holzkonstruktion'],
+        'Innenwand gegen unbeheizte Kellergeschosse': ['Massivbauweise', 'Holzkonstruktion']
+    }
+    return jsonify(floor_data.get(floor, []))
+
+
+@app.route('/get_ceiling/<ceiling>')
+def get_ceiling(ceiling):
+    ceiling_data = {
+        'Decke gegen das Erdreich': ['Massivbauweise', 'Holzkonstruktion'],
+        'Dach zwischen beheizten und unbeheizten Dachgeschoss': ['Massivbauweise', 'Holzkonstruktion'],
+        'Decke im obersten Geschoss': ['Massiv', 'Holzbalkendecke'],
+        'Decke über Außenbereich': ['Massiv', 'Holzbalkendecke']
+    }
+    return jsonify(ceiling_data.get(ceiling, []))
 
 
 if __name__ == '__main__':
