@@ -62,11 +62,17 @@ window3_width = 0.0
 window3_height = 0.0
 wall3 = ""
 wall3_width = 0.0
-door_wall3 = true
+door_wall3 = 0
 door_wall3_width = 0.0
 door_wall3_height = 0.0
 construction_wall3 = ""
-
-
-
-
+window1_glazing = ""
+construction_wall1 = ""
+window2_glazing = ""
+construction_wall2 = ""
+window3_glazing = ""
+wall3_height = 0.0
+window4_glazing = ""
+construction_ceiling = ""
+construction_floor = ""
+construction_wall4 = ""
