@@ -305,16 +305,20 @@
                         </td>
                         <td class="border_bottom">
                             <label for="door_wall1" class="felder">Tür:</label>
-                            <select name="door_wall1" id="door_wall1" class="felder">
+                            <select name="door_wall1" id="door_wall1" class="felder"
+                                    onchange=toggleFieldset("door_wall1","fieldset_door_wall1")>
                                 <option {% if config['house']['door_wall1'] %} selected="selected" {% endif %} value="1">Ja</option>
-                                <option {% if not config['house']['door_wall1'] %} selected="selected" {% endif %} value="0">Nein</option>
+                                <option {% if not config['house']['door_wall1'] %} selected="selected" {% endif %} value="0">Keine Tür</option>
                             </select>
+                            <div id="fieldset_door_wall1" {% if config['house']['door_wall1'] %}
+                            style="display: block;" {% else %} style="display: none;" {% endif %}>
                             <label for="door_wall1_width" class="felder">Türbreite [m]:</label>
                             <input id="door_wall1_width" minlength="1" name="door_wall1_width" step="0.1" min="0"
                                    type="number" value="{{ config['house']['door_wall1_width'] }}" class="felder">
                             <label for="door_wall1_height" class="felder">Türhöhe [m]:</label>
                             <input id="door_wall1_height" minlength="1" name="door_wall1_height" step="0.1" min="0"
                                    type="number" value="{{ config['house']['door_wall1_height'] }}" class="felder">
+                            </div>
                         </td>
                         <td></td>
                         <td></td>
@@ -527,13 +531,20 @@
                     <tr>
                         <td>
                             <label for="door_wall4" class="felder">Tür:</label>
-                            <select name="door_wall4" id="door_wall4" class="felder">
+                            <select name="door_wall4" id="door_wall4" class="felder"
+                                    onchange=toggleFieldset("door_wall4","fieldset_door_wall4")>
                                 <option {% if config['house']['door_wall4'] %} selected="selected" {% endif %} value="1">Ja</option>
-                                <option {% if not config['house']['door_wall4'] %} selected="selected" {% endif %} value="0">Nein</option>
+                                <option {% if not config['house']['door_wall4'] %} selected="selected" {% endif %} value="0">Keine Tür</option>
                             </select>
+                            <div id="fieldset_door_wall4" {% if config['house']['door_wall4'] %}
+                            style="display: block;" {% else %} style="display: none;" {% endif %}>
                             <label for="door_wall4_width" class="felder">Türbreite [m]:</label>
                             <input id="door_wall4_width" minlength="1" name="door_wall4_width" step="0.1" min="0"
                                    type="number" value="{{ config['house']['door_wall4_width'] }}" class="felder">
+                            <label for="door_wall4_height" class="felder">Türhöhe [m]:</label>
+                            <input id="door_wall4_height" minlength="1" name="door_wall4_height" step="0.1" min="0"
+                                   type="number" value="{{ config['house']['door_wall4_height'] }}" class="felder">
+                            </div>
                         </td>
                         <td class="border_left"></td>
                         <td>
@@ -575,13 +586,20 @@
                         </td>
                         <td>
                             <label for="door_wall2" class="felder">Tür:</label>
-                            <select name="door_wall2" id="door_wall2" class="felder">
+                            <select name="door_wall2" id="door_wall2" class="felder"
+                                    onchange=toggleFieldset("door_wall2","fieldset_door_wall2")>
                                 <option {% if config['house']['door_wall2'] %} selected="selected" {% endif %} value="1">Ja</option>
-                                <option {% if not config['house']['door_wall2'] %} selected="selected" {% endif %} value="0">Nein</option>
+                                <option {% if not config['house']['door_wall2'] %} selected="selected" {% endif %} value="0">Keine Tür</option>
                             </select>
+                            <div id="fieldset_door_wall2" {% if config['house']['door_wall2'] %}
+                            style="display: block;" {% else %} style="display: none;" {% endif %}>
                             <label for="door_wall2_width" class="felder">Türbreite [m]:</label>
                             <input id="door_wall2_width" minlength="1" name="door_wall2_width" step="0.1" min="0"
                                    type="number" value="{{ config['house']['door_wall2_width'] }}" class="felder">
+                            <label for="door_wall2_height" class="felder">Türhöhe [m]:</label>
+                            <input id="door_wall2_height" minlength="1" name="door_wall2_height" step="0.1" min="0"
+                                   type="number" value="{{ config['house']['door_wall2_height'] }}" class="felder">
+                            </div>
                         </td>
                         <td></td>
                     </tr>
@@ -665,16 +683,20 @@
                         </td>
                         <td class="border_top">
                             <label for="door_wall3" class="felder">Tür:</label>
-                            <select name="door_wall3" id="door_wall3" class="felder">
+                            <select name="door_wall3" id="door_wall3" class="felder"
+                                    onchange=toggleFieldset("door_wall3","fieldset_door_wall3")>
                                 <option {% if config['house']['door_wall3'] %} selected="selected" {% endif %} value="1">Ja</option>
-                                <option {% if not config['house']['door_wall3'] %} selected="selected" {% endif %} value="0">Nein</option>
+                                <option {% if not config['house']['door_wall3'] %} selected="selected" {% endif %} value="0">Keine Tür</option>
                             </select>
+                            <div id="fieldset_door_wall3" {% if config['house']['door_wall3'] %}
+                            style="display: block;" {% else %} style="display: none;" {% endif %}>
                             <label for="door_wall3_width" class="felder">Türbreite [m]:</label>
                             <input id="door_wall3_width" minlength="1" name="door_wall3_width" step="0.1" min="0"
                                    type="number" value="{{ config['house']['door_wall3_width'] }}" class="felder">
                             <label for="door_wall3_height" class="felder">Türhöhe [m]:</label>
                             <input id="door_wall3_height" minlength="1" name="door_wall3_height" step="0.1" min="0"
                                    type="number" value="{{ config['house']['door_wall3_height'] }}" class="felder">
+                            </div>
                         </td>
                         <td></td>
                         <td></td>

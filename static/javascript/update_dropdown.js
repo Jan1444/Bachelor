@@ -170,3 +170,13 @@ function updateFloorDropdown() {
             });
         });
 }
+
+function toggleFieldset(selectId, FieldSetId) {
+    const selectValue = document.getElementById(selectId).value;
+    const fieldSet = document.getElementById(FieldSetId);
+    if (selectValue === "1") {
+        fieldSet.style.display = "block";
+    } else {
+        fieldSet.style.display = "none";
+    }
+}

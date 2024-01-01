@@ -734,46 +734,63 @@ def heating_power():
     room.Floor.area = house_data.get("wall1_width", 0) * house_data.get("wall2_width", 0)
     room.Floor.temp_diff = diff_temp
     room.Floor.u_wert = hp.u_value[house_data.get("floor", 0)][house_data.get("construction_floor", 0)][
-        house_data.get("house_year", 0)]
+        house_data.get("house_year" if house_data["house_year"] < 1995 else 1995, 0)]
 
     room.ceiling.area = house_data.get("wall1_width", 0) * house_data.get("wall2_width", 0)
     room.ceiling.temp_diff = diff_temp
     room.ceiling.u_wert = hp.u_value.get(house_data["ceiling"], 0).get(house_data["construction_ceiling"], 0).get(
-        house_data["house_year"], 0)
+        house_data["house_year"] if house_data["house_year"] < 1995 else 1995, 0)
 
     room.Wall1.area = house_data.get("wall1_width", 0) * house_data.get("wall1_height", 0)
     room.Wall1.temp_diff = diff_temp
     room.Wall1.u_wert = hp.u_value.get(house_data["wall1"], 0).get(house_data["construction_wall1"], 0).get(
-        house_data["house_year"], 0)
+        house_data["house_year"] if house_data["house_year"] < 1995 else 1995, 0)
     room.Wall1.Window1.area = house_data.get("window1_width", 0) * house_data.get("window1_height", 0)
     room.Wall1.Window1.u_wert = hp.u_value.get("Fenster", {}).get(house_data["window1_frame"], {}).get(
-        house_data["window1_glazing"], {}).get(house_data["window1_year"], 0)
+        house_data["window1_glazing"], {}).get(
+        house_data["window1_year"] if house_data["window1_year"] < 1995 else 1995, 0)
+    room.Wall1.Door.area = house_data.get("door_wall1_width", 0) * house_data.get("door_wall1_height", 0)
+    room.Wall1.Door.u_wert = hp.u_value.get("Türen", 0).get("alle", 0).get(
+        house_data["house_year"] if house_data["house_year"] < 1995 else 1995, 0)
 
     room.Wall2.area = house_data.get("wall2_width", 0) * house_data.get("wall1_height", 0)
     room.Wall2.temp_diff = diff_temp
     room.Wall2.u_wert = hp.u_value.get(house_data["wall2"], 0).get(house_data["construction_wall2"], 0).get(
-        house_data["house_year"], 0)
+        house_data["house_year"] if house_data["house_year"] < 1995 else 1995, 0)
     room.Wall2.Window1.area = house_data.get("window2_width", 0) * house_data.get("window2_height", 0)
     room.Wall2.Window1.u_wert = hp.u_value.get("Fenster").get(house_data["window2_frame"], {}).get(
-        house_data["window2_glazing"], {}).get(house_data["window2_year"], 0)
+        house_data["window2_glazing"], {}).get(
+        house_data["window2_year"] if house_data["window2_year"] < 1995 else 1995, 0)
+    room.Wall2.Door.area = house_data.get("door_wall2_width", 0) * house_data.get("door_wall2_height", 0)
+    room.Wall2.Door.u_wert = hp.u_value.get("Türen", 0).get("alle", 0).get(
+        house_data["house_year"] if house_data["house_year"] < 1995 else 1995, 0)
 
     room.Wall3.area = house_data.get("wall1_width", 0) * house_data.get("wall1_height", 0)
     room.Wall3.temp_diff = diff_temp
     room.Wall3.u_wert = hp.u_value.get(house_data["wall3"], 0).get(house_data["construction_wall3"], 0).get(
-        house_data["house_year"], 0)
+        house_data["house_year"] if house_data["house_year"] < 1995 else 1995, 0)
     room.Wall3.Window1.area = house_data.get("window3_width", 0) * house_data.get("window3_height", 0)
     room.Wall3.Window1.u_wert = hp.u_value.get("Fenster", {}).get(house_data["window3_frame"], {}).get(
-        house_data["window3_glazing"], {}).get(house_data["window3_year"], 0)
+        house_data["window3_glazing"], {}).get(
+        house_data["window3_year"] if house_data["window3_year"] < 1995 else 1995, 0)
+    room.Wall3.Door.area = house_data.get("door_wall3_width", 0) * house_data.get("door_wall3_height", 0)
+    room.Wall3.Door.u_wert = hp.u_value.get("Türen", 0).get("alle", 0).get(
+        house_data["house_year"] if house_data["house_year"] < 1995 else 1995, 0)
 
     room.Wall4.area = house_data.get("wall2_width", 0) * house_data.get("wall1_height", 0)
     room.Wall4.temp_diff = diff_temp
     room.Wall4.u_wert = hp.u_value.get(house_data["wall4"], 0).get(house_data["construction_wall4"]).get(
-        house_data["house_year"], 0)
+        house_data["house_year"] if house_data["house_year"] < 1995 else 1995, 0)
     room.Wall4.Window1.area = house_data["window4_width"] * house_data["window4_height"]
     room.Wall4.Window1.u_wert = hp.u_value.get("Fenster", {}).get(house_data["window4_frame"], {}).get(
-        house_data["window4_glazing"], {}).get(house_data["window4_year"], 0)
+        house_data["window4_glazing"], {}).get(
+        house_data["window4_year"] if house_data["window4_year"] < 1995 else 1995, 0)
+    room.Wall4.Door.area = house_data.get("door_wall4_width", 0) * house_data.get("door_wall4_height", 0)
+    room.Wall4.Door.u_wert = hp.u_value.get("Türen", 0).get("alle", 0).get(
+        house_data["house_year"] if house_data["house_year"] < 1995 else 1995, 0)
 
-    room.volume = house_data.get("wall1_width", 0) * house_data.get("wall1_height", 0) * house_data.get("wall4_width", 0)
+    room.volume = house_data.get("wall1_width", 0) * house_data.get("wall1_height", 0) * house_data.get("wall4_width",
+                                                                                                        0)
 
     ret_dat = hp.calc_heating_power(room)
     print(ret_dat)

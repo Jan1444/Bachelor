@@ -70,3 +70,5 @@ window4_glazing = ""
 construction_ceiling = "Massivbauweise"
 construction_floor = "Massivbauweise"
 construction_wall4 = "Massivbauweise"
+door_wall3_width = 0.0
+door_wall3_height = 0.0
