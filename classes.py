@@ -480,6 +480,8 @@ class RequiredHeatingPower:
     # https://www.bosch-homecomfort.com/de/de/wohngebaeude/wissen/heizungsratgeber/heizleistung-berechnen/
     @dataclasses.dataclass
     class Room:
+        volume: float = 0.0
+
         @dataclasses.dataclass
         class Wall1:
             u_wert: float = 0.0
@@ -921,62 +923,48 @@ class RequiredHeatingPower:
         }
 
     @staticmethod
+    @lru_cache(maxsize=None)
     def calc_heating_power(room: Room):
-        wall_1: float = (
-                (
-                        room.Wall1.area - room.Wall1.Door.area - room.Wall1.Window1.area -
-                        room.Wall1.Window2.area - room.Wall1.Window3.area - room.Wall1.Window4.area
-                ) * room.Wall1.u_wert * room.Wall1.temp_diff
-        )
+        def _calc(wall_obj: room.Wall1 | room.Wall2 | room.Wall3 | room.Wall4):
+            wall: float = (
+                    (
+                            wall_obj.area - wall_obj.Door.area - wall_obj.Window1.area -
+                            wall_obj.Window2.area - wall_obj.Window3.area - wall_obj.Window4.area
+                    ) * wall_obj.u_wert * wall_obj.temp_diff
+            )
+            window1 = 0
+            window2 = 0
+            window3 = 0
+            window4 = 0
+            door = 0
 
-        wall_1_window_1: float = room.Wall1.Window1.area * room.Wall1.Window1.u_wert * room.Wall1.temp_diff
-        wall_1_window_2: float = room.Wall1.Window2.area * room.Wall1.Window2.u_wert * room.Wall1.temp_diff
-        wall_1_window_3: float = room.Wall1.Window3.area * room.Wall1.Window3.u_wert * room.Wall1.temp_diff
-        wall_1_window_4: float = room.Wall1.Window4.area * room.Wall1.Window4.u_wert * room.Wall1.temp_diff
+            try:
+                window1: float = wall_obj.Window1.area * wall_obj.Window1.u_wert * wall_obj.temp_diff
+            except TypeError:
+                pass
+            try:
+                window2: float = wall_obj.Window2.area * wall_obj.Window2.u_wert * wall_obj.temp_diff
+            except TypeError:
+                pass
+            try:
+                window3: float = wall_obj.Window3.area * wall_obj.Window3.u_wert * wall_obj.temp_diff
+            except TypeError:
+                pass
+            try:
+                window4: float = wall_obj.Window4.area * wall_obj.Window4.u_wert * wall_obj.temp_diff
+            except TypeError:
+                pass
+            try:
+                door: float = wall_obj.Door.area * wall_obj.Door.u_wert * wall_obj.temp_diff
+            except TypeError:
+                pass
 
-        wall_1_door: float = room.Wall1.Door.area * room.Wall1.Door.u_wert * room.Wall1.temp_diff
+            return wall, window1, window2, window3, window4, door
 
-        wall_2: float = (
-                (
-                        room.Wall1.area - room.Wall1.Door.area - room.Wall1.Window1.area -
-                        room.Wall1.Window2.area - room.Wall1.Window3.area - room.Wall1.Window4.area
-                ) * room.Wall1.u_wert * room.Wall1.temp_diff
-        )
-
-        wall_2_window_1: float = room.Wall2.Window1.area * room.Wall2.Window1.u_wert * room.Wall2.temp_diff
-        wall_2_window_2: float = room.Wall2.Window2.area * room.Wall2.Window2.u_wert * room.Wall2.temp_diff
-        wall_2_window_3: float = room.Wall2.Window3.area * room.Wall2.Window3.u_wert * room.Wall2.temp_diff
-        wall_2_window_4: float = room.Wall2.Window4.area * room.Wall2.Window4.u_wert * room.Wall2.temp_diff
-
-        wall_2_door: float = room.Wall2.Door.area * room.Wall2.Door.u_wert * room.Wall2.temp_diff
-
-        wall_3: float = (
-                (
-                        room.Wall3.area - room.Wall3.Door.area - room.Wall3.Window1.area -
-                        room.Wall3.Window2.area - room.Wall3.Window3.area - room.Wall3.Window4.area
-                ) * room.Wall3.u_wert * room.Wall3.temp_diff
-        )
-
-        wall_3_window_1: float = room.Wall3.Window1.area * room.Wall3.Window1.u_wert * room.Wall3.temp_diff
-        wall_3_window_2: float = room.Wall3.Window2.area * room.Wall3.Window2.u_wert * room.Wall3.temp_diff
-        wall_3_window_3: float = room.Wall3.Window3.area * room.Wall3.Window3.u_wert * room.Wall3.temp_diff
-        wall_3_window_4: float = room.Wall3.Window4.area * room.Wall3.Window4.u_wert * room.Wall3.temp_diff
-
-        wall_3_door: float = room.Wall3.Door.area * room.Wall3.Door.u_wert * room.Wall3.temp_diff
-
-        wall_4: float = (
-                (
-                        room.Wall4.area - room.Wall4.Door.area - room.Wall4.Window1.area -
-                        room.Wall4.Window2.area - room.Wall4.Window3.area - room.Wall4.Window4.area
-                ) * room.Wall4.u_wert * room.Wall4.temp_diff
-        )
-
-        wall_4_window_1: float = room.Wall4.Window1.area * room.Wall4.Window1.u_wert * room.Wall4.temp_diff
-        wall_4_window_2: float = room.Wall4.Window2.area * room.Wall4.Window2.u_wert * room.Wall4.temp_diff
-        wall_4_window_3: float = room.Wall4.Window3.area * room.Wall4.Window3.u_wert * room.Wall4.temp_diff
-        wall_4_window_4: float = room.Wall4.Window4.area * room.Wall4.Window4.u_wert * room.Wall4.temp_diff
-
-        wall_4_door: float = room.Wall4.Door.area * room.Wall4.Door.u_wert * room.Wall4.temp_diff
+        wall_1, wall_1_window_1, wall_1_window_2, wall_1_window_3, wall_1_window_4, wall_1_door = _calc(room.Wall1)
+        wall_2, wall_2_window_1, wall_2_window_2, wall_2_window_3, wall_2_window_4, wall_2_door = _calc(room.Wall2)
+        wall_3, wall_3_window_1, wall_3_window_2, wall_3_window_3, wall_3_window_4, wall_3_door = _calc(room.Wall3)
+        wall_4, wall_4_window_1, wall_4_window_2, wall_4_window_3 ,wall_4_window_4, wall_4_door = _calc(room.Wall4)
 
         floor: float = room.Floor.area * room.Floor.u_wert * room.Floor.temp_diff
 

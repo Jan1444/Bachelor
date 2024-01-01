@@ -525,10 +525,10 @@
                                 {% endif %}
                             </select>
                             <label for="wall2_width" class="felder">Wandbreite [m]:</label>
-                            <input id="wall2_width" minlength="1" name="wall2_width"
+                            <input id="wall2_width" minlength="1" name="wall2_width" step="0.1" min="0"
                                    value="{{ config['house']['wall2_width'] }}" type="number" class="felder">
                             <label for="wall2_height" class="felder">Wandhöhe [m]:</label>
-                            <input id="wall2_height" minlength="1" name="wall2_height"
+                            <input id="wall2_height" minlength="1" name="wall2_height" step="0.1" min="0"
                                    value="{{ config['house']['wall2_height'] }}" type="number" class="felder">
                         </td>
                         <td></td>
@@ -682,7 +682,7 @@
                                    value="{{ config['house']['wall3_width'] }}" class="felder">
                             <label for="wall3_height" class="felder">Wandhöhe [m]:</label>
                             <input id="wall3_height" minlength="1" name="wall3_height" step="0.1" min="0" type="number"
-                                   value="{{ config['house']['wall1_height'] }}" class="felder">
+                                   value="{{ config['house']['wall3_height'] }}" class="felder">
                         </td>
                         <td class="border_top">
                             <label for="door_wall3" class="felder">Tür:</label>

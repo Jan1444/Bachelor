@@ -1,6 +1,7 @@
 #  -*- coding: utf-8 -*-
 
 import datetime
+import json
 import os
 from functools import lru_cache, wraps
 
@@ -11,7 +12,6 @@ import requests
 import tomli
 import tomli_w
 from frozendict import frozendict
-import json
 
 import classes
 import consts
@@ -19,10 +19,14 @@ import debug
 
 
 def init_classes(latitude: float, longitude: float, module_efficiency: float, module_area: int, tilt_angle: float,
-                 exposure_angle: float, mounting_type: int, costs: float) -> (
-        classes.Weather, classes.MarketData, classes.CalcSunPos, classes.PVProfit):
+                 exposure_angle: float, mounting_type: int, costs: float, ip_address: str) -> (classes.Weather,
+                                                                                               classes.MarketData,
+                                                                                               classes.CalcSunPos,
+                                                                                               classes.PVProfit,
+                                                                                               classes.RequiredHeatingPower):
     """
 
+    :param ip_address:
     :rtype: classes.Weather, classes.MarketData, classes.CalcSunPos, classes.PVProfit
     :param mounting_type:
     :param costs:
@@ -39,7 +43,9 @@ def init_classes(latitude: float, longitude: float, module_efficiency: float, mo
     sun: classes.CalcSunPos = classes.CalcSunPos(latitude, longitude)
     pv: classes.PVProfit = classes.PVProfit(module_efficiency, module_area, tilt_angle, exposure_angle, -0.35, 25,
                                             mounting_type)
-    return weather, market, sun, pv
+    hp: classes.RequiredHeatingPower = classes.RequiredHeatingPower()
+    s_trv: classe.ShellyTRVControl = classe.ShellyTRVControl(ip_address)
+    return weather, market, sun, pv, hp, s_trv
 
 
 def freeze_all(func):
@@ -119,7 +125,7 @@ def write_data_to_config(data: dict, path: str = None) -> int:
         house['wall1_height'] = float(data['wall1_height'])
         house['construction_wall1'] = str(data['construction_wall1'])
 
-        house['door_wall1'] = bool(data['door_wall1'])
+        house['door_wall1'] = int(data['door_wall1'])
         house['door_wall1_width'] = float(data['door_wall1_width'])
         house['door_wall1_height'] = float(data['door_wall1_height'])
 
@@ -134,7 +140,7 @@ def write_data_to_config(data: dict, path: str = None) -> int:
         house['wall2_height'] = float(data['wall2_height'])
         house['construction_wall2'] = str(data['construction_wall2'])
 
-        house['door_wall2'] = bool(data['door_wall2'])
+        house['door_wall2'] = int(data['door_wall2'])
         house['door_wall2_width'] = float(data['door_wall2_width'])
         house['door_wall2_height'] = float(data['door_wall2_height'])
 
@@ -170,7 +176,7 @@ def write_data_to_config(data: dict, path: str = None) -> int:
         house['wall4_height'] = float(data['wall4_height'])
         house['construction_wall4'] = str(data['construction_wall4'])
 
-        house['door_wall4'] = bool(data['door_wall4'])
+        house['door_wall4'] = int(data['door_wall4'])
         house['door_wall4_width'] = float(data['door_wall4_width'])
         house['door_wall4_height'] = float(data['door_wall4_height'])
 
@@ -455,7 +461,7 @@ def generate_weather_data(data: dict, config_data: dict) -> list[str]:
 
     if "plot_png_weather" in data.keys():
         if data["plot_png_weather"] == "on":
-            if os.path.exists(rf"{consts.downloads_file_Path}weahter_plot.png"):
+            if os.path.exists(rf"{consts.downloads_file_Path}weather_plot.png"):
                 os.remove(rf"{consts.downloads_file_Path}weather_plot.png")
             if len(energy_data.keys()) > 50:
                 x = len(energy_data.keys()) * 0.25
@@ -711,6 +717,66 @@ def data_analyzer(path: None | str = None) -> int:
 
     return (lat, lon, ele, rad_database, meteo_database, year_min, year_max, power_data, date_time_data,
             max_energy, time_max_energy, average_energy)
+
+
+def heating_power():
+    data = read_data_from_file(consts.config_file_Path)
+
+    house_data: dict = data["house"]
+    weather_data = data["coordinates"]
+
+    hp: classes.RequiredHeatingPower = classes.RequiredHeatingPower()
+    weather: classes.Weather = classes.Weather(weather_data["latitude"], weather_data["longitude"])
+
+    outdoor_temperature: float = 20  # weather.data["time"]["temp"]
+    diff_temp = outdoor_temperature
+
+    room = hp.Room
+
+    room.Floor.area = house_data.get("wall1_width", 0) * house_data.get("wall2_width", 0)
+    room.Floor.temp_diff = diff_temp
+    room.Floor.u_wert = hp.u_value[house_data.get("floor", 0)][house_data.get("construction_floor", 0)][
+        house_data.get("house_year", 0)]
+
+    room.ceiling.area = house_data.get("wall1_width", 0) * house_data.get("wall2_width", 0)
+    room.ceiling.temp_diff = diff_temp
+    room.ceiling.u_wert = hp.u_value.get(house_data["ceiling"], 0).get(house_data["construction_ceiling"], 0).get(
+        house_data["house_year"], 0)
+
+    room.Wall1.area = house_data.get("wall1_width", 0) * house_data.get("wall1_height", 0)
+    room.Wall1.temp_diff = diff_temp
+    room.Wall1.u_wert = hp.u_value.get(house_data["wall1"], 0).get(house_data["construction_wall1"], 0).get(
+        house_data["house_year"], 0)
+    room.Wall1.Window1.area = house_data.get("window1_width", 0) * house_data.get("window1_height", 0)
+    room.Wall1.Window1.u_wert = hp.u_value.get("Fenster", {}).get(house_data["window1_frame"], {}).get(
+        house_data["window1_glazing"], {}).get(house_data["window1_year"], 0)
+
+    room.Wall2.area = house_data.get("wall2_width", 0) * house_data.get("wall2_height", 0)
+    room.Wall2.temp_diff = diff_temp
+    room.Wall2.u_wert = hp.u_value.get(house_data["wall2"], 0).get(house_data["construction_wall2"], 0).get(
+        house_data["house_year"], 0)
+    room.Wall2.Window1.area = house_data.get("window2_width", 0) * house_data.get("window2_height", 0)
+    room.Wall2.Window1.u_wert = hp.u_value.get("Fenster").get(house_data["window2_frame"], {}).get(
+        house_data["window2_glazing"], {}).get(house_data["window2_year"], 0)
+
+    room.Wall3.area = house_data.get("wall3_width", 0) * house_data.get("wall3_height", 0)
+    room.Wall3.temp_diff = diff_temp
+    room.Wall3.u_wert = hp.u_value.get(house_data["wall3"], 0).get(house_data["construction_wall3"], 0).get(
+        house_data["house_year"], 0)
+    room.Wall3.Window1.area = house_data.get("window3_width", 0) * house_data.get("window3_height", 0)
+    room.Wall3.Window1.u_wert = hp.u_value.get("Fenster", {}).get(house_data["window3_frame"], {}).get(
+        house_data["window3_glazing"], {}).get(house_data["window3_year"], 0)
+
+    room.Wall4.area = house_data.get("wall4_width", 0) * house_data.get("wall4_height", 0)
+    room.Wall4.temp_diff = diff_temp
+    room.Wall4.u_wert = hp.u_value.get(house_data["wall4"], 0).get(house_data["construction_wall4"]).get(
+        house_data["house_year"], 0)
+    room.Wall4.Window1.area = house_data["window4_width"] * house_data["window4_height"]
+    room.Wall4.Window1.u_wert = hp.u_value.get("Fenster", {}).get(house_data["window4_frame"], {}).get(
+        house_data["window4_glazing"], {}).get(house_data["window4_year"], 0)
+
+    ret_dat = hp.calc_heating_power(room)
+    print(ret_dat)
 
 
 if __name__ == "__main__":
