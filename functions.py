@@ -137,7 +137,6 @@ def write_data_to_config(data: dict, path: str = None) -> int:
 
         house['wall2'] = str(data['wall2'])
         house['wall2_width'] = float(data['wall2_width'])
-        house['wall2_height'] = float(data['wall2_height'])
         house['construction_wall2'] = str(data['construction_wall2'])
 
         house['door_wall2'] = int(data['door_wall2'])
@@ -151,8 +150,6 @@ def write_data_to_config(data: dict, path: str = None) -> int:
         house['window3_height'] = float(data['window3_height'])
 
         house['wall3'] = str(data['wall3'])
-        house['wall3_width'] = float(data['wall3_width'])
-        house['wall3_height'] = float(data['wall3_height'])
         house['construction_wall3'] = str(data['construction_wall3'])
 
         house['door_wall3'] = int(data['door_wall3'])
@@ -172,8 +169,6 @@ def write_data_to_config(data: dict, path: str = None) -> int:
         house['construction_floor'] = str(data['construction_floor'])
 
         house['wall4'] = str(data['wall4'])
-        house['wall4_width'] = float(data['wall4_width'])
-        house['wall4_height'] = float(data['wall4_height'])
         house['construction_wall4'] = str(data['construction_wall4'])
 
         house['door_wall4'] = int(data['door_wall4'])
@@ -728,8 +723,11 @@ def heating_power():
     hp: classes.RequiredHeatingPower = classes.RequiredHeatingPower()
     weather: classes.Weather = classes.Weather(weather_data["latitude"], weather_data["longitude"])
 
-    outdoor_temperature: float = 20  # weather.data["time"]["temp"]
-    diff_temp = outdoor_temperature
+    print(weather.data[list(weather.data.keys())[0]]["06:00"]["temp"])
+
+    outdoor_temp: float = weather.data[list(weather.data.keys())[0]]["06:00"]["temp"]
+    indoor_temp: float = 20.0
+    diff_temp = indoor_temp - outdoor_temp
 
     room = hp.Room
 
@@ -751,7 +749,7 @@ def heating_power():
     room.Wall1.Window1.u_wert = hp.u_value.get("Fenster", {}).get(house_data["window1_frame"], {}).get(
         house_data["window1_glazing"], {}).get(house_data["window1_year"], 0)
 
-    room.Wall2.area = house_data.get("wall2_width", 0) * house_data.get("wall2_height", 0)
+    room.Wall2.area = house_data.get("wall2_width", 0) * house_data.get("wall1_height", 0)
     room.Wall2.temp_diff = diff_temp
     room.Wall2.u_wert = hp.u_value.get(house_data["wall2"], 0).get(house_data["construction_wall2"], 0).get(
         house_data["house_year"], 0)
@@ -759,7 +757,7 @@ def heating_power():
     room.Wall2.Window1.u_wert = hp.u_value.get("Fenster").get(house_data["window2_frame"], {}).get(
         house_data["window2_glazing"], {}).get(house_data["window2_year"], 0)
 
-    room.Wall3.area = house_data.get("wall3_width", 0) * house_data.get("wall3_height", 0)
+    room.Wall3.area = house_data.get("wall1_width", 0) * house_data.get("wall1_height", 0)
     room.Wall3.temp_diff = diff_temp
     room.Wall3.u_wert = hp.u_value.get(house_data["wall3"], 0).get(house_data["construction_wall3"], 0).get(
         house_data["house_year"], 0)
@@ -767,7 +765,7 @@ def heating_power():
     room.Wall3.Window1.u_wert = hp.u_value.get("Fenster", {}).get(house_data["window3_frame"], {}).get(
         house_data["window3_glazing"], {}).get(house_data["window3_year"], 0)
 
-    room.Wall4.area = house_data.get("wall4_width", 0) * house_data.get("wall4_height", 0)
+    room.Wall4.area = house_data.get("wall2_width", 0) * house_data.get("wall1_height", 0)
     room.Wall4.temp_diff = diff_temp
     room.Wall4.u_wert = hp.u_value.get(house_data["wall4"], 0).get(house_data["construction_wall4"]).get(
         house_data["house_year"], 0)
@@ -775,8 +773,11 @@ def heating_power():
     room.Wall4.Window1.u_wert = hp.u_value.get("Fenster", {}).get(house_data["window4_frame"], {}).get(
         house_data["window4_glazing"], {}).get(house_data["window4_year"], 0)
 
+    room.volume = house_data.get("wall1_width", 0) * house_data.get("wall1_height", 0) * house_data.get("wall4_width", 0)
+
     ret_dat = hp.calc_heating_power(room)
     print(ret_dat)
+    print(room.volume)
 
 
 if __name__ == "__main__":
