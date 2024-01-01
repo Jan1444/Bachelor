@@ -618,7 +618,7 @@ class RequiredHeatingPower:
             area: float = 0.0
             temp_diff: float = 0.0
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.u_value: dict = {
             "Fenster": {
                 "Holzrahmen": {
@@ -924,7 +924,7 @@ class RequiredHeatingPower:
 
     @staticmethod
     @lru_cache(maxsize=None)
-    def calc_heating_power(room: Room):
+    def calc_heating_power(room: Room) -> float:
         def _calc(wall_obj: room.Wall1 | room.Wall2 | room.Wall3 | room.Wall4):
             wall: float = (
                     (
@@ -984,10 +984,10 @@ class RequiredHeatingPower:
 
 
 class ShellyTRVControl:
-    def __init__(self, ip_address: str):
+    def __init__(self, ip_address: str) -> None:
         self.ip_address: str = ip_address
 
-    def get_status(self):
+    def get_status(self) -> dict | None:
         url = f"http://{self.ip_address}/status"
         try:
             response = requests.get(url, timeout=5)
@@ -1000,7 +1000,7 @@ class ShellyTRVControl:
             debug.printer(exceptions)
             return None
 
-    def get_settings(self):
+    def get_settings(self) -> dict | None:
         url = f"http://{self.ip_address}/settings"
         try:
             response = requests.get(url, timeout=8)
@@ -1013,7 +1013,7 @@ class ShellyTRVControl:
             debug.printer(exceptions)
             return None
 
-    def get_thermostat(self):
+    def get_thermostat(self) -> dict | None:
         url = f"http://{self.ip_address}/thermostats/0"
         try:
             response = requests.get(url, timeout=5)
@@ -1026,7 +1026,7 @@ class ShellyTRVControl:
             debug.printer(exceptions)
             return None
 
-    def set_valve_pos(self, position):
+    def set_valve_pos(self, position) -> bool:
         url = f"http://{self.ip_address}/thermostat/0?pos={position}"
         try:
             response = requests.get(url, timeout=5)
@@ -1040,7 +1040,7 @@ class ShellyTRVControl:
             debug.printer(exceptions)
             return False
 
-    def set_temperature(self, temperature):
+    def set_temperature(self, temperature) -> bool:
         url = f"http://{self.ip_address}/thermostat/0?target_t_enabled=1&target_t={temperature}"
         try:
             response = requests.get(url, timeout=5)

@@ -719,14 +719,18 @@ def heating_power():
 
     house_data: dict = data["house"]
     weather_data = data["coordinates"]
+    shelly_data = data["shelly"]
 
     hp: classes.RequiredHeatingPower = classes.RequiredHeatingPower()
     weather: classes.Weather = classes.Weather(weather_data["latitude"], weather_data["longitude"])
+    trv: classes.ShellyTRVControl = classes.ShellyTRVControl(shelly_data["ip_address"])
 
-    print(weather.data[list(weather.data.keys())[0]]["06:00"]["temp"])
+    trv_data: dict = trv.get_thermostat()
+    if trv_data is None:
+        trv_data: dict = trv.get_thermostat()
 
-    outdoor_temp: float = weather.data[list(weather.data.keys())[0]]["06:00"]["temp"]
-    indoor_temp: float = 20.0
+    outdoor_temp: float = weather.data[list(weather.data.keys())[0]]["23:45"]["temp"]
+    indoor_temp: float = trv_data.get("tmp").get("value")
     diff_temp = indoor_temp - outdoor_temp
 
     room = hp.Room
@@ -789,7 +793,7 @@ def heating_power():
     room.Wall4.Door.u_wert = hp.u_value.get("Türen", 0).get("alle", 0).get(
         house_data["house_year"] if house_data["house_year"] < 1995 else 1995, 0)
 
-    room.volume = house_data.get("wall1_width", 0) * house_data.get("wall1_height", 0) * house_data.get("wall4_width",
+    room.volume = house_data.get("wall1_width", 0) * house_data.get("wall1_height", 0) * house_data.get("wall2_width",
                                                                                                         0)
 
     ret_dat = hp.calc_heating_power(room)
