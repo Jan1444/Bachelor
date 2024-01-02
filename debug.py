@@ -6,7 +6,7 @@ import inspect
 debug_on: bool = True
 
 
-def printer(text: str) -> None:
+def printer(*text: object) -> None:
     if debug_on:
         frame = inspect.currentframe()
         caller = frame.f_back

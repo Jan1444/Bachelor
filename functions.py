@@ -725,28 +725,20 @@ def heating_power():
     weather: classes.Weather = classes.Weather(weather_data["latitude"], weather_data["longitude"])
     trv: classes.ShellyTRVControl = classes.ShellyTRVControl(shelly_data["ip_address"])
 
-    trv_data: dict = trv.get_thermostat()
-    if trv_data is None:
-        trv_data: dict = trv.get_thermostat()
-
-    outdoor_temp: float = weather.data[list(weather.data.keys())[0]]["23:45"]["temp"]
-    indoor_temp: float = trv_data.get("tmp").get("value")
-    diff_temp = indoor_temp - outdoor_temp
-
     room = hp.Room
 
     room.Floor.area = house_data.get("wall1_width", 0) * house_data.get("wall2_width", 0)
-    room.Floor.temp_diff = diff_temp
+
     room.Floor.u_wert = hp.u_value[house_data.get("floor", 0)][house_data.get("construction_floor", 0)][
         house_data.get("house_year" if house_data["house_year"] < 1995 else 1995, 0)]
 
     room.ceiling.area = house_data.get("wall1_width", 0) * house_data.get("wall2_width", 0)
-    room.ceiling.temp_diff = diff_temp
+
     room.ceiling.u_wert = hp.u_value.get(house_data["ceiling"], 0).get(house_data["construction_ceiling"], 0).get(
         house_data["house_year"] if house_data["house_year"] < 1995 else 1995, 0)
 
     room.Wall1.area = house_data.get("wall1_width", 0) * house_data.get("wall1_height", 0)
-    room.Wall1.temp_diff = diff_temp
+
     room.Wall1.u_wert = hp.u_value.get(house_data["wall1"], 0).get(house_data["construction_wall1"], 0).get(
         house_data["house_year"] if house_data["house_year"] < 1995 else 1995, 0)
     room.Wall1.Window1.area = house_data.get("window1_width", 0) * house_data.get("window1_height", 0)
@@ -758,7 +750,7 @@ def heating_power():
         house_data["house_year"] if house_data["house_year"] < 1995 else 1995, 0)
 
     room.Wall2.area = house_data.get("wall2_width", 0) * house_data.get("wall1_height", 0)
-    room.Wall2.temp_diff = diff_temp
+
     room.Wall2.u_wert = hp.u_value.get(house_data["wall2"], 0).get(house_data["construction_wall2"], 0).get(
         house_data["house_year"] if house_data["house_year"] < 1995 else 1995, 0)
     room.Wall2.Window1.area = house_data.get("window2_width", 0) * house_data.get("window2_height", 0)
@@ -770,7 +762,7 @@ def heating_power():
         house_data["house_year"] if house_data["house_year"] < 1995 else 1995, 0)
 
     room.Wall3.area = house_data.get("wall1_width", 0) * house_data.get("wall1_height", 0)
-    room.Wall3.temp_diff = diff_temp
+
     room.Wall3.u_wert = hp.u_value.get(house_data["wall3"], 0).get(house_data["construction_wall3"], 0).get(
         house_data["house_year"] if house_data["house_year"] < 1995 else 1995, 0)
     room.Wall3.Window1.area = house_data.get("window3_width", 0) * house_data.get("window3_height", 0)
@@ -782,7 +774,7 @@ def heating_power():
         house_data["house_year"] if house_data["house_year"] < 1995 else 1995, 0)
 
     room.Wall4.area = house_data.get("wall2_width", 0) * house_data.get("wall1_height", 0)
-    room.Wall4.temp_diff = diff_temp
+
     room.Wall4.u_wert = hp.u_value.get(house_data["wall4"], 0).get(house_data["construction_wall4"]).get(
         house_data["house_year"] if house_data["house_year"] < 1995 else 1995, 0)
     room.Wall4.Window1.area = house_data["window4_width"] * house_data["window4_height"]
@@ -796,9 +788,40 @@ def heating_power():
     room.volume = house_data.get("wall1_width", 0) * house_data.get("wall1_height", 0) * house_data.get("wall2_width",
                                                                                                         0)
 
-    ret_dat = hp.calc_heating_power(room)
-    print(ret_dat)
-    print(room.volume)
+    trv_data: dict = trv.get_thermostat()
+    if trv_data is None:
+        trv_data: dict = trv.get_thermostat(timeout=10)
+
+    indoor_temp: float = (trv_data.get("tmp").get("value")) if trv_data is not None else 18
+
+    ret_dat: list = []
+    diff_data: list = []
+
+    today = weather.data[list(weather.data.keys())[0]]
+    i = 0
+
+    for t in today.keys():
+        print(t)
+        if t != "daily":
+            print(today[t])
+            outdoor_temp: float = today[t]["temp"]
+            diff_temp: float = (indoor_temp + i) - outdoor_temp
+
+            i += 1
+
+            room.Floor.temp_diff = diff_temp
+            room.ceiling.temp_diff = diff_temp
+            room.Wall1.temp_diff = diff_temp
+            room.Wall2.temp_diff = diff_temp
+            room.Wall3.temp_diff = diff_temp
+            room.Wall4.temp_diff = diff_temp
+            d = hp.calc_heating_power(room)
+
+            diff_data.append(diff_temp)
+            ret_dat.append(d)
+
+    debug.printer(diff_data, ret_dat)
+    # print((room.volume * 1.225 * 1000 * diff_temp) / (3000 - ret_dat))
 
 
 if __name__ == "__main__":

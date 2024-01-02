@@ -364,15 +364,34 @@ class PVProfit:
         self.exposure_angle: float = exposure_angle
         self.temperature_coefficient: float = temperature_coefficient / 100
         self.nominal_temperature: float = nominal_temperature
-        self.mounting_type_dict: dict = {0: 22,  # Völlig freie Aufständerung
-                                         1: 28,  # Auf dem Dach, großer Abstand
-                                         2: 29,  # Auf dem Dach bzw. dach integriert, gute Hinterlüftung
-                                         3: 32,  # Auf dem Dach bzw. dach integriert, schlechte Hinterlüftung
-                                         4: 35,  # An der Fassade bzw. fassaden integriert, gute Hinterlüftung
-                                         5: 39,  # An der Fassade bzw. fassaden integriert, schlechte Hinterlüftung
-                                         6: 43,  # Dachintegration, ohne Hinterlüftung
-                                         7: 55  # Fassaden integriert, ohne Hinterlüftung
-                                         }
+        self.mounting_type_dict: dict = {
+            0: 22,  # Völlig freie Aufständerung
+            1: 28,  # Auf dem Dach, großer Abstand
+            2: 29,  # Auf dem Dach bzw. dach integriert, gute Hinterlüftung
+            3: 32,  # Auf dem Dach bzw. dach integriert, schlechte Hinterlüftung
+            4: 35,  # An der Fassade bzw. fassaden integriert, gute Hinterlüftung
+            5: 39,  # An der Fassade bzw. fassaden integriert, schlechte Hinterlüftung
+            6: 43,  # Dachintegration, ohne Hinterlüftung
+            7: 55  # Fassaden integriert, ohne Hinterlüftung
+        }
+        self.diffuse_index_F11: dict = {
+            1: -0.008, 2: 0.13, 3: 0.33, 4: 0.568, 5: 0.873, 6: 1.132, 7: 1.06, 8: 0.678
+        }
+        self.diffuse_index_F12: dict = {
+            1: 0.588, 2: 0.683, 3: 0.487, 4: 0.187, 5: -0.392, 6: -1.237, 7: -1.6, 8: -0.327
+        }
+        self.diffuse_index_F13: dict = {
+            1: -0.062, 2: -0.151, 3: -0.221, 4: -0.295, 5: -0.362, 6: -0.412, 7: -0.359, 8: -0.25
+        }
+        self.diffuse_index_F21: dict = {
+            1: -0.06, 2: -0.019, 3: 0.055, 4: 0.109, 5: 0.226, 6: 0.288, 7: 0.264, 8: 0.156
+        }
+        self.diffuse_index_F22: dict = {
+            1: 0.072, 2: 0.066, 3: -0.064, 4: -0.152, 5: -0.462, 6: -0.823, 7: -1.127, 8: -1.377
+        }
+        self.diffuse_index_F23: dict = {
+            1: -0.022, 2: -0.029, 3: -0.026, 4: -0.014, 5: 0.001, 6: 0.056, 7: 0.131, 8: 0.251
+        }
         self.mounting_type: int = self.mounting_type_dict[mounting_type_index]
 
     def __str__(self) -> str:
@@ -450,6 +469,56 @@ class PVProfit:
             if power_direct_horizontal is None:
                 print("No radiation")
             return 0
+
+    def calc_diffuse_radiation(self, sun_height: float, diffuse_radiation, direct_radiation, incidence_angle: float):
+        """
+        Perez-Modell
+        :return:
+        """
+        kappa: float = 1.041
+        air_mass: float = 1 / np.sin(np.deg2rad(sun_height))
+        clarity_index: float = ((((diffuse_radiation + direct_radiation * np.arcsin(sun_height)) /
+                                  diffuse_radiation) + kappa * np.power(incidence_angle, 3)) /
+                                (1 + kappa * np.power(incidence_angle, 3)))  # Epsilon
+        brightness_index: float = air_mass * direct_radiation / 1361  # Delta
+
+        index: int = 0
+
+        if 1 <= clarity_index <= 1.065:
+            index = 1
+        elif 1.065 < clarity_index <= 1.230:
+            index = 2
+        elif 1.230 < clarity_index <= 1.5:
+            index = 3
+        elif 1.5 < clarity_index <= 1.95:
+            index = 4
+        elif 1.95 < clarity_index <= 2.8:
+            index = 5
+        elif 2.8 < clarity_index <= 4.5:
+            index = 6
+        elif 4.5 < clarity_index <= 6.2:
+            index = 7
+        elif clarity_index > 6.2:
+            index = 8
+
+        f_1: float = (self.diffuse_index_F11[index] +
+                      self.diffuse_index_F12[index] * brightness_index +
+                      self.diffuse_index_F13[index] * incidence_angle)
+
+        f_2: float = (self.diffuse_index_F21[index] +
+                      self.diffuse_index_F22[index] * brightness_index +
+                      self.diffuse_index_F23[index] * incidence_angle)
+
+        a: float = max(0, np.cos(np.deg2rad(incidence_angle)))
+        b: float = max(0.087, np.sin(np.deg2rad(sun_height)))
+
+        diffuse_energy: float = diffuse_radiation * (
+                0.5 * (
+                1 + np.cos(np.deg2rad(self.tilt_angle))) * (1 - f_1) + a / b * f_1 + f_2 * np.sin(
+            np.deg2rad(self.tilt_angle))
+        )
+
+        return diffuse_energy
 
     @lru_cache(maxsize=None)
     def calc_power_with_dni(self, dni: float, incidence_angle: float, temperature: float) -> float:
@@ -923,8 +992,8 @@ class RequiredHeatingPower:
         }
 
     @staticmethod
-    @lru_cache(maxsize=None)
     def calc_heating_power(room: Room) -> float:
+        @lru_cache(maxsize=None)
         def _calc(wall_obj: room.Wall1 | room.Wall2 | room.Wall3 | room.Wall4):
             wall: float = (
                     (
@@ -964,7 +1033,7 @@ class RequiredHeatingPower:
         wall_1, wall_1_window_1, wall_1_window_2, wall_1_window_3, wall_1_window_4, wall_1_door = _calc(room.Wall1)
         wall_2, wall_2_window_1, wall_2_window_2, wall_2_window_3, wall_2_window_4, wall_2_door = _calc(room.Wall2)
         wall_3, wall_3_window_1, wall_3_window_2, wall_3_window_3, wall_3_window_4, wall_3_door = _calc(room.Wall3)
-        wall_4, wall_4_window_1, wall_4_window_2, wall_4_window_3 ,wall_4_window_4, wall_4_door = _calc(room.Wall4)
+        wall_4, wall_4_window_1, wall_4_window_2, wall_4_window_3, wall_4_window_4, wall_4_door = _calc(room.Wall4)
 
         floor: float = room.Floor.area * room.Floor.u_wert * room.Floor.temp_diff
 
@@ -987,12 +1056,12 @@ class ShellyTRVControl:
     def __init__(self, ip_address: str) -> None:
         self.ip_address: str = ip_address
 
-    def get_status(self) -> dict | None:
-        url = f"http://{self.ip_address}/status"
+    def get_status(self, timeout: int = 5) -> dict | None:
+        url: str = f"http://{self.ip_address}/status"
         try:
-            response = requests.get(url, timeout=5)
+            response: requests.models.Response = requests.get(url, timeout=timeout)
             if response.status_code == 200:
-                data = response.json()
+                data: dict = response.json()
                 return data
             return None
         except (requests.exceptions.ConnectTimeout, OSError) as exceptions:
@@ -1000,12 +1069,12 @@ class ShellyTRVControl:
             debug.printer(exceptions)
             return None
 
-    def get_settings(self) -> dict | None:
-        url = f"http://{self.ip_address}/settings"
+    def get_settings(self, timeout: int = 8) -> dict | None:
+        url: str = f"http://{self.ip_address}/settings"
         try:
-            response = requests.get(url, timeout=8)
+            response: requests.models.Response = requests.get(url, timeout=timeout)
             if response.status_code == 200:
-                data = response.json()
+                data: dict = response.json()
                 return data
             return None
         except (requests.exceptions.ConnectTimeout, OSError) as exceptions:
@@ -1013,12 +1082,12 @@ class ShellyTRVControl:
             debug.printer(exceptions)
             return None
 
-    def get_thermostat(self) -> dict | None:
-        url = f"http://{self.ip_address}/thermostats/0"
+    def get_thermostat(self, timeout: int = 5) -> dict | None:
+        url: str = f"http://{self.ip_address}/thermostats/0"
         try:
-            response = requests.get(url, timeout=5)
+            response: requests.models.Response = requests.get(url, timeout=timeout)
             if response.status_code == 200:
-                data = response.json()
+                data: dict = response.json()
                 return data
             return None
         except (requests.exceptions.ConnectTimeout, OSError) as exceptions:
@@ -1026,12 +1095,12 @@ class ShellyTRVControl:
             debug.printer(exceptions)
             return None
 
-    def set_valve_pos(self, position) -> bool:
-        url = f"http://{self.ip_address}/thermostat/0?pos={position}"
+    def set_valve_pos(self, position: int, timeout: int = 5) -> bool:
+        url: str = f"http://{self.ip_address}/thermostat/0?pos={position}"
         try:
-            response = requests.get(url, timeout=5)
+            response: requests.models.Response = requests.get(url, timeout=timeout)
             if response.status_code == 200:
-                data = response.json()
+                data: dict = response.json()
                 if data["pos"] == position:
                     return True
             return False
@@ -1040,12 +1109,12 @@ class ShellyTRVControl:
             debug.printer(exceptions)
             return False
 
-    def set_temperature(self, temperature) -> bool:
-        url = f"http://{self.ip_address}/thermostat/0?target_t_enabled=1&target_t={temperature}"
+    def set_temperature(self, temperature: float, timeout: int = 5) -> bool:
+        url: str = f"http://{self.ip_address}/thermostat/0?target_t_enabled=1&target_t={temperature}"
         try:
-            response = requests.get(url, timeout=5)
+            response: requests.models.Response = requests.get(url, timeout=timeout)
             if response.status_code == 200:
-                data = response.json()
+                data: dict = response.json()
                 if data["target_t"]["value"] == temperature:
                     return True
             return False
