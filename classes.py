@@ -17,9 +17,10 @@ class MarketData:
 
     def __init__(self, consumer_costs, start_time: None | str = None, end_time: None | str = None) -> None:
         """
-        Initialize the market data class
-        :param consumer_costs: The cost of the grid
-        :return: None.
+        Initialise the class object.
+        :param consumer_costs: The cost of the network.
+        :param start_time: Start time, if only return data is given, the time is 24 hours.
+        :param end_time: End time, start time must be given.
         """
         time_start: str = "00:00:00,00"
         self.session = requests_cache.CachedSession(r'cache/marketdata.cache', expire_after=datetime.timedelta(hours=1))
@@ -47,17 +48,17 @@ class MarketData:
 
     def __str__(self) -> str:
         """
-        Can be used to print the data
-        :return: The market as string.
+        The function can be used to print the market data.
+        :return: It returns the market as a string.
         """
         return str(self.data)
 
     @staticmethod
     def convert_ms_to_time(ms: int) -> str:
         """
-        Convert the given ms to a time string (hour and minutes)
-        :param ms: The ms to convert
-        :return: the time in hour and minutes.
+        Convert the given milliseconds to a time string representing hours and minutes.
+        :param ms: The ms to convert.
+        :return: The time in hours and minutes.
         """
         time = datetime.datetime.fromtimestamp(ms / 1000).time()
         date = datetime.datetime.fromtimestamp(ms / 1000).date()
@@ -68,9 +69,9 @@ class MarketData:
     @staticmethod
     def convert_time_to_ms(date: str, t: str) -> int:
         """
-        Convert the given date and time to milliseconds
+        Convert the given date and time into milliseconds.
         :param date: As str
-        :param t: time as string in a format %H:%M:%S,%f
+        :param t: time as string in the format %H:%M:%S,%f
         :return: milliseconds.
         """
         dt_obj = int(datetime.datetime.strptime(f"{date} {t}", '%Y-%m-%d %H:%M:%S,%f').timestamp() * 1000)
@@ -78,10 +79,10 @@ class MarketData:
 
     def get_data(self, start: int | None = None, end: int | None = None) -> dict:
         """
-        Gets the data from the awattar api for 24 hours, or the given start and end time
+        Retrieves data from the AWATTAR API for 24 hours, or the specified start and end time.
         https://www.awattar.de/services/api
-        :param start: start time in millisecond
-        :param end: end time in milliseconds
+        :param start: start time in millisecond.
+        :param end: end time in milliseconds.
         :return: json string of the data as dict.
         """
         if start and not end:
@@ -134,8 +135,8 @@ class Weather:
         weather_data: dict = self.get_weather(start_date, end_date)
         self.data: dict = {}
         try:
-            self.create_dict(weather_data, start_date, end_date)
-            self.sort_weather(weather_data)
+            self._create_dict(weather_data, start_date, end_date)
+            self._sort_weather(weather_data)
         except LookupError as e:
             if "reason" in weather_data.keys():
                 print(weather_data["reason"])
@@ -151,7 +152,14 @@ class Weather:
         """
         return str(self.data)
 
-    def create_dict(self, weather_data: dict, start_date: str | None, end_date: str | None) -> None:
+    def _create_dict(self, weather_data: dict, start_date: str | None, end_date: str | None) -> None:
+        """
+        Creates the dictionary for the weather data
+        :param weather_data: received weather data from the api.
+        :param start_date: start date of the weather data.
+        :param end_date: end date of the weather data.
+        :return:
+        """
         days: list = []
         if start_date is not None and end_date is not None:
             for date in weather_data["hourly"]["time"]:
@@ -180,32 +188,9 @@ class Weather:
                     "dni_radiation": ""
                 }
 
-    def get_weather(self, start_date: str | None, end_date: str | None) -> dict:
+    def _sort_weather(self, unsorted_data: dict) -> None:
         """
-        Gets the weather for the given latitude and longitude
-        :return: A dict with the following variables: direct radiation, temperatur, cloudcover, temperature max,
-                 temperatur min, sunrise, sunset.
-        """
-        if start_date is None or end_date is None:
-            url: str = (f"https://api.open-meteo.com/v1/forecast?latitude={self.latitude}&longitude={self.longitude}&"
-                        "minutely_15=direct_normal_irradiance,direct_radiation&hourly=temperature_2m,cloudcover&"
-                        "models=best_match&daily=temperature_2m_max,temperature_2m_min,sunrise,sunset&"
-                        "timezone=Europe%2FBerlin&forecast_days=3")
-        else:
-            start: datetime = datetime.datetime.strptime(start_date, "%d-%m-%Y")
-            end: datetime = datetime.datetime.strptime(end_date, "%d-%m-%Y")
-            url: str = (f"https://api.open-meteo.com/v1/forecast?latitude={self.latitude}&longitude={self.longitude}&"
-                        f"minutely_15=direct_normal_irradiance,direct_radiation&hourly=temperature_2m,cloudcover&"
-                        f"models=best_match&daily=temperature_2m_max,temperature_2m_min,sunrise,sunset&"
-                        f"timezone=Europe%2FBerlin&start_date={start.year}-{str(start.month).zfill(2)}"
-                        f"-{str(start.day).zfill(2)}"
-                        f"&end_date={end.year}-{str(end.month).zfill(2)}-{str(end.day).zfill(2)}")
-        print(url)
-        return self.session.get(url).json()
-
-    def sort_weather(self, unsorted_data: dict) -> None:
-        """
-        Sorts the weather in a dictionary
+        Sorts the weather in the created dictionary
         :return: None
         """
         date = datetime.datetime.strptime(unsorted_data["minutely_15"]["time"][0],
@@ -237,6 +222,29 @@ class Weather:
             date = datetime.datetime.strptime(date, '%d-%m-%Y') + datetime.timedelta(days=1)
             date = date.strftime('%d-%m-%Y')
 
+    def get_weather(self, start_date: str | None, end_date: str | None) -> dict:
+        """
+        Gets the weather for the given latitude and longitude
+        :return: A dict with the following variables: direct radiation, temperatur, cloudcover, temperature max,
+                 temperatur min, sunrise, sunset.
+        """
+        if start_date is None or end_date is None:
+            url: str = (f"https://api.open-meteo.com/v1/forecast?latitude={self.latitude}&longitude={self.longitude}&"
+                        "minutely_15=direct_normal_irradiance,direct_radiation&hourly=temperature_2m,cloudcover&"
+                        "models=best_match&daily=temperature_2m_max,temperature_2m_min,sunrise,sunset&"
+                        "timezone=Europe%2FBerlin&forecast_days=3")
+        else:
+            start: datetime = datetime.datetime.strptime(start_date, "%d-%m-%Y")
+            end: datetime = datetime.datetime.strptime(end_date, "%d-%m-%Y")
+            url: str = (f"https://api.open-meteo.com/v1/forecast?latitude={self.latitude}&longitude={self.longitude}&"
+                        f"minutely_15=direct_normal_irradiance,direct_radiation&hourly=temperature_2m,cloudcover&"
+                        f"models=best_match&daily=temperature_2m_max,temperature_2m_min,sunrise,sunset&"
+                        f"timezone=Europe%2FBerlin&start_date={start.year}-{str(start.month).zfill(2)}"
+                        f"-{str(start.day).zfill(2)}"
+                        f"&end_date={end.year}-{str(end.month).zfill(2)}-{str(end.day).zfill(2)}")
+        print(url)
+        return self.session.get(url).json()
+
 
 class CalcSunPos:
     """
@@ -246,8 +254,8 @@ class CalcSunPos:
     def __init__(self, latitude, longitude, date: str | None = None) -> None:
         """
         Initialize the class
-        :param latitude:
-        :param longitude:
+        :param latitude: latitude
+        :param longitude:longitude
         :param date: Format %d-%m-%Y
         """
         self.time_last_calc: float | None = None
@@ -288,8 +296,8 @@ class CalcSunPos:
     @lru_cache(maxsize=None)
     def calc_azimuth(self, t: float) -> float:
         """
-        Calcs the azimuth to the given time
-        :param t:  as float
+        Calcs the azimuth to the given time.
+        :param t: Time as float.
         :return: The azimuth in degrees.
         """
         sun_height: float = np.deg2rad(self.calc_solar_elevation(t))
@@ -306,8 +314,8 @@ class CalcSunPos:
     @lru_cache(maxsize=None)
     def calc_solar_elevation(self, t: float) -> float:
         """
-        Calcs solar elevation to the given time
-        :param t:  as a float
+        Calcs solar elevation to the given time.
+        :param t: Time as a float.
         :return: The solar elevation in degrees.
         """
         self.time_last_calc: float = round((int(t)) + ((t - int(t)) * 100 / 60), 2) - 0.25
@@ -321,8 +329,27 @@ class CalcSunPos:
     @lru_cache(maxsize=None)
     def adjust_for_new_angle(self, original_gb, original_tilt_angle, original_azimuth_angle, new_tilt_angle,
                              new_azimuth_angle, time):
+        """
+
+        :param original_gb:
+        :param original_tilt_angle:
+        :param original_azimuth_angle:
+        :param new_tilt_angle:
+        :param new_azimuth_angle:
+        :param time:
+        :return:
+        """
+
         @lru_cache(maxsize=None)
-        def calc_incidence_angle(elevation_sun, azimuth_sun, tilt_angle, panel_azimuth):
+        def _calc_incidence_angle(elevation_sun, azimuth_sun, tilt_angle, panel_azimuth):
+            """
+
+            :param elevation_sun:
+            :param azimuth_sun:
+            :param tilt_angle:
+            :param panel_azimuth:
+            :return:
+            """
             return np.rad2deg(
                 np.arccos(
                     np.cos(np.deg2rad(elevation_sun)) * np.sin(np.deg2rad(tilt_angle)) *
@@ -333,10 +360,10 @@ class CalcSunPos:
 
         sun_azimuth = self.calc_azimuth(time)
         sun_elevation = self.calc_solar_elevation(time)
-        incidence_angle_original = calc_incidence_angle(sun_elevation, sun_azimuth, original_tilt_angle,
-                                                        original_azimuth_angle)
+        incidence_angle_original = _calc_incidence_angle(sun_elevation, sun_azimuth, original_tilt_angle,
+                                                         original_azimuth_angle)
         gb_horizontal = original_gb / np.cos(np.deg2rad(incidence_angle_original))
-        incidence_angle_new = calc_incidence_angle(sun_elevation, sun_azimuth, new_tilt_angle, new_azimuth_angle)
+        incidence_angle_new = _calc_incidence_angle(sun_elevation, sun_azimuth, new_tilt_angle, new_azimuth_angle)
         adjusted_gb = gb_horizontal * np.cos(np.deg2rad(incidence_angle_new))
 
         return adjusted_gb
@@ -472,7 +499,11 @@ class PVProfit:
 
     def calc_diffuse_radiation(self, sun_height: float, diffuse_radiation, direct_radiation, incidence_angle: float):
         """
-        Perez-Modell
+        Calcs the diffuse radiation with the Perez Model
+        :param sun_height:
+        :param diffuse_radiation:
+        :param direct_radiation:
+        :param incidence_angle:
         :return:
         """
         kappa: float = 1.041
@@ -514,8 +545,8 @@ class PVProfit:
 
         diffuse_energy: float = diffuse_radiation * (
                 0.5 * (
-                1 + np.cos(np.deg2rad(self.tilt_angle))) * (1 - f_1) + a / b * f_1 + f_2 * np.sin(
-            np.deg2rad(self.tilt_angle))
+                1 + np.cos(np.deg2rad(self.tilt_angle))) * (1 - f_1) + a / b * f_1 + f_2 *
+                np.sin(np.deg2rad(self.tilt_angle))
         )
 
         return diffuse_energy
@@ -547,8 +578,15 @@ class PVProfit:
 
 class RequiredHeatingPower:
     # https://www.bosch-homecomfort.com/de/de/wohngebaeude/wissen/heizungsratgeber/heizleistung-berechnen/
+    """
+
+    """
+
     @dataclasses.dataclass
     class Room:
+        """
+
+        """
         volume: float = 0.0
 
         @dataclasses.dataclass
@@ -688,6 +726,9 @@ class RequiredHeatingPower:
             temp_diff: float = 0.0
 
     def __init__(self) -> None:
+        """
+
+        """
         self.u_value: dict = {
             "Fenster": {
                 "Holzrahmen": {
@@ -993,8 +1034,19 @@ class RequiredHeatingPower:
 
     @staticmethod
     def calc_heating_power(room: Room) -> float:
+        """
+
+        :param room:
+        :return:
+        """
+
         @lru_cache(maxsize=None)
         def _calc(wall_obj: room.Wall1 | room.Wall2 | room.Wall3 | room.Wall4):
+            """
+
+            :param wall_obj:
+            :return:
+            """
             wall: float = (
                     (
                             wall_obj.area - wall_obj.Door.area - wall_obj.Window1.area -
@@ -1053,10 +1105,23 @@ class RequiredHeatingPower:
 
 
 class ShellyTRVControl:
+    """
+
+    """
+
     def __init__(self, ip_address: str) -> None:
+        """
+
+        :param ip_address:
+        """
         self.ip_address: str = ip_address
 
     def get_status(self, timeout: int = 5) -> dict | None:
+        """
+
+        :param timeout:
+        :return:
+        """
         url: str = f"http://{self.ip_address}/status"
         try:
             response: requests.models.Response = requests.get(url, timeout=timeout)
@@ -1070,6 +1135,11 @@ class ShellyTRVControl:
             return None
 
     def get_settings(self, timeout: int = 8) -> dict | None:
+        """
+
+        :param timeout:
+        :return:
+        """
         url: str = f"http://{self.ip_address}/settings"
         try:
             response: requests.models.Response = requests.get(url, timeout=timeout)
@@ -1083,6 +1153,11 @@ class ShellyTRVControl:
             return None
 
     def get_thermostat(self, timeout: int = 5) -> dict | None:
+        """
+
+        :param timeout:
+        :return:
+        """
         url: str = f"http://{self.ip_address}/thermostats/0"
         try:
             response: requests.models.Response = requests.get(url, timeout=timeout)
@@ -1096,6 +1171,12 @@ class ShellyTRVControl:
             return None
 
     def set_valve_pos(self, position: int, timeout: int = 5) -> bool:
+        """
+
+        :param position:
+        :param timeout:
+        :return:
+        """
         url: str = f"http://{self.ip_address}/thermostat/0?pos={position}"
         try:
             response: requests.models.Response = requests.get(url, timeout=timeout)
@@ -1110,6 +1191,12 @@ class ShellyTRVControl:
             return False
 
     def set_temperature(self, temperature: float, timeout: int = 5) -> bool:
+        """
+
+        :param temperature:
+        :param timeout:
+        :return:
+        """
         url: str = f"http://{self.ip_address}/thermostat/0?target_t_enabled=1&target_t={temperature}"
         try:
             response: requests.models.Response = requests.get(url, timeout=timeout)
