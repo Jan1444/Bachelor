@@ -180,3 +180,32 @@ function toggleFieldset(selectId, FieldSetId) {
         fieldSet.style.display = "none";
     }
 }
+
+function toggleFieldset2(selectId, FieldSetId) {
+    const selectValue = document.getElementById(selectId).value;
+    const fieldSet = document.getElementById(FieldSetId);
+    if (selectValue === "Danfoss" || selectValue === "Mitsubishi") {
+        fieldSet.style.display = "block";
+    } else {
+        fieldSet.style.display = "none";
+    }
+}
+
+function toggleFieldset3(selectId, FieldSetId1, FieldSetId2,FieldSetId3,FieldSetId4) {
+    const selectValue = document.getElementById(selectId).value;
+    const fieldSet1 = document.getElementById(FieldSetId1);
+    const fieldSet2 = document.getElementById(FieldSetId2);
+    const fieldSet3 = document.getElementById(FieldSetId3);
+    const fieldSet4 = document.getElementById(FieldSetId4);
+    if (selectValue === "ir_remote") {
+        fieldSet1.style.display = "none";
+        fieldSet2.style.display = "none";
+        fieldSet3.style.display = "block";
+        fieldSet4.style.display = "block";
+    }else if (selectValue === "cloud"){
+        fieldSet1.style.display = "block";
+        fieldSet2.style.display = "block";
+        fieldSet3.style.display = "none";
+        fieldSet4.style.display = "none";
+    }
+}

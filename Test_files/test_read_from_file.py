@@ -13,7 +13,7 @@ import numpy as np
 
 def load_write_config(data: dict | None = None, path: str | None = None) -> dict | None:
     if path is None:
-        path = 'config/config_test.toml'
+        path = '../config/config_test.toml'
     if data:
         tomli_w.dump(config, open(path, "wb"))
     else:

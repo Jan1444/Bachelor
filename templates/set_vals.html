@@ -192,14 +192,41 @@
             </tr>
             <tr>
                 <td class="Box1" colspan="3">
-                    <b>IR-Remote</b>
+                    <b>Split-Klimagerät:</b>
                 </td>
             </tr>
-            <!-- IR Remote -->
+            <!-- Split-Klimagerät -->
             <tr>
-                <td><label for="ir">IR Button XXX:</label></td>
+                <td><label for="air_conditioner">Hersteller:</label></td>
+                <td><select name="air_conditioner" id="air_conditioner" class="felder" onchange=toggleFieldset2("air_conditioner","air_conditioner_steering")>
+                    <option value="">Gerät wählen</option>
+                    <option value="Danfoss">Danfoss</option>
+                    <option value="Mitsubishi">Mitsubishi</option>
+                </select></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><select style="display: none" name="air_conditioner" id="air_conditioner_steering" class="felder"
+                onchange=toggleFieldset3("air_conditioner_steering","label_ip_cloud","ip_address_cloud","ir","label_ir")>
+                    <option value="">Ansteuerung wählen</option>
+                    <option value="cloud">Cloud</option>
+                    <option value="ir_remote">IR-Remote</option>
+                </select></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td><label for="ip_address_cloud" id="label_ip_cloud" style="display: none">IP Adresse:</label></td>
+                <td><input id="ip_address_cloud" minlength="13" name="ip_address_cloud"
+                           type="text" value="{{ config['shelly']['ip_address'] }}" style="display: none"></td>
+                <td></td>
+
+            </tr>
+                <!-- IR Remote -->
+            <tr>
+                <td><label for="ir" id="label_ir" style="display: none">IR Button XXX:</label></td>
                 <td><input id="ir" minlength="1" name="ir"
-                           type="text" value="{{ config['ir_remote']['consumer_price'] }}"></td>
+                           type="text" value="{{ config['ir_remote']['consumer_price'] }}" style="display: none"></td>
                 <td></td>
             </tr>
             <tr>
