@@ -83,6 +83,7 @@ def write_data_to_config(data: dict, path: str = None) -> int:
         config_data = tomli.load(open(path, 'rb'))
 
     try:
+        debug.printer(data)
         if data['latitude'] != "" or data['longitude'] != "":
             config_data['coordinates']['latitude'] = float(data['latitude'])
             config_data['coordinates']['longitude'] = float(data['longitude'])
@@ -95,7 +96,7 @@ def write_data_to_config(data: dict, path: str = None) -> int:
         market = config_data['market']
         converter = config_data['converter']
         shelly = config_data['shelly']
-        ir_remote = config_data['ir_remote']
+        air_conditioner = config_data['air_conditioner']
         house = config_data['house']
 
         pv['tilt_angle'] = float(data['tilt_angle'])
@@ -111,6 +112,11 @@ def write_data_to_config(data: dict, path: str = None) -> int:
         market['consumer_price'] = float(data['consumer_price'])
 
         shelly['ip_address'] = str(data['ip_address'])
+
+        air_conditioner["air_conditioner"] = str(data['air_conditioner'])
+        air_conditioner["air_conditioner_steering"] = str(data['air_conditioner_steering'])
+        air_conditioner["ip_address_cloud"] = str(data['ip_address_cloud'])
+        air_conditioner["ir_remote"] = str(data['ir_remote'])
 
         house['house_year'] = int(data['house_year'])
 

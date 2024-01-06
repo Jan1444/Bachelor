@@ -5,6 +5,9 @@ import requests
 from pprint import pprint
 from functools import lru_cache
 
+import pymelcloud
+from daikinapi import Daikin
+
 import classes
 from config import settings as consts
 

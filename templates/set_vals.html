@@ -198,35 +198,52 @@
             <!-- Split-Klimagerät -->
             <tr>
                 <td><label for="air_conditioner">Hersteller:</label></td>
-                <td><select name="air_conditioner" id="air_conditioner" class="felder" onchange=toggleFieldset2("air_conditioner","air_conditioner_steering")>
-                    <option value="">Gerät wählen</option>
-                    <option value="Danfoss">Danfoss</option>
-                    <option value="Mitsubishi">Mitsubishi</option>
+                <td><select name="air_conditioner" id="air_conditioner" class="felder"
+                            onchange=toggleFieldset2("air_conditioner","air_conditioner_steering")>
+                    <option  value="">Gerät wählen</option>
+                    <option {% if config['air_conditioner']['air_conditioner'] == "Danfoss" %} selected="selected" {% endif %}
+                    value="Danfoss">Danfoss</option>
+                    <option {% if config['air_conditioner']['air_conditioner'] == "Mitsubishi" %} selected="selected" {% endif %}
+                    value="Mitsubishi">Mitsubishi</option>
                 </select></td>
                 <td></td>
             </tr>
             <tr>
                 <td></td>
-                <td><select style="display: none" name="air_conditioner" id="air_conditioner_steering" class="felder"
-                onchange=toggleFieldset3("air_conditioner_steering","label_ip_cloud","ip_address_cloud","ir","label_ir")>
+                <td><select name="air_conditioner_steering" id="air_conditioner_steering" class="felder"
+                onchange=toggleFieldset3("air_conditioner_steering","label_ip_cloud","ip_address_cloud","ir","label_ir")
+                {% if config['air_conditioner']['air_conditioner_steering'] %} style="display: block;"
+                    {% else %} style="display: none;" {% endif %}>
                     <option value="">Ansteuerung wählen</option>
-                    <option value="cloud">Cloud</option>
-                    <option value="ir_remote">IR-Remote</option>
+                    <option {% if config['air_conditioner']['air_conditioner_steering'] == "cloud" %} selected="selected" {% endif %}
+                    value="cloud">Cloud</option>
+                    <option {% if config['air_conditioner']['air_conditioner_steering'] == "ir_remote" %} selected="selected" {% endif %}
+                    value="ir_remote">IR-Remote</option>
                 </select></td>
                 <td></td>
             </tr>
             <tr>
-                <td><label for="ip_address_cloud" id="label_ip_cloud" style="display: none">IP Adresse:</label></td>
+                <td><label for="ip_address_cloud" id="label_ip_cloud"
+                {% if config['air_conditioner']['ip_address_cloud'] %} style="display: block;"
+                    {% else %} style="display: none;" {% endif %}>
+                    IP Adresse:</label></td>
                 <td><input id="ip_address_cloud" minlength="13" name="ip_address_cloud"
-                           type="text" value="{{ config['shelly']['ip_address'] }}" style="display: none"></td>
+                           type="text" value="{{ config['air_conditioner']['ip_address_cloud'] }}"
+                           {% if config['air_conditioner']['ip_address_cloud'] %} style="display: block;"
+                    {% else %} style="display: none;" {% endif %}></td>
                 <td></td>
 
             </tr>
                 <!-- IR Remote -->
             <tr>
-                <td><label for="ir" id="label_ir" style="display: none">IR Button XXX:</label></td>
-                <td><input id="ir" minlength="1" name="ir"
-                           type="text" value="{{ config['ir_remote']['consumer_price'] }}" style="display: none"></td>
+                <td><label for="ir" id="label_ir"
+                           {% if config['air_conditioner']['ir_remote'] %} style="display: block;"
+                    {% else %} style="display: none;" {% endif %}
+                    >IR Button XXX:</label></td>
+                <td><input id="ir" minlength="1" name="ir_remote"
+                           type="text" value="{{ config['air_conditioner']['ir_remote'] }}"
+                           {% if config['air_conditioner']['ir_remote'] %} style="display: block;"
+                    {% else %} style="display: none;" {% endif %}></td>
                 <td></td>
             </tr>
             <tr>
@@ -241,7 +258,8 @@
                         <td>
                             <!-- Haus Jahr -->
                             <label for="house_year" class="felder">Hausbaujahr:</label>
-                            <input id="house_year" minlength="1" name="house_year" type="number" value="{{ config['house']['house_year'] }}" class="felder">
+                            <input id="house_year" minlength="1" name="house_year" type="number"
+                                   value="{{ config['house']['house_year'] }}" class="felder">
                         </td>
                         <td class="border_bottom">
                             <!-- Fenster 1 Rahmen -->

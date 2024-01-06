@@ -1,11 +1,16 @@
-Flask>=3.0.0
-frozendict>=2.3.10
-matplotlib>=3.8.2
-numpy>=1.26.2
-pandas>=2.1.4
-Requests>=2.31.0
-requests_cache>=1.1.1
-tomli>=2.0.1
-tomli_w>=1.0.0
+Flask
+frozendict
+matplotlib
+numpy
+pandas
+Requests
+requests_cache
+tomli
+tomli_w
 
-Werkzeug~=3.0.1
+Werkzeug
+pymelcloud
+paho-mqtt
+pyperclip
+playwright
+daikinapi

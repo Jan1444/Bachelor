@@ -35,6 +35,13 @@ config_data: Final[dict] = {
 
     },
 
+    "air_conditioner": {
+        'air_conditioner': '',
+        'air_conditioner_steering': '',
+        'ip_address_cloud': '192.168.178.95',
+        'ir_remote': '',
+    },
+
     "house": {
         'house_year': '',
         'window1_frame': '',
@@ -63,18 +70,15 @@ config_data: Final[dict] = {
         'window2_height': '',
         'wall4': '',
         'construction_wall4': '',
-        'wall4_width': '',
-        'wall4_height': '',
         'wall2': '',
         'construction_wall2': '',
         'wall2_width': '',
-        'wall2_height': '',
         'door_wall4': '',
         'door_wall4_width': '',
         'door_wall4_height': '',
         'floor': '',
         'construction_floor': '',
-        'door_wall2': 'True',
+        'door_wall2': '',
         'door_wall2_width': '',
         'door_wall2_height': '',
         'window3_frame': '',
@@ -84,8 +88,6 @@ config_data: Final[dict] = {
         'window3_height': '',
         'wall3': '',
         'construction_wall3': '',
-        'wall3_width': '',
-        'wall3_height': '',
         'door_wall3': '',
         'door_wall3_width': '',
         'door_wall3_height': ''
