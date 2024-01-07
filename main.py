@@ -156,7 +156,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-# mitsubishi pymelcloud
-# Daikin gibts auch Lsg
-# IR sollte immer funktionieren

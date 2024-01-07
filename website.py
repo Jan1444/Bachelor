@@ -75,10 +75,11 @@ def analytics():
                                    url_weather=f"{consts.plot_path}output_weather.png",
                                    url_market=f"{consts.plot_path}output_market.png")
 
-    weather, market, sun, pv = fc.init_classes(coordinates["latitude"], coordinates["longitude"],
-                                               pv_consts["module_efficiency"], pv_consts["area"],
-                                               pv_consts["tilt_angle"], pv_consts["exposure_angle"],
-                                               pv_consts["mounting_type"], market_consts["consumer_price"])
+    weather, market, sun, pv, hp, trv = fc.init_classes(coordinates["latitude"], coordinates["longitude"],
+                                                        pv_consts["module_efficiency"], pv_consts["area"],
+                                                        pv_consts["tilt_angle"], pv_consts["exposure_angle"],
+                                                        pv_consts["mounting_type"], market_consts["consumer_price"],
+                                                        "192.168.178.000")
     today = list(weather.data.keys())[0]
     weather_date = weather.data[today]
 

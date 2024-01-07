@@ -44,7 +44,7 @@ def init_classes(latitude: float, longitude: float, module_efficiency: float, mo
     pv: classes.PVProfit = classes.PVProfit(module_efficiency, module_area, tilt_angle, exposure_angle, -0.35, 25,
                                             mounting_type)
     hp: classes.RequiredHeatingPower = classes.RequiredHeatingPower()
-    s_trv: classe.ShellyTRVControl = classe.ShellyTRVControl(ip_address)
+    s_trv: classes.ShellyTRVControl = classes.ShellyTRVControl(ip_address)
     return weather, market, sun, pv, hp, s_trv
 
 
