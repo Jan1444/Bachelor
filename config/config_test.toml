@@ -21,9 +21,9 @@ consumer_price = 13.35
 ip_address = "192.168.178.95"
 
 [air_conditioner]
-air_conditioner = "Danfoss"
-air_conditioner_steering = "cloud"
-ip_address_cloud = "192.167.187.200"
+air_conditioner = ""
+air_conditioner_steering = ""
+ip_address_cloud = ""
 ir_remote = ""
 
 [house]

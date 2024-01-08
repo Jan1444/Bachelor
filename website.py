@@ -59,7 +59,7 @@ def analytics():
     power_data: list = []
     weather_time: list = []
 
-    energy_data: list = []
+    # energy_data: list = []
 
     market_time: list = []
     market_price: list = []
@@ -73,7 +73,8 @@ def analytics():
         if (time_now - time_write).seconds < (60 * 60) and (time_now - time_write).days <= 0:
             return render_template('analytics.html', name="new_plot",
                                    url_weather=f"{consts.plot_path}output_weather.png",
-                                   url_market=f"{consts.plot_path}output_market.png")
+                                   url_market=f"{consts.plot_path}output_market.png",
+                                   energy_data=data["energy"]["energy"])
 
     weather, market, sun, pv, hp, trv = fc.init_classes(coordinates["latitude"], coordinates["longitude"],
                                                         pv_consts["module_efficiency"], pv_consts["area"],
@@ -104,23 +105,23 @@ def analytics():
 
             power_data.append(power_dni)
 
-    energy = fc.calc_energy(power_data, kwh=False)
+    energy = round(fc.calc_energy(power_data, kwh=False), 2)
 
     for t in market.data:
         market_time.append(t["start_timestamp"])
         market_price.append(t["consumerprice"])
 
     fc.write_data_to_file(None, None, None, None, time=weather_time, radiation_dni=radiation_data_dni,
-                          power=power_data, market_price=market_price)
+                          power=power_data, market_price=market_price, energy=energy)
 
-    for _ in power_data:
-        energy_data.append(energy)
+    # for _ in power_data:
+    #    energy_data.append(energy)
 
     plt.clf()
     plt.figure(figsize=(60, 25))
     plt.grid()
     plt.plot(weather_time, power_data, label="Power [W]")
-    plt.plot(weather_time, energy_data, label="Energy [Wh]")
+    # plt.plot(weather_time, energy_data, label="Energy [Wh]")
     plt.xticks(rotation=90, ha="right", fontsize=30)
     plt.yticks(ticks=np.arange(0, (converter_consts["max_power"] + 51), step=50), ha="right", fontsize=30)
     plt.tight_layout()
@@ -138,7 +139,7 @@ def analytics():
     plt.savefig(f'{consts.plot_path}output_market.png')
 
     return render_template('analytics.html', name="new_plot", url_weather=f"{consts.plot_path}output_weather.png",
-                           url_market=f"{consts.plot_path}output_market.png")
+                           url_market=f"{consts.plot_path}output_market.png", energy_data=energy)
 
 
 @app.route('/generate_download', methods=['POST'])

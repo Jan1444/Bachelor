@@ -194,9 +194,11 @@ def write_data_to_file(weather_data: None | dict = None, sun: None | classes.Cal
                        pv: None | classes.PVProfit = None, market: None | classes.MarketData = None,
                        time: None | list[str] = None, radiation: None | list[float] = None,
                        radiation_dni: None | list[float] = None, power: None | list[float] = None,
-                       market_price: None | list[float] = None, path: None | str = None) -> int:
+                       market_price: None | list[float] = None, path: None | str = None, energy: None | float = None
+                       ) -> int:
     """
 
+    :param energy:
     :param path:
     :param radiation_dni:
     :param weather_data:
@@ -218,6 +220,9 @@ def write_data_to_file(weather_data: None | dict = None, sun: None | classes.Cal
         "write_time": {
             "time": datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S"),
             "format": "%d-%m-%Y %H:%M:%S"
+        },
+        "energy": {
+            "energy": energy
         }
     }
     try:
