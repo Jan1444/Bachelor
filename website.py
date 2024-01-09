@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 import tomli
+import tomli_w
 
 from flask import Flask, render_template, request, send_from_directory, flash, redirect, url_for, jsonify
 from werkzeug.utils import secure_filename
@@ -51,6 +52,7 @@ def analytics():
     with open(consts.config_file_Path, 'rb') as f:
         config_data = tomli.load(f)
 
+    analy = config_data['analytics']
     coordinates = config_data["coordinates"]
     pv_consts = config_data["pv"]
     market_consts = config_data["market"]
@@ -59,22 +61,24 @@ def analytics():
     power_data: list = []
     weather_time: list = []
 
-    # energy_data: list = []
-
     market_time: list = []
     market_price: list = []
 
     if os.path.exists(consts.data_file_Path):
         data = fc.read_data_from_file(consts.data_file_Path)
 
-        time_write = datetime.datetime.strptime(data["write_time"]["time"], data["write_time"]["format"])
+        time_write_data = datetime.datetime.strptime(data["write_time"]["time"], data["write_time"]["format"])
         time_now = datetime.datetime.now()
 
-        if (time_now - time_write).seconds < (60 * 60) and (time_now - time_write).days <= 0:
-            return render_template('analytics.html', name="new_plot",
-                                   url_weather=f"{consts.plot_path}output_weather.png",
-                                   url_market=f"{consts.plot_path}output_market.png",
-                                   energy_data=data["energy"]["energy"])
+        if (time_now - time_write_data).seconds < (60 * 60) and (time_now - time_write_data).days <= 0:
+            if not analy['reload']:
+                return render_template('analytics.html', name="new_plot",
+                                       url_weather=f"{consts.plot_path}output_weather.png",
+                                       url_market=f"{consts.plot_path}output_market.png",
+                                       energy_data=data["energy"]["energy"])
+
+            analy['reload'] = False
+            tomli_w.dump(config_data, open(consts.config_file_Path, 'wb'))
 
     weather, market, sun, pv, hp, trv = fc.init_classes(coordinates["latitude"], coordinates["longitude"],
                                                         pv_consts["module_efficiency"], pv_consts["area"],
@@ -113,9 +117,6 @@ def analytics():
 
     fc.write_data_to_file(None, None, None, None, time=weather_time, radiation_dni=radiation_data_dni,
                           power=power_data, market_price=market_price, energy=energy)
-
-    # for _ in power_data:
-    #    energy_data.append(energy)
 
     plt.clf()
     plt.figure(figsize=(60, 25))

@@ -92,12 +92,19 @@ def write_data_to_config(data: dict, path: str = None) -> int:
             config_data['coordinates']['latitude'] = lat
             config_data['coordinates']['longitude'] = lon
 
+        tme = config_data['write_time']
+        analytics = config_data['analytics']
         pv = config_data['pv']
         market = config_data['market']
         converter = config_data['converter']
         shelly = config_data['shelly']
         air_conditioner = config_data['air_conditioner']
         house = config_data['house']
+
+        tme['time'] = datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+        tme['format'] = "%d-%m-%Y %H:%M:%S"
+
+        analytics['reload'] = True
 
         pv['tilt_angle'] = float(data['tilt_angle'])
         pv['area'] = float(data['area'])

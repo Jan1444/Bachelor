@@ -1,3 +1,10 @@
+[write_time]
+time = "09-01-2024 19:09:13"
+format = "%d-%m-%Y %H:%M:%S"
+
+[analytics]
+reload = false
+
 [coordinates]
 latitude = 49.5198371
 longitude = 11.2948653
@@ -12,7 +19,7 @@ nominal_temperature = 25.0
 mounting_type = 1
 
 [converter]
-max_power = 1000.0
+max_power = 800.0
 
 [market]
 consumer_price = 13.35

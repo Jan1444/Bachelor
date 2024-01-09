@@ -7,6 +7,10 @@ uploads_file_Path: Final[str] = r'uploads/'
 plot_path: Final[str] = r'static/plots/'
 
 config_data: Final[dict] = {
+    "write_time": {
+      "time": "",
+      "format": "%d-%m-%Y %H:%M:%S"
+    },
     "coordinates": {
         "latitude": "",
         "longitude": ""
