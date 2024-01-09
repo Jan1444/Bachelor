@@ -4,7 +4,7 @@ longitude = 11.2948653
 
 [pv]
 tilt_angle = 35.0
-area = 5.16
+area = 200.0
 module_efficiency = 20.0
 exposure_angle = 0.0
 temperature_coefficient = -0.35
@@ -12,7 +12,7 @@ nominal_temperature = 25.0
 mounting_type = 1
 
 [converter]
-max_power = 800.0
+max_power = 1000.0
 
 [market]
 consumer_price = 13.35

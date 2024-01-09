@@ -6,7 +6,7 @@
       <excludeFolder url="file://$MODULE_DIR$/venv" />
       <excludeFolder url="file://$MODULE_DIR$/downloads" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 3.12 (PythonCode)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 3.12 (Bachelor)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="pythonProject1" />
   </component>
