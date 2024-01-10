@@ -2,11 +2,9 @@
 
 import tomli
 import tomli_w
-from pprint import pprint
-import debug
 import json
 import datetime
-import classes
+from module import classes, debug
 import matplotlib.pyplot as plt
 import numpy as np
 

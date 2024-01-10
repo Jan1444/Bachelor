@@ -9,15 +9,10 @@ import numpy as np
 import tomli
 import tomli_w
 
-from flask import Flask, render_template, request, send_from_directory, flash, redirect, url_for, jsonify
+from flask import Flask, render_template, request, send_from_directory, flash, redirect, jsonify
 from werkzeug.utils import secure_filename
 
-import classes
-import debug
-import functions as fc
-import consts
-
-import json
+from module import consts, debug, functions as fc
 
 UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = {'json'}

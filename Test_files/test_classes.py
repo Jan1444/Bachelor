@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
-import classes
+from module import classes
 import datetime
 import matplotlib.pyplot as plt
-import numpy as np
 
 time_data: list = []
 azimuth_data: list = []

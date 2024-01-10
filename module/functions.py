@@ -13,8 +13,7 @@ import tomli
 import tomli_w
 from frozendict import frozendict
 
-import classes
-import consts
+from module import classes, consts
 import debug
 
 
@@ -224,7 +223,7 @@ def write_data_to_file(weather_data: None | dict = None, sun: None | classes.Cal
     :return:
     """
     if path is None:
-        data_file_path = r"data/data.toml"
+        data_file_path = r"../data/data.toml"
     else:
         data_file_path = path
 
@@ -1032,7 +1031,7 @@ if __name__ == "__main__":
     data_analyzer()
 
     print("Test unpack_data")
-    data_test: dict = tomli.load(open(r"data/data.toml", "rb"))
+    data_test: dict = tomli.load(open(r"../data/data.toml", "rb"))
     ret = unpack_data(data_test)
     if ret != (-1, -1, -1, -1):
         print('✅', "PASS")
