@@ -46,7 +46,7 @@
     <table class="BoxHeader">
         <tr>
             <td>
-                <img class="HeaderImage" src="{{ url_for('static', filename='favicon/android-chrome-512x512.png') }}">
+                <img class="HeaderImage" src="{{ url_for('static', filename='favicon/android-chrome-512x512.png') }}" alt="">
                 <h1 class="Headerh1">Settings</h1>
             </td>
         </tr>
@@ -67,7 +67,8 @@
                 <td><label for="latitude">Breitengrad [°]:</label></td>
                 <td><input id="latitude" minlength="2" name="latitude" type="text"
                            value="{{ config['coordinates']['latitude'] }}"
-                           {% if error %} style="border-color: red; border-width: 3px" {% endif %}></td>
+                           {% if error %} style="border-color: red; border-width: 3px" {% endif %}>
+                </td>
                 <td><label for="Straße" >Straße:</label>
                     <input id="Straße" minlength="2" name="Straße" type="text" value=""
                            {% if error %} style="border-color: red; border-width: 3px" {% endif %}>
