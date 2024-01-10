@@ -8,8 +8,8 @@ plot_path: Final[str] = r'static/plots/'
 
 config_data: Final[dict] = {
     "write_time": {
-      "time": "",
-      "format": "%d-%m-%Y %H:%M:%S"
+        "time": "",
+        "format": "%d-%m-%Y %H:%M:%S"
     },
     "coordinates": {
         "latitude": "",
@@ -42,10 +42,13 @@ config_data: Final[dict] = {
     "air_conditioner": {
         'air_conditioner': '',
         'air_conditioner_steering': '',
-        'ip_address_cloud': '192.168.178.95',
+        'ip_address_cloud': '',
         'ir_remote': '',
     },
-
+    "heating": {
+        "heating_power": "",
+        "heating_area": ""
+    },
     "house": {
         'house_year': '',
         'window1_frame': '',
