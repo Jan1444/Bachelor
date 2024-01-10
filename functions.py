@@ -103,7 +103,7 @@ def write_data_to_config(data: dict, path: str = None) -> int:
         converter = config_data['converter']
         shelly = config_data['shelly']
         air_conditioner = config_data['air_conditioner']
-        heating = config_data['heating']
+
         house = config_data['house']
 
         tme['time'] = datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S")
@@ -130,10 +130,7 @@ def write_data_to_config(data: dict, path: str = None) -> int:
         air_conditioner["ip_address_cloud"] = str(data['ip_address_cloud'])
         air_conditioner["ir_remote"] = str(data['ir_remote'])
 
-        heating["heating_power"] = float(data['heating_power'])
-        heating["heating_area"] = float(data['heating_area'])
 
-        '''
         house['house_year'] = int(data['house_year'])
 
         house['window1_frame'] = str(data['window1_frame'])
@@ -196,7 +193,6 @@ def write_data_to_config(data: dict, path: str = None) -> int:
         house['door_wall4'] = int(data['door_wall4'])
         house['door_wall4_width'] = float(data['door_wall4_width'])
         house['door_wall4_height'] = float(data['door_wall4_height'])
-        '''
         tomli_w.dump(config_data, open(path, 'wb'))
 
         return 1

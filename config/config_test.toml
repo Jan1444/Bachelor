@@ -33,10 +33,6 @@ air_conditioner_steering = ""
 ip_address_cloud = ""
 ir_remote = ""
 
-[heating]
-heating_power = 24.0
-heating_area = 10.0
-
 [house]
 house_year = 0
 window1_frame = ""

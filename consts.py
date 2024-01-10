@@ -45,10 +45,6 @@ config_data: Final[dict] = {
         'ip_address_cloud': '',
         'ir_remote': '',
     },
-    "heating": {
-        "heating_power": "",
-        "heating_area": ""
-    },
     "house": {
         'house_year': '',
         'window1_frame': '',
