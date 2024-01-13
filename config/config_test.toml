@@ -1,5 +1,5 @@
 [write_time]
-time = "10-01-2024 12:06:51"
+time = "13-01-2024 17:25:52"
 format = "%d-%m-%Y %H:%M:%S"
 
 [analytics]
@@ -16,7 +16,7 @@ module_efficiency = 20.0
 exposure_angle = 0.0
 temperature_coefficient = -0.35
 nominal_temperature = 25.0
-mounting_type = 1
+mounting_type = -1
 
 [converter]
 max_power = 800.0

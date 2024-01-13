@@ -13,8 +13,7 @@ import tomli
 import tomli_w
 from frozendict import frozendict
 
-from module import classes, consts
-import debug
+from module import classes, consts, debug
 
 
 def init_classes(latitude: float, longitude: float, module_efficiency: float, module_area: int, tilt_angle: float,
@@ -84,8 +83,8 @@ def write_data_to_config(data: dict, path: str = None) -> int:
     try:
         debug.printer(data)
 
-        for data_keys in data.keys():
-            data[data_keys] = str(data[data_keys]).replace(",", ".")
+        for data_key in data.keys():
+            data[data_key] = str(data[data_key]).replace(",", ".")
 
         if data['latitude'] != "" or data['longitude'] != "":
             config_data['coordinates']['latitude'] = float(data['latitude'])
@@ -192,6 +191,7 @@ def write_data_to_config(data: dict, path: str = None) -> int:
         house['door_wall4'] = int(data['door_wall4'])
         house['door_wall4_width'] = float(data['door_wall4_width'])
         house['door_wall4_height'] = float(data['door_wall4_height'])
+
         tomli_w.dump(config_data, open(path, 'wb'))
 
         return 1
@@ -223,7 +223,7 @@ def write_data_to_file(weather_data: None | dict = None, sun: None | classes.Cal
     :return:
     """
     if path is None:
-        data_file_path = r"../data/data.toml"
+        data_file_path = consts.data_file_Path
     else:
         data_file_path = path
 

@@ -7,7 +7,7 @@ import numpy as np
 import requests
 import requests_cache
 
-import debug
+from module import debug
 
 
 class MarketData:
@@ -392,6 +392,7 @@ class PVProfit:
         self.temperature_coefficient: float = temperature_coefficient / 100
         self.nominal_temperature: float = nominal_temperature
         self.mounting_type_dict: dict = {
+            -1: 100,
             0: 22,  # Völlig freie Aufständerung
             1: 28,  # Auf dem Dach, großer Abstand
             2: 29,  # Auf dem Dach bzw. dach integriert, gute Hinterlüftung

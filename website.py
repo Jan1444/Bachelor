@@ -12,10 +12,11 @@ import tomli_w
 from flask import Flask, render_template, request, send_from_directory, flash, redirect, jsonify
 from werkzeug.utils import secure_filename
 
-from module import consts, debug, functions as fc
+from module import consts, debug
+from module import functions as fc
 
 UPLOAD_FOLDER = 'uploads'
-ALLOWED_EXTENSIONS = {'json'}
+ALLOWED_EXTENSIONS: set[str] = {'json'}
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -119,8 +120,12 @@ def analytics():
     plt.plot(weather_time, power_data, label="Power [W]")
     # plt.plot(weather_time, energy_data, label="Energy [Wh]")
     plt.xticks(rotation=90, ha="right", fontsize=30)
-    _size = converter_consts["max_power"] + (50 if converter_consts["max_power"] >= 1000 else 0)
-    plt.yticks(ticks=np.arange(0, _size, step=(_size / 15)), ha="right", fontsize=30)
+    _size = converter_consts["max_power"]
+    debug.printer(_size)
+    _step = 25 if _size <= 1000 else (_size / 50) if (_size / 50) % 5 == 0 else _size / 50 - (_size / 50) % 5
+    _ticks = np.arange(0, _size + _step, step=_step)
+    debug.printer(_ticks)
+    plt.yticks(ticks=_ticks, ha="right", fontsize=30)
     plt.tight_layout()
     plt.legend(loc="center left", fontsize=30)
     plt.savefig(f'{consts.plot_path}output_weather.png')
@@ -224,6 +229,11 @@ def safe_settings():
         data = request.form.to_dict()
 
         debug.printer(data)
+
+        if data["mounting_type"] == "-1":
+            return render_template('set_vals.html',
+                                   error_mounting_type='Bitte wählen Sie einen Montagetypen aus',
+                                   config=config_data)
 
         if ((data['latitude'] != "" and data['longitude'] != "") or (data['Straße'] != "" and data['Nr'] != "" and
                                                                      data['Stadt'] != "" and data['PLZ'] != "" and

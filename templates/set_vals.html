@@ -124,23 +124,30 @@
                 <td></td>
             </tr>
             <tr>
+                {% if error_mounting_type %}
+                    <p style="color: red;">{{ error_mounting_type }}</p>
+                {% endif %}
                 <td><label for="mounting_type">Montagetyp:</label></td>
-                <td><input id="mounting_type" minlength="1" name="mounting_type"
-                           type="text" value="{{ config['pv']['mounting_type'] }}"></td>
-                <td>
-                    <div class="tooltip">?
-                        <span class="tooltiptext">
-                            0: Completely free elevation<br>
-                            1: On the roof, large distance<br>
-                            2: Integrated on the roof or roof, good rear ventilation<br>
-                            3: Integrated on the roof or rooftop, poor rear ventilation<br>
-                            4: Integrated on the façade or façades, good rear ventilation<br>
-                            5: Integrated on the façade or façades, poor rear ventilation<br>
-                            6: Roof integration, without rear ventilation<br>
-                            7: Façade integration, without rear ventilation.</span>
-                    </div>
-                </td>
-
+                <td><select name="mounting_type" id="mounting_type" class="felder" 
+                        {% if error_mounting_type %} style="border-color: red; border-width: 2px" {% endif %}>
+                    <option value="-1">Montagetyp wählen</option>
+                    <option {% if config['pv']['mounting_type'] == 0 %} selected="selected" {% endif %}
+                            value="0">Völlig freie Aufständerung</option>
+                    <option {% if config['pv']['mounting_type'] == 1 %} selected="selected" {% endif %}
+                            value="1">Auf dem Dach, großer Abstand</option>
+                    <option {% if config['pv']['mounting_type'] == 2 %} selected="selected" {% endif %}
+                            value="2">Auf dem Dach bzw. dachintegriert, gute Hinterlüftung</option>
+                    <option {% if config['pv']['mounting_type'] == 3 %} selected="selected" {% endif %}
+                            value="3">Auf dem Dach bzw. dachintegriert, schlechte Hinterlüftung</option>
+                    <option {% if config['pv']['mounting_type'] == 4 %} selected="selected" {% endif %}
+                            value="4">An der Fassade bzw. fassadenintegriert, gute Hinterlüftung</option>
+                    <option {% if config['pv']['mounting_type'] == 5 %} selected="selected" {% endif %}
+                            value="5">An der Fassade bzw. fassadenintegriert, schlechte Hinterlüftung</option>
+                    <option {% if config['pv']['mounting_type'] == 6 %} selected="selected" {% endif %}
+                            value="6">Dachintegration, ohne Hinterlüftung</option>
+                    <option {% if config['pv']['mounting_type'] == 7 %} selected="selected" {% endif %}
+                            value="7">Fassadenintegration, ohne Hinterlüftung</option>
+                </select></td>
             </tr>
             <tr>
                 <td><label for="temperature_coefficient">Temperatur Koeffizient [%/°C]:</label></td>
