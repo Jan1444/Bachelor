@@ -5,7 +5,7 @@ import requests
 from functools import lru_cache
 
 from module import classes
-from config import settings as consts
+from config import config_data
 
 
 def init_classes(latitude: float, longitude: float, module_efficiency: float, module_area: int, tilt_angle: float,
@@ -136,9 +136,9 @@ def test_day_data(weather_data: dict, sun: classes.CalcSunPos, pv: classes.PVPro
 def main():
     plt.figure(figsize=(60, 15))
     plt.grid()
-    coordinates = consts["coordinates"]
-    pv_consts = consts["pv"]
-    market_consts = consts["market"]
+    coordinates = config_data["coordinates"]
+    pv_consts = config_data["pv"]
+    market_consts = config_data["market"]
 
     w, m, sun, pv = init_classes(coordinates["latitude"], coordinates["longitude"],
                                  pv_consts["module_efficiency"], pv_consts["area"],

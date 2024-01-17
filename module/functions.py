@@ -87,110 +87,111 @@ def write_data_to_config(data: dict, path: str = None) -> int:
             data[data_key] = str(data[data_key]).replace(",", ".")
 
         if data['latitude'] != "" or data['longitude'] != "":
-            config_data['coordinates']['latitude'] = float(data['latitude'])
-            config_data['coordinates']['longitude'] = float(data['longitude'])
+            config_data['coordinates']['latitude'] = float(data.get('latitude', 0))
+            config_data['coordinates']['longitude'] = float(data.get('longitude', 0))
         else:
-            lat, lon = get_coord(data['Straße'], data['Nr'], data['Stadt'], data['PLZ'], data['Land'])
+            lat, lon = get_coord(str(data.get('Straße', "")), str(data.get('Nr', '')), str(data.get('Stadt', '')),
+                                 int(data.get('PLZ', 0)), str(data.get('Land', '')))
             config_data['coordinates']['latitude'] = lat
             config_data['coordinates']['longitude'] = lon
 
-        tme = config_data['write_time']
-        analytics = config_data['analytics']
-        pv = config_data['pv']
-        market = config_data['market']
-        converter = config_data['converter']
-        shelly = config_data['shelly']
-        air_conditioner = config_data['air_conditioner']
+        tme = config_data.get('write_time')
+        analytics = config_data.get('analytics')
+        pv = config_data.get('pv')
+        market = config_data.get('market')
+        converter = config_data.get('converter')
+        shelly = config_data.get('shelly')
+        air_conditioner = config_data.get('air_conditioner')
 
-        house = config_data['house']
+        house = config_data.get('house')
 
-        tme['time'] = datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S")
-        tme['format'] = "%d-%m-%Y %H:%M:%S"
+        time_format: str = "%d-%m-%Y %H:%M:%S"
+        tme['time'] = datetime.datetime.now().strftime(time_format)
+        tme['format'] = time_format
 
         analytics['reload'] = True
 
-        pv['tilt_angle'] = float(data['tilt_angle'])
-        pv['area'] = float(data['area'])
-        pv['module_efficiency'] = float(data['module_efficiency'])
-        pv['exposure_angle'] = float(data['exposure_angle'])
-        pv['temperature_coefficient'] = float(data['temperature_coefficient'])
-        pv['nominal_temperature'] = float(data['nominal_temperature'])
-        pv['mounting_type'] = int(data['mounting_type'])
+        pv['tilt_angle'] = float(data.get('tilt_angle', 0))
+        pv['area'] = float(data.get('area', 0))
+        pv['module_efficiency'] = float(data.get('module_efficiency', 0))
+        pv['exposure_angle'] = float(data.get('exposure_angle', 0))
+        pv['temperature_coefficient'] = float(data.get('temperature_coefficient', 0))
+        pv['nominal_temperature'] = float(data.get('nominal_temperature', 0))
+        pv['mounting_type'] = int(data.get('mounting_type', 0))
 
-        converter['max_power'] = float(data['converter_power'])
+        converter['max_power'] = float(data.get('converter_power', 0))
 
-        market['consumer_price'] = float(data['consumer_price'])
+        market['consumer_price'] = float(data.get('consumer_price', 0))
 
-        shelly['ip_address'] = str(data['ip_address'])
+        shelly['ip_address'] = str(data.get('ip_address', ''))
 
-        air_conditioner["air_conditioner"] = str(data['air_conditioner'])
-        air_conditioner["air_conditioner_steering"] = str(data['air_conditioner_steering'])
-        air_conditioner["ip_address_cloud"] = str(data['ip_address_cloud'])
-        air_conditioner["ir_remote"] = str(data['ir_remote'])
+        air_conditioner["air_conditioner"] = str(data.get('air_conditioner', ''))
+        air_conditioner["air_conditioner_steering"] = str(data.get('air_conditioner_steering', ''))
+        air_conditioner["ip_address_cloud"] = str(data.get('ip_address_cloud', ''))
+        air_conditioner["ir_remote"] = str(data.get('ir_remote', ''))
 
+        house['house_year'] = int(data.get('house_year', 0))
 
-        house['house_year'] = int(data['house_year'])
+        house['window1_frame'] = str(data.get('window1_frame', ''))
+        house['window1_glazing'] = str(data.get('window1_glazing', ''))
+        house['window1_year'] = int(data.get('window1_year', 0))
+        house['window1_width'] = float(data.get('window1_width', 0))
+        house['window1_height'] = float(data.get('window1_height', 0))
 
-        house['window1_frame'] = str(data['window1_frame'])
-        house['window1_glazing'] = str(data['window1_glazing'])
-        house['window1_year'] = int(data['window1_year'])
-        house['window1_width'] = float(data['window1_width'])
-        house['window1_height'] = float(data['window1_height'])
+        house['wall1'] = str(data.get('wall1', ''))
+        house['wall1_width'] = float(data.get('wall1_width', 0))
+        house['wall1_height'] = float(data.get('wall1_height', 0))
+        house['construction_wall1'] = str(data.get('construction_wall1', ''))
 
-        house['wall1'] = str(data['wall1'])
-        house['wall1_width'] = float(data['wall1_width'])
-        house['wall1_height'] = float(data['wall1_height'])
-        house['construction_wall1'] = str(data['construction_wall1'])
+        house['door_wall1'] = int(data.get('door_wall1', 0))
+        house['door_wall1_width'] = float(data.get('door_wall1_width', 0))
+        house['door_wall1_height'] = float(data.get('door_wall1_height', 0))
 
-        house['door_wall1'] = int(data['door_wall1'])
-        house['door_wall1_width'] = float(data['door_wall1_width'])
-        house['door_wall1_height'] = float(data['door_wall1_height'])
+        house['window2_frame'] = str(data.get('window2_frame', ''))
+        house['window2_glazing'] = str(data.get('window2_glazing', ''))
+        house['window2_year'] = int(data.get('window2_year', 0))
+        house['window2_width'] = float(data.get('window2_width', 0))
+        house['window2_height'] = float(data.get('window2_height', 0))
 
-        house['window2_frame'] = str(data['window2_frame'])
-        house['window2_glazing'] = str(data['window2_glazing'])
-        house['window2_year'] = int(data['window2_year'])
-        house['window2_width'] = float(data['window2_width'])
-        house['window2_height'] = float(data['window2_height'])
+        house['wall2'] = str(data.get('wall2', ''))
+        house['wall2_width'] = float(data.get('wall2_width', 0))
+        house['construction_wall2'] = str(data.get('construction_wall2', ''))
 
-        house['wall2'] = str(data['wall2'])
-        house['wall2_width'] = float(data['wall2_width'])
-        house['construction_wall2'] = str(data['construction_wall2'])
+        house['door_wall2'] = int(data.get('door_wall2', 0))
+        house['door_wall2_width'] = float(data.get('door_wall2_width', 0))
+        house['door_wall2_height'] = float(data.get('door_wall2_height', 0))
 
-        house['door_wall2'] = int(data['door_wall2'])
-        house['door_wall2_width'] = float(data['door_wall2_width'])
-        house['door_wall2_height'] = float(data['door_wall2_height'])
+        house['window3_frame'] = str(data.get('window3_frame', ''))
+        house['window3_glazing'] = str(data.get('window3_glazing', ''))
+        house['window3_year'] = int(data.get('window3_year', 0))
+        house['window3_width'] = float(data.get('window3_width', 0))
+        house['window3_height'] = float(data.get('window3_height', 0))
 
-        house['window3_frame'] = str(data['window3_frame'])
-        house['window3_glazing'] = str(data['window3_glazing'])
-        house['window3_year'] = int(data['window3_year'])
-        house['window3_width'] = float(data['window3_width'])
-        house['window3_height'] = float(data['window3_height'])
+        house['wall3'] = str(data.get('wall3', ''))
+        house['construction_wall3'] = str(data.get('construction_wall3', ''))
 
-        house['wall3'] = str(data['wall3'])
-        house['construction_wall3'] = str(data['construction_wall3'])
+        house['door_wall3'] = int(data.get('door_wall3', 0))
+        house['door_wall3_width'] = float(data.get('door_wall3_width', 0))
+        house['door_wall3_height'] = float(data.get('door_wall3_height', 0))
 
-        house['door_wall3'] = int(data['door_wall3'])
-        house['door_wall3_width'] = float(data['door_wall3_width'])
-        house['door_wall3_height'] = float(data['door_wall3_height'])
+        house['window4_frame'] = str(data.get('window4_frame', ''))
+        house['window4_glazing'] = str(data.get('window4_glazing', ''))
+        house['window4_year'] = int(data.get('window4_year', 0))
+        house['window4_width'] = float(data.get('window4_width', 0))
+        house['window4_height'] = float(data.get('window4_height', 0))
 
-        house['window4_frame'] = str(data['window4_frame'])
-        house['window4_glazing'] = str(data['window4_glazing'])
-        house['window4_year'] = int(data['window4_year'])
-        house['window4_width'] = float(data['window4_width'])
-        house['window4_height'] = float(data['window4_height'])
+        house['ceiling'] = str(data.get('ceiling', ''))
+        house['construction_ceiling'] = str(data.get('construction_ceiling', ''))
 
-        house['ceiling'] = str(data['ceiling'])
-        house['construction_ceiling'] = str(data['construction_ceiling'])
+        house['floor'] = str(data.get('floor', ''))
+        house['construction_floor'] = str(data.get('construction_floor', ''))
 
-        house['floor'] = str(data['floor'])
-        house['construction_floor'] = str(data['construction_floor'])
+        house['wall4'] = str(data.get('wall4', ''))
+        house['construction_wall4'] = str(data.get('construction_wall4', ''))
 
-        house['wall4'] = str(data['wall4'])
-        house['construction_wall4'] = str(data['construction_wall4'])
-
-        house['door_wall4'] = int(data['door_wall4'])
-        house['door_wall4_width'] = float(data['door_wall4_width'])
-        house['door_wall4_height'] = float(data['door_wall4_height'])
+        house['door_wall4'] = int(data.get('door_wall4', 0))
+        house['door_wall4_width'] = float(data.get('door_wall4_width', 0))
+        house['door_wall4_height'] = float(data.get('door_wall4_height', 0))
 
         tomli_w.dump(config_data, open(path, 'wb'))
 

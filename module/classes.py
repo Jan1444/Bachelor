@@ -30,14 +30,14 @@ class MarketData:
             time_start_ms: int = self.convert_time_to_ms(date_today, time_start)
             self.data: dict = self.get_data(start=time_start_ms)
         else:
-            time_start: str = datetime.datetime.strptime(start_time, "%Y-%m-%dT%H:%M")
-            time_end: str = datetime.datetime.strptime(end_time, "%Y-%m-%dT%H:%M")
+            time_start: datetime.datetime = datetime.datetime.strptime(start_time, "%Y-%m-%dT%H:%M")
+            time_end: datetime.datetime = datetime.datetime.strptime(end_time, "%Y-%m-%dT%H:%M")
 
-            date_start = time_start.strftime('%Y-%m-%d')
-            date_end = time_end.strftime('%Y-%m-%d')
+            date_start: str = time_start.strftime('%Y-%m-%d')
+            date_end: str = time_end.strftime('%Y-%m-%d')
 
-            time_start = time_start.strftime('%H:%M:%S,%f')
-            time_end = time_end.strftime('%H:%M:%S,%f')
+            time_start: str = time_start.strftime('%H:%M:%S,%f')
+            time_end: str = time_end.strftime('%H:%M:%S,%f')
 
             time_start_ms: int = self.convert_time_to_ms(date_start, time_start)
             end_time_ms: int = self.convert_time_to_ms(date_end, time_end)
@@ -54,7 +54,7 @@ class MarketData:
         return str(self.data)
 
     @staticmethod
-    def convert_ms_to_time(ms: int) -> str:
+    def convert_ms_to_time(ms: int) -> tuple[str, str]:
         """
         Convert the given milliseconds to a time string representing hours and minutes.
         :param ms: The ms to convert.
@@ -103,10 +103,11 @@ class MarketData:
         :return: None
         """
         for i, old_data in enumerate(self.data):
-            self.data[i]['start_timestamp'], self.data[i]['date'] = self.convert_ms_to_time(old_data['start_timestamp'])
-            self.data[i]['end_timestamp'] = self.convert_ms_to_time(old_data['end_timestamp'])[0]
-            self.data[i]['marketprice'] = round(old_data['marketprice'] / 10, 3)
-            self.data[i]['consumerprice'] = round(((old_data['marketprice'] + consumer_costs) * 1.19), 3)
+            self.data[i]['start_timestamp'], self.data[i]['date'] = self.convert_ms_to_time(old_data.get(
+                                                                                                'start_timestamp', 0))
+            self.data[i]['end_timestamp'] = self.convert_ms_to_time(old_data.get('end_timestamp', 0))[0]
+            self.data[i]['marketprice'] = round(old_data.get('marketprice', 0) / 10, 3)
+            self.data[i]['consumerprice'] = round(((old_data.get('marketprice', 0) + consumer_costs) * 1.19), 3)
             self.data[i]['unit'] = 'ct/kWh'
 
 
@@ -428,7 +429,7 @@ class PVProfit:
         :return: str of the data.
         """
         val = (f"Die Modul Effizienz ist: {self.module_efficiency * 100}%\n"
-               f"Die Modulfläche ist: {self.module_area}m^2\n"
+               f"Die Modulfläche ist: {self.module_area}m²\n"
                f"Der Neigungswinkel ist: {self.tilt_angle}°\n"
                f"Der Ausrichtungswinkel ist: {self.exposure_angle}°")
         return val
@@ -452,7 +453,7 @@ class PVProfit:
         """
         Calcs the temperature of the pv system
         :param temperature: the surrounding temperature in °C
-        :param radiation: the current radiation in W/m^2
+        :param radiation: the current radiation in W/m²
         :return: the temperatur of the pv panel in °C.
         """
         try:
@@ -469,7 +470,7 @@ class PVProfit:
         """
         Calcs the current efficiency of the pv panel
         :param temperature: the current surrounding temperatur in °C
-        :param radiation: the current radiation in W/m^2
+        :param radiation: the current radiation in W/m²
         :return: the current efficiency as float.
         """
         current_efficiency = self.module_efficiency + (self.calc_pv_temp(temperature, radiation)
@@ -546,7 +547,7 @@ class PVProfit:
 
         diffuse_energy: float = diffuse_radiation * (
                 0.5 * (
-                1 + np.cos(np.deg2rad(self.tilt_angle))) * (1 - f_1) + a / b * f_1 + f_2 *
+                    1 + np.cos(np.deg2rad(self.tilt_angle))) * (1 - f_1) + a / b * f_1 + f_2 *
                 np.sin(np.deg2rad(self.tilt_angle))
         )
 
@@ -558,7 +559,7 @@ class PVProfit:
         Calculates the energy output of the PV panel using Direct Normal Irradiance (DNI)
         :param temperature:
         :param incidence_angle: The incidence angle of the sun
-        :param dni: Direct Normal Irradiance in W/m^2
+        :param dni: Direct Normal Irradiance in W/m²
         :return: Current energy output of the panel in Watts.
         """
         if incidence_angle == -1:
@@ -1042,7 +1043,8 @@ class RequiredHeatingPower:
         """
 
         @lru_cache(maxsize=None)
-        def _calc(wall_obj: room.Wall1 | room.Wall2 | room.Wall3 | room.Wall4):
+        def _calc(wall_obj: room.Wall1 | room.Wall2 | room.Wall3 | room.Wall4) -> tuple[float, float, float, float,
+                                                                                        float, float]:
             """
 
             :param wall_obj:
@@ -1054,11 +1056,11 @@ class RequiredHeatingPower:
                             wall_obj.Window2.area - wall_obj.Window3.area - wall_obj.Window4.area
                     ) * wall_obj.u_wert * wall_obj.temp_diff
             )
-            window1 = 0
-            window2 = 0
-            window3 = 0
-            window4 = 0
-            door = 0
+            window1: float = 0
+            window2: float = 0
+            window3: float = 0
+            window4: float = 0
+            door: float = 0
 
             try:
                 window1: float = wall_obj.Window1.area * wall_obj.Window1.u_wert * wall_obj.temp_diff
