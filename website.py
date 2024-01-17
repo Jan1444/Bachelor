@@ -148,8 +148,8 @@ def analytics():
 def download():
     toml_file_path: str = consts.config_file_Path
     msg: str = ""
-    msg_market: str = ""
-    msg_weather: str = ""
+    msg_market: list[str] = []
+    msg_weather: list[str] = []
     err_msg_weather: str = ""
     err_msg_market: str = ""
     date_now: dict = {}
