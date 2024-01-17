@@ -1,5 +1,5 @@
 [write_time]
-time = "13-01-2024 17:25:52"
+time = "17-01-2024 19:57:51"
 format = "%d-%m-%Y %H:%M:%S"
 
 [analytics]
@@ -16,7 +16,7 @@ module_efficiency = 20.0
 exposure_angle = 0.0
 temperature_coefficient = -0.35
 nominal_temperature = 25.0
-mounting_type = -1
+mounting_type = 0
 
 [converter]
 max_power = 800.0
@@ -40,10 +40,13 @@ window1_glazing = ""
 window1_year = 0
 window1_width = 0.0
 window1_height = 0.0
+window1_u_value = 0.34
 wall1 = ""
 construction_wall1 = ""
+wall1_type = 0
 wall1_width = 0.0
 wall1_height = 0.0
+wall1_diff_temp = 0.0
 door_wall1 = 0
 door_wall1_width = 0.0
 door_wall1_height = 0.0
@@ -82,3 +85,4 @@ construction_wall3 = ""
 door_wall3 = 0
 door_wall3_width = 0.0
 door_wall3_height = 0.0
+wall1_u_value = 0.0

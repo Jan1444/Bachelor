@@ -4,6 +4,7 @@ import datetime
 import json
 import os
 from functools import lru_cache, wraps
+from typing import Tuple
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -137,11 +138,15 @@ def write_data_to_config(data: dict, path: str = None) -> int:
         house['window1_year'] = int(data.get('window1_year', 0))
         house['window1_width'] = float(data.get('window1_width', 0))
         house['window1_height'] = float(data.get('window1_height', 0))
+        house['window1_u_value'] = float(data.get('window1_u_value', 0))
 
         house['wall1'] = str(data.get('wall1', ''))
         house['wall1_width'] = float(data.get('wall1_width', 0))
         house['wall1_height'] = float(data.get('wall1_height', 0))
         house['construction_wall1'] = str(data.get('construction_wall1', ''))
+        house['wall1_type'] = int(data.get('wall1_type', 0))
+        house['wall1_u_value'] = float(data.get('wall1_u_value', 0))
+        house['wall1_diff_temp'] = float(data.get('wall1_diff_temp', 0))
 
         house['door_wall1'] = int(data.get('door_wall1', 0))
         house['door_wall1_width'] = float(data.get('door_wall1_width', 0))
@@ -620,7 +625,8 @@ def unpack_data(data: dict) -> (list[str], list[float], list[float], list[float]
 
 
 @lru_cache(maxsize=None)
-def data_analyzer(path: None | str = None) -> int:
+def data_analyzer(path: None | str = None) -> int | tuple[
+    float, float, float, str, str, str, str, list, list, float, str, float]:
     config_data: dict = read_data_from_file(consts.config_file_Path)
 
     config_pv: dict = config_data["pv"]

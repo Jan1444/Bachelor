@@ -304,7 +304,8 @@ def get_window(frame):
     door_data = {
         'Holzrahmen': ['Einfachverglasung', 'Doppelverglasung', 'Isolierverglasung'],
         'Kunststoffrahmen': ['Isolierverglasung'],
-        'Metallrahmen': ['Isolierverglasung']
+        'Metallrahmen': ['Isolierverglasung'],
+        'u_value': ['']
     }
     return jsonify(door_data.get(frame, []))
 

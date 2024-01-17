@@ -135,7 +135,7 @@ tr td:nth-child(3) {
 
 .felder{
     font-family: var(--standard_font);
-    width: 160px !important;
+    width: 200px !important;
     height: 25px;
     font-size: 20px;
     display: inline-block;
