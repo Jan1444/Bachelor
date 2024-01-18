@@ -335,12 +335,14 @@
                                     toggleFieldsetWindow('wall1','wall1_data','wall1_u_value')">
                                 <option value="">Wand typ wählen</option>
                                 <option {% if config['house']['wall1'] == "Außenwand" %} selected="selected" {% endif %}
-                                value="Außenwand">Außenwand</option>
+                                    value="Außenwand">Außenwand</option>
                                 <option {% if config['house']['wall1'] == "Wand gegen Erdreich" %} selected="selected" {% endif %}
-                                value="Wand gegen Erdreich">Wand gegen Erdreich</option>
+                                    value="Wand gegen Erdreich">Wand gegen Erdreich</option>
                                 <option {% if config['house']['wall1'] == "Innenwand gegen unbeheizte Kellergeschosse" %} selected="selected" {% endif %}
-                                value="Innenwand gegen unbeheizte Kellergeschosse">
-                                Innenwand gegen unbeheizte Kellergeschosse</option>
+                                    value="Innenwand gegen unbeheizte Kellergeschosse">
+                                    Innenwand gegen unbeheizte Kellergeschosse</option>
+                                <option {% if config['house']['wall1'] == "ENEV" %} selected="selected" {% endif %}
+                                    value="ENEV">ENEV</option>
                                 <option {% if config['house']['wall1'] == "u_value" %} selected="selected" {% endif %}
                                 value="u_value">Eigener U-Wert</option>
                             </select>

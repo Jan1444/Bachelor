@@ -24,7 +24,11 @@ function updateWallDropdown(first,second) {
     fetch('/get_wall/' + wall)
         .then(response => response.json())
         .then(data => {
-            construction.innerHTML = '<option value="">Bauweise wählen</option>';
+            if (wall === "ENEV"){
+                construction.innerHTML = '<option value="">ENEV wählen</option>';
+            }else{
+                construction.innerHTML = '<option value="">Bauweise wählen</option>';
+            }
             data.forEach(function (glazing) {
                 const option = document.createElement('option');
                 option.value = glazing;
