@@ -3,7 +3,7 @@ time = "17-01-2024 19:57:51"
 format = "%d-%m-%Y %H:%M:%S"
 
 [analytics]
-reload = true
+reload = false
 
 [coordinates]
 latitude = 49.5198371

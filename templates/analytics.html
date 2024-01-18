@@ -43,7 +43,7 @@
     <table class="BoxHeader">
         <tr>
             <td>
-                <img class="HeaderImage" src="{{ url_for('static', filename='favicon/android-chrome-512x512.png') }}">
+                <img class="HeaderImage" src="../static/favicon/android-chrome-512x512.png" alt="">
                 <h1 class="Headerh1">Analytics</h1>
             </td>
         </tr>
@@ -53,12 +53,12 @@
         <tr>
             <td class="Box1" colspan="1">
                 <b>
-                    Wetter Daten Heutige Produzierte Energie: {{ energy_data }} Wh
+                    Wetter Daten Heutige produzierte Energie: {{ energy_data }} Wh
                 </b>
             </td>
         </tr>
         <tr>
-            <td><img alt="Weather Chart" src={{ url_weather }} width="95%" ></td>
+            <td><img alt="Weather Chart" width="95%" src={{ url_weather }} ></td>
         </tr>
         <tr>
             <td class="Box1" colspan="1">
@@ -68,7 +68,7 @@
             </td>
         </tr>
         <tr>
-            <td><img alt="Weather Chart" src={{ url_market }} width="95%" ></td>
+            <td><img alt="Market Chart" width="95%" src={{ url_market }} ></td>
         </tr>
     </table>
 </div>
