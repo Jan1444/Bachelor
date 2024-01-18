@@ -761,9 +761,9 @@ def heating_power():
     room.Floor.u_wert = hp.u_value[house_data.get("floor", 0)][house_data.get("construction_floor", 0)][
         house_data.get("house_year" if house_data["house_year"] < 1995 else 1995, 0)]
 
-    room.ceiling.area = house_data.get("wall1_width", 0) * house_data.get("wall2_width", 0)
+    room.Ceiling.area = house_data.get("wall1_width", 0) * house_data.get("wall2_width", 0)
 
-    room.ceiling.u_wert = hp.u_value.get(house_data["ceiling"], 0).get(house_data["construction_ceiling"], 0).get(
+    room.Ceiling.u_wert = hp.u_value.get(house_data["ceiling"], 0).get(house_data["construction_ceiling"], 0).get(
         house_data["house_year"] if house_data["house_year"] < 1995 else 1995, 0)
 
     room.Wall1.area = house_data.get("wall1_width", 0) * house_data.get("wall1_height", 0)
@@ -839,7 +839,7 @@ def heating_power():
             i += 1
 
             room.Floor.temp_diff = diff_temp
-            room.ceiling.temp_diff = diff_temp
+            room.Ceiling.temp_diff = diff_temp
             room.Wall1.temp_diff = diff_temp
             room.Wall2.temp_diff = diff_temp
             room.Wall3.temp_diff = diff_temp

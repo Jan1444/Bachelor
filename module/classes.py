@@ -722,14 +722,14 @@ class RequiredHeatingPower:
             temp_diff: float = 0.0
 
         @dataclasses.dataclass
-        class ceiling:
+        class Ceiling:
             u_wert: float = 0.0
             area: float = 0.0
             temp_diff: float = 0.0
 
     def __init__(self) -> None:
         """
-
+        # https://www.raum-analyse.de/waermedaemmung/enev/
         """
         self.u_value: dict = {
             "Fenster": {
@@ -1207,7 +1207,7 @@ class RequiredHeatingPower:
 
         floor: float = room.Floor.area * room.Floor.u_wert * room.Floor.temp_diff
 
-        ceiling: float = room.ceiling.area * room.ceiling.u_wert * room.Floor.temp_diff
+        ceiling: float = room.Ceiling.area * room.Ceiling.u_wert * room.Floor.temp_diff
 
         heating_power: float = (wall_1 + wall_1_window_1 + wall_1_window_2 + wall_1_window_3 + wall_1_window_4 +
                                 wall_1_door +

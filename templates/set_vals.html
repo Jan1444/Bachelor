@@ -269,20 +269,21 @@
                                    value="{{ config['house']['house_year'] }}" class="felder">
                         </td>
                         <td class="border_bottom">
-
                             <label for="window1_frame" class="felder">Fensterrahmen:</label>
                             <select name="window1_frame" id="window1_frame" class="felder" 
-                                    onchange="updateWindowDropdown('window1_frame','window1_glazing')
-                                    toggleFieldsetWindow('window1_frame','window1_data','window1_u_value_input')">
+                                    onchange="updateWindowDropdown('window1_frame','window1_glazing');
+                                    toggleFieldsetWindow('window1_frame','window1_data','window1_u_value_input','window1_data_year');">
                                 <option value="">Rahmen wählen</option>
                                 <option {% if config['house']['window1_frame'] == "Holzrahmen" %} selected="selected" {% endif %}
-                                value="Holzrahmen">Holzrahmen</option>
+                                    value="Holzrahmen">Holzrahmen</option>
                                 <option {% if config['house']['window1_frame'] == "Kunststoffrahmen" %} selected="selected" {% endif %}
-                                value="Kunststoffrahmen">Kunststoffrahmen</option>
+                                    value="Kunststoffrahmen">Kunststoffrahmen</option>
                                 <option {% if config['house']['window1_frame'] == "Metallrahmen" %} selected="selected" {% endif %}
-                                value="Metallrahmen">Metallrahmen</option>
+                                    value="Metallrahmen">Metallrahmen</option>
+                                <option {% if config['house']['window1_frame'] == "Metallrahmen" %} selected="selected" {% endif %}
+                                    value="ENEV">ENEV</option>
                                 <option{% if config['house']['window1_frame'] == "u_value" %} selected="selected" {% endif %}
-                                value="u_value">Eigener U-Wert</option>
+                                    value="u_value">Eigener U-Wert</option>
                             </select>
                             <div id="window1_data" {% if config['house']['window1_frame'] == 'u_value' %} style="display: none" {% else %}
                                  style="display: block" {% endif %}>
@@ -306,18 +307,21 @@
                                         value="Isolierverglasung">Isolierverglasung</option>
                                     {% endif %}
                                 </select>
-    
+                            </div>
+                        
+                            <div id="window1_data_year" {% if config['house']['window1_frame'] == 'u_value' or  config['house']['window1_frame'] == 'ENEV' %}
+                                 style="display: none" {% else %} style="display: block" {% endif %}>
                                 <label for="window1_year" class="felder">Fensterbaujahr:</label>
                                 <input id="window1_year" minlength="1" name="window1_year" step="0.1" min="0" type="number"
                                        value="{{ config['house']['window1_year'] }}" class="felder">
                             </div>
+                        
                             <div id="window1_u_value_input" {% if config['house']['window1_frame'] == 'u_value' %} style="display: block" {% else %}
                                      style="display: none" {% endif %}>
                                 <label for="window1_u_value" class="felder">U-Wert:</label>
                                 <input id="window1_u_value" minlength="1" name="window1_u_value" step="0.01" min="0" type="number"
                                            value="{{ config['house']['window1_u_value'] }}" class="felder">
                             </div>
-                            
                         
                             <label for="window1_width" class="felder">Fensterbreite [m]:</label>
                             <input id="window1_width" minlength="1" name="window1_width" step="0.1" min="0" type="number"
@@ -330,22 +334,22 @@
                         </td>
                         <td class="border_bottom">
                             <label for="wall1" class="felder">Wand:</label>
-                            <select name="wall1" id="wall1" class="felder" 
-                                    onchange="updateWallDropdown('wall1','construction_wall1')
-                                    toggleFieldsetWindow('wall1','wall1_data','wall1_u_value')">
+                            <select name="wall1" id="wall1" class="felder"
+                                    onchange="updateWallDropdown('wall1','construction_wall1');
+                                    toggleFieldsetWall('wall1','wall1_data','wall1_u_value','wall1_data','wall1_type_id');">
                                 <option value="">Wand typ wählen</option>
                                 <option {% if config['house']['wall1'] == "Außenwand" %} selected="selected" {% endif %}
                                     value="Außenwand">Außenwand</option>
-                                <option {% if config['house']['wall1'] == "Wand gegen Erdreich" %} selected="selected" {% endif %}
-                                    value="Wand gegen Erdreich">Wand gegen Erdreich</option>
-                                <option {% if config['house']['wall1'] == "Innenwand gegen unbeheizte Kellergeschosse" %} selected="selected" {% endif %}
-                                    value="Innenwand gegen unbeheizte Kellergeschosse">
-                                    Innenwand gegen unbeheizte Kellergeschosse</option>
-                                <option {% if config['house']['wall1'] == "ENEV" %} selected="selected" {% endif %}
-                                    value="ENEV">ENEV</option>
+                                <option {% if config['house']['wall1'] == "Innenwand" %} selected="selected" {% endif %}
+                                    value="Innenwand">Innenwand</option>
+                                <option {% if config['house']['wall1'] == "ENEV Außenwand" %} selected="selected" {% endif %}
+                                    value="ENEV Außenwand">ENEV Außenwand</option>
+                                <option {% if config['house']['wall1'] == "ENEV Innenwand" %} selected="selected" {% endif %}
+                                    value="ENEV Innenwand">ENEV Innenwand</option>
                                 <option {% if config['house']['wall1'] == "u_value" %} selected="selected" {% endif %}
                                 value="u_value">Eigener U-Wert</option>
                             </select>
+                        
                             <div id="wall1_data" {% if config['house']['wall1'] == 'u_value' %} style="display: none" {% else %}
                                  style="display: block" {% endif %}>
                                 <label for="construction_wall1" class="felder">Bauweise:</label>
@@ -371,23 +375,26 @@
                                     {% endif %}
                                 </select>
                             </div>
+                        
                             <div id="wall1_u_value" {% if config['house']['wall1'] == 'u_value' %} style="display: block" {% else %}
                                  style="display: none" {% endif %}>
                                 <label for="wall1_u_value" class="felder">U-Wert:</label>
                                 <input id="wall1_u_value" minlength="1" name="wall1_u_value" step="0.01" min="0" type="number"
                                        value="{{ config['house']['wall1_u_value'] }}" class="felder">
                                 <label for="wall1_type" class="felder">Wand Typ:</label>
-                                <select name="wall1_type" id="wall1_type" class="felder" onchange="toggleFieldset('wall1_type','wall1_type_id')">
+                                <select name="wall1_type" id="wall1_type" class="felder" onchange="toggleFieldset('wall1_type','wall1_type_id', '1')">
                                     <option value="0" {% if not config['house']['wall1_type'] %} selected="selected"{% endif %}>Außenwand</option>
                                     <option value="1" {% if config['house']['wall1_type'] %} selected="selected"{% endif %}>Innenwand</option>
                                 </select>
-                                <div id="wall1_type_id" {% if config['house']['wall1_type'] %}  style="display: block" {% else %}
-                                style="display: none" {% endif %}>
-                                    <label for="wall1_diff_temp" class="felder">angrenzende Raumtemperatur [°C]:</label>
-                                    <input id="wall1_diff_temp" minlength="1" name="wall1_diff_temp" step="0.1" min="0" type="number"
-                                       value="{{ config['house']['wall1_diff_temp'] }}" class="felder">
-                                </div>
                             </div>
+                        
+                            <div id="wall1_type_id" {% if config['house']['wall1_type'] %}  style="display: block" {% else %}
+                                style="display: none" {% endif %}>
+                                <label for="wall1_diff_temp" class="felder">angrenzende Raumtemperatur [°C]:</label>
+                                <input id="wall1_diff_temp" minlength="1" name="wall1_diff_temp" step="0.1" min="0" type="number"
+                                       value="{{ config['house']['wall1_diff_temp'] }}" class="felder">
+                            </div>
+                            
                             <label for="wall1_width" class="felder">Wandbreite [m]:</label>
                             <input id="wall1_width" minlength="1" name="wall1_width" step="0.1" min="0" type="number"
                                    value="{{ config['house']['wall1_width'] }}" class="felder">
