@@ -19,7 +19,7 @@
     <link href="../static/favicon/site.webmanifest" rel="manifest">
     <link color="#5bbad5" href="../static/favicon/safari-pinned-tab.svg" rel="mask-icon">
     <!--Stylesheet-->
-    <link href="../static/css/style_index.css" rel="stylesheet" type="text/css">
+    <link href="../static/css/style_analytics.css" rel="stylesheet" type="text/css">
 </head>
 <body>
 <div id="main-container">
@@ -39,38 +39,24 @@
             </li>
         </ul>
     </div>
-
-    <table class="BoxHeader">
-        <tr>
-            <td>
-                <img class="HeaderImage" src="../static/favicon/android-chrome-512x512.png" alt="">
-                <h1 class="Headerh1">Analytics</h1>
-            </td>
-        </tr>
-    </table>
-
-    <table class="BoxContent">
-        <tr>
-            <td class="Box1" colspan="1">
-                <b>
-                    Wetter Daten Heutige produzierte Energie: {{ energy_data }} Wh
-                </b>
-            </td>
-        </tr>
-        <tr>
-            <td><img alt="Weather Chart" width="95%" src={{ url_weather }} ></td>
-        </tr>
-        <tr>
-            <td class="Box1" colspan="1">
-                <b>
-                    Strom Daten
-                </b>
-            </td>
-        </tr>
-        <tr>
-            <td><img alt="Market Chart" width="95%" src={{ url_market }} ></td>
-        </tr>
-    </table>
+    <header class="BoxHeader">
+        <img class="HeaderImage" src="../static/favicon/android-chrome-512x512.png" alt="">
+        <h1 class="Headerh1">Analytics</h1>
+    </header>
+    <div class="BoxContent">
+        <nav class="Box1">
+            <b>Wetter Daten Heutige produzierte Energie: {{ energy_data }} Wh</b>
+        </nav>
+        <section class="chart"> 
+            <img alt="Weather Chart" src={{ url_weather }}>
+        </section>
+        <nav class="Box1">
+            <b>Strom Preis</b>
+        </nav>
+        <section class="chart">
+            <img alt="Market Chart" src={{ url_market }}>
+        </section>
+    </div>
 </div>
 </body>
 </html>
