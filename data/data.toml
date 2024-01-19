@@ -1,486 +1,486 @@
 [write_time]
-time = "18-01-2024 15:16:45"
+time = "19-01-2024 11:15:52"
 format = "%d-%m-%Y %H:%M:%S"
 
 [energy]
-energy = 3.69
+energy = 1193.89
 
 ["00:00"]
 dni_radiation = 0.0
 power = 0
-market_price = 24.646
+market_price = 23.592
 
 ["00:15"]
 dni_radiation = 0.0
 power = 0
-market_price = 25.565
+market_price = 24.286
 
 ["00:30"]
 dni_radiation = 0.0
 power = 0
-market_price = 25.565
+market_price = 24.286
 
 ["00:45"]
 dni_radiation = 0.0
 power = 0
-market_price = 25.565
+market_price = 24.286
 
 ["01:00"]
 dni_radiation = 0.0
 power = 0
-market_price = 25.565
+market_price = 24.286
 
 ["01:15"]
 dni_radiation = 0.0
 power = 0
-market_price = 25.073
+market_price = 23.854
 
 ["01:30"]
 dni_radiation = 0.0
 power = 0
-market_price = 25.073
+market_price = 23.854
 
 ["01:45"]
 dni_radiation = 0.0
 power = 0
-market_price = 25.073
+market_price = 23.854
 
 ["02:00"]
 dni_radiation = 0.0
 power = 0
-market_price = 25.073
+market_price = 23.854
 
 ["02:15"]
 dni_radiation = 0.0
 power = 0
-market_price = 24.846
+market_price = 23.696
 
 ["02:30"]
 dni_radiation = 0.0
 power = 0
-market_price = 24.846
+market_price = 23.696
 
 ["02:45"]
 dni_radiation = 0.0
 power = 0
-market_price = 24.846
+market_price = 23.696
 
 ["03:00"]
 dni_radiation = 0.0
 power = 0
-market_price = 24.846
+market_price = 23.696
 
 ["03:15"]
 dni_radiation = 0.0
 power = 0
-market_price = 24.801
+market_price = 23.355
 
 ["03:30"]
 dni_radiation = 0.0
 power = 0
-market_price = 24.801
+market_price = 23.355
 
 ["03:45"]
 dni_radiation = 0.0
 power = 0
-market_price = 24.801
+market_price = 23.355
 
 ["04:00"]
 dni_radiation = 0.0
 power = 0
-market_price = 24.801
+market_price = 23.355
 
 ["04:15"]
 dni_radiation = 0.0
 power = 0
-market_price = 25.117
+market_price = 23.422
 
 ["04:30"]
 dni_radiation = 0.0
 power = 0
-market_price = 25.117
+market_price = 23.422
 
 ["04:45"]
 dni_radiation = 0.0
 power = 0
-market_price = 25.117
+market_price = 23.422
 
 ["05:00"]
 dni_radiation = 0.0
 power = 0
-market_price = 25.117
+market_price = 23.422
 
 ["05:15"]
 dni_radiation = 0.0
 power = 0
-market_price = 25.525
+market_price = 23.915
 
 ["05:30"]
 dni_radiation = 0.0
 power = 0
-market_price = 25.525
+market_price = 23.915
 
 ["05:45"]
 dni_radiation = 0.0
 power = 0
-market_price = 25.525
+market_price = 23.915
 
 ["06:00"]
 dni_radiation = 0.0
 power = 0
-market_price = 25.525
+market_price = 23.915
 
 ["06:15"]
 dni_radiation = 0.0
 power = 0
-market_price = 26.768
+market_price = 25.161
 
 ["06:30"]
 dni_radiation = 0.0
 power = 0
-market_price = 26.768
+market_price = 25.161
 
 ["06:45"]
 dni_radiation = 0.0
 power = 0
-market_price = 26.768
+market_price = 25.161
 
 ["07:00"]
 dni_radiation = 0.0
 power = 0
-market_price = 26.768
+market_price = 25.161
 
 ["07:15"]
 dni_radiation = 0.0
 power = 0
-market_price = 29.161
+market_price = 26.26
 
 ["07:30"]
 dni_radiation = 0.0
 power = 0
-market_price = 29.161
+market_price = 26.26
 
 ["07:45"]
 dni_radiation = 0.0
 power = 0
-market_price = 29.161
+market_price = 26.26
 
 ["08:00"]
 dni_radiation = 0.0
 power = 0
-market_price = 29.161
+market_price = 26.26
 
 ["08:15"]
 dni_radiation = 0.0
 power = 0.0
-market_price = 30.867
+market_price = 28.295
 
 ["08:30"]
 dni_radiation = 0.0
 power = 0.0
-market_price = 30.867
+market_price = 28.295
 
 ["08:45"]
 dni_radiation = 0.0
 power = 0.0
-market_price = 30.867
+market_price = 28.295
 
 ["09:00"]
 dni_radiation = 0.0
 power = 0.0
-market_price = 30.867
+market_price = 28.295
 
 ["09:15"]
-dni_radiation = 0.0
-power = 0.0
-market_price = 30.425
+dni_radiation = 7.7
+power = 6.198
+market_price = 28.151
 
 ["09:30"]
-dni_radiation = 0.0
-power = 0.0
-market_price = 30.425
+dni_radiation = 12.5
+power = 10.852
+market_price = 28.151
 
 ["09:45"]
-dni_radiation = 0.0
-power = 0.0
-market_price = 30.425
+dni_radiation = 10.7
+power = 9.937
+market_price = 28.151
 
 ["10:00"]
-dni_radiation = 0.0
-power = 0.0
-market_price = 30.425
+dni_radiation = 28.2
+power = 27.623
+market_price = 28.151
 
 ["10:15"]
-dni_radiation = 0.0
-power = 0.0
-market_price = 29.084
+dni_radiation = 105.7
+power = 105.828
+market_price = 27.209
 
 ["10:30"]
-dni_radiation = 0.0
-power = 0.0
-market_price = 29.084
+dni_radiation = 112.4
+power = 117.026
+market_price = 27.209
 
 ["10:45"]
-dni_radiation = 0.0
-power = 0.0
-market_price = 29.084
+dni_radiation = 180.4
+power = 189.288
+market_price = 27.209
 
 ["11:00"]
-dni_radiation = 3.4
-power = 3.675
-market_price = 29.084
+dni_radiation = 238.1
+power = 248.831
+market_price = 27.209
 
 ["11:15"]
-dni_radiation = 0.0
-power = 0.0
-market_price = 28.733
+dni_radiation = 217.2
+power = 234.418
+market_price = 26.163
 
 ["11:30"]
-dni_radiation = 0.0
-power = 0.0
-market_price = 28.733
+dni_radiation = 212.1
+power = 233.669
+market_price = 26.163
 
 ["11:45"]
-dni_radiation = 0.0
-power = 0.0
-market_price = 28.733
+dni_radiation = 412.0
+power = 417.377
+market_price = 26.163
 
 ["12:00"]
-dni_radiation = 0.0
-power = 0.0
-market_price = 28.733
+dni_radiation = 510.2
+power = 492.234
+market_price = 26.163
 
 ["12:15"]
-dni_radiation = 0.0
-power = 0.0
-market_price = 27.019
+dni_radiation = 351.4
+power = 370.262
+market_price = 25.029
 
 ["12:30"]
-dni_radiation = 0.0
-power = 0.0
-market_price = 27.019
+dni_radiation = 378.6
+power = 393.629
+market_price = 25.029
 
 ["12:45"]
-dni_radiation = 0.0
-power = 0.0
-market_price = 27.019
+dni_radiation = 397.0
+power = 407.536
+market_price = 25.029
 
 ["13:00"]
-dni_radiation = 0.0
-power = 0.0
-market_price = 27.019
+dni_radiation = 321.4
+power = 337.983
+market_price = 25.029
 
 ["13:15"]
-dni_radiation = 3.0
-power = 3.53
-market_price = 26.313
+dni_radiation = 252.1
+power = 270.968
+market_price = 24.615
 
 ["13:30"]
-dni_radiation = 3.1
-power = 3.58
-market_price = 26.313
+dni_radiation = 181.7
+power = 198.381
+market_price = 24.615
 
 ["13:45"]
-dni_radiation = 0.0
-power = 0.0
-market_price = 26.313
+dni_radiation = 105.2
+power = 116.125
+market_price = 24.615
 
 ["14:00"]
-dni_radiation = 0.0
-power = 0.0
-market_price = 26.313
+dni_radiation = 116.6
+power = 124.248
+market_price = 24.615
 
 ["14:15"]
-dni_radiation = 0.0
-power = 0.0
-market_price = 26.172
+dni_radiation = 130.2
+power = 133.44
+market_price = 24.836
 
 ["14:30"]
-dni_radiation = 0.0
-power = 0.0
-market_price = 26.172
+dni_radiation = 218.2
+power = 207.745
+market_price = 24.836
 
 ["14:45"]
-dni_radiation = 4.1
-power = 3.992
-market_price = 26.172
+dni_radiation = 48.9
+power = 47.387
+market_price = 24.836
 
 ["15:00"]
-dni_radiation = 0.0
-power = 0.0
-market_price = 26.172
+dni_radiation = 40.4
+power = 37.255
+market_price = 24.836
 
 ["15:15"]
-dni_radiation = 0.0
-power = 0.0
-market_price = 27.102
+dni_radiation = 20.2
+power = 17.592
+market_price = 25.103
 
 ["15:30"]
-dni_radiation = 0.0
-power = 0.0
-market_price = 27.102
+dni_radiation = 5.9
+power = 4.794
+market_price = 25.103
 
 ["15:45"]
 dni_radiation = 0.0
 power = 0.0
-market_price = 27.102
+market_price = 25.103
 
 ["16:00"]
 dni_radiation = 0.0
 power = 0.0
-market_price = 27.102
+market_price = 25.103
 
 ["16:15"]
-dni_radiation = 0.0
-power = 0.0
-market_price = 27.729
+dni_radiation = 11.9
+power = 7.186
+market_price = 25.965
 
 ["16:30"]
-dni_radiation = 0.0
-power = 0.0
-market_price = 27.729
+dni_radiation = 14.7
+power = 7.744
+market_price = 25.965
 
 ["16:45"]
-dni_radiation = 0.0
+dni_radiation = 19.6
 power = 0
-market_price = 27.729
+market_price = 25.965
 
 ["17:00"]
 dni_radiation = 0.0
 power = 0
-market_price = 27.729
+market_price = 25.965
 
 ["17:15"]
 dni_radiation = 0.0
 power = 0
-market_price = 28.343
+market_price = 27.025
 
 ["17:30"]
 dni_radiation = 0.0
 power = 0
-market_price = 28.343
+market_price = 27.025
 
 ["17:45"]
 dni_radiation = 0.0
 power = 0
-market_price = 28.343
+market_price = 27.025
 
 ["18:00"]
 dni_radiation = 0.0
 power = 0
-market_price = 28.343
+market_price = 27.025
 
 ["18:15"]
 dni_radiation = 0.0
 power = 0
-market_price = 28.174
+market_price = 26.799
 
 ["18:30"]
 dni_radiation = 0.0
 power = 0
-market_price = 28.174
+market_price = 26.799
 
 ["18:45"]
 dni_radiation = 0.0
 power = 0
-market_price = 28.174
+market_price = 26.799
 
 ["19:00"]
 dni_radiation = 0.0
 power = 0
-market_price = 28.174
+market_price = 26.799
 
 ["19:15"]
 dni_radiation = 0.0
 power = 0
-market_price = 27.136
+market_price = 25.672
 
 ["19:30"]
 dni_radiation = 0.0
 power = 0
-market_price = 27.136
+market_price = 25.672
 
 ["19:45"]
 dni_radiation = 0.0
 power = 0
-market_price = 27.136
+market_price = 25.672
 
 ["20:00"]
 dni_radiation = 0.0
 power = 0
-market_price = 27.136
+market_price = 25.672
 
 ["20:15"]
 dni_radiation = 0.0
 power = 0
-market_price = 26.236
+market_price = 24.692
 
 ["20:30"]
 dni_radiation = 0.0
 power = 0
-market_price = 26.236
+market_price = 24.692
 
 ["20:45"]
 dni_radiation = 0.0
 power = 0
-market_price = 26.236
+market_price = 24.692
 
 ["21:00"]
 dni_radiation = 0.0
 power = 0
-market_price = 26.236
+market_price = 24.692
 
 ["21:15"]
 dni_radiation = 0.0
 power = 0
-market_price = 25.778
+market_price = 24.35
 
 ["21:30"]
 dni_radiation = 0.0
 power = 0
-market_price = 25.778
+market_price = 24.35
 
 ["21:45"]
 dni_radiation = 0.0
 power = 0
-market_price = 25.778
+market_price = 24.35
 
 ["22:00"]
 dni_radiation = 0.0
 power = 0
-market_price = 25.778
+market_price = 24.35
 
 ["22:15"]
 dni_radiation = 0.0
 power = 0
-market_price = 25.517
+market_price = 24.055
 
 ["22:30"]
 dni_radiation = 0.0
 power = 0
-market_price = 25.517
+market_price = 24.055
 
 ["22:45"]
 dni_radiation = 0.0
 power = 0
-market_price = 25.517
+market_price = 24.055
 
 ["23:00"]
 dni_radiation = 0.0
 power = 0
-market_price = 25.517
+market_price = 24.055
 
 ["23:15"]
 dni_radiation = 0.0
 power = 0
-market_price = 24.646
+market_price = 23.592
 
 ["23:30"]
 dni_radiation = 0.0
 power = 0
-market_price = 24.646
+market_price = 23.592
 
 ["23:45"]
 dni_radiation = 0.0
 power = 0
-market_price = 24.646
+market_price = 23.592

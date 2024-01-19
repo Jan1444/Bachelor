@@ -49,6 +49,7 @@ function toggleFieldsetWindow(selectId, FieldSetId1, FieldSetId2, FieldSetId3) {
     const fieldSet3 = document.getElementById(FieldSetId3);
     if (selectValue === "ENEV"){
         fieldSet1.style.display = "block";
+        fieldSet2.style.display = "none";
         fieldSet3.style.display = "none";
     }
     else if (selectValue === "u_value") {

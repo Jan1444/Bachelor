@@ -35,10 +35,17 @@
     --standard_font: Arial;
 }
 
+table {
+    font-size: var(--font_height);
+    font-family: var(--font_family);
+    color: white;
+}
+
+
 button {
+    margin-top: 10px;
     font-size: var(--font_size);
     font-family: var(--standard_font);
-    margin: 10px 10px 10px 100px;
 }
 
 h1 {
@@ -47,9 +54,51 @@ h1 {
     margin-bottom: 30px;
 }
 
+table {
+    table-layout: auto;
+    width: 100%;
+}
+
+
+.BoxHeat {
+    tr{
+        height: 100px;
+    }
+
+    td {
+        width: 500px !important;
+    }
+
+
+
+
+    text-align: center;
+}
+
+
+tr td:nth-child(1) {
+    width: 250px;
+}
+
+tr td:nth-child(2) {
+    width: 110px;
+}
+
+tr td:nth-child(3) {
+    width: 930px;
+}
+
 .error_class {
     border-color: red;
     border-width: 3px;
+}
+
+.BoxContent {
+    grid-row-start: 2;
+    grid-row-end: 2;
+    grid-column-start: 2;
+    grid-column-end: 2;
+    width: 100%;
 }
 
 .Box1{
@@ -65,6 +114,10 @@ h1 {
     color: white;
 }
 
+.Box2 {
+    width: 100%;
+}
+
 .input-group {
     display: flex;
     align-items: center;
@@ -77,13 +130,44 @@ h1 {
     font-size: calc(var(--font_height) - 3px);
     font-family: var(--font_family);
     width: 300px;
-    padding-left: 5px;
 }
 
-.input-group select, .input-group input {
+.input-group input {
     font-family: var(--font_family);
     font-size: calc(var(--font_height) - 3px);
     width: 150px;
+}
+
+.input-group select {
+    font-family: var(--font_family);
+    font-size: calc(var(--font_height) - 3px);
+    width: 150px;
+}
+
+.border_top{
+    border-top: 3px solid;
+    padding-top: 5px;
+}
+
+.border_bottom{
+    border-bottom: 3px solid;
+    padding-bottom: 5px;
+}
+
+.border_left{
+    border-left: 3px solid;
+}
+
+.border_right{
+    border-right: 3px solid;
+}
+
+.felder{
+    font-family: var(--standard_font);
+    width: 200px !important;
+    height: 25px;
+    font-size: 20px;
+    display: inline-block;
 }
 
 .visible{
@@ -106,11 +190,9 @@ h1 {
 }
 
 .cell {
-    flex: 1;
+    flex: 1; /* passt die Größe automatisch an */
     padding: 3px;
-    box-sizing: border-box;
-    margin-left: 10px;
-    margin-right: 10px;
+    box-sizing: border-box; /* Stellt sicher, dass Padding in der Breite enthalten ist */
 }
 
 .cell input, .cell select {
@@ -126,7 +208,6 @@ h1 {
     font-size: calc(var(--font_height) - 3px);
     font-family: var(--font_family);
     width: 200px;
-    margin-top: 5px;
 }
 
 
