@@ -40,108 +40,100 @@
         </ul>
     </div>
 
-    <table class="BoxHeader">
-        <tr>
-            <td>
-                <img class="HeaderImage" alt="" src="../static/favicon/android-chrome-512x512.png">
-                <h1 class="Headerh1">Datei Download</h1>
-            </td>
-        </tr>
-    </table>
+    <header class="BoxHeader">
+        <img class="HeaderImage" src="../static/favicon/android-chrome-512x512.png" alt="">
+        <h1 class="Headerh1">Datei Download</h1>
+    </header>
 
     <form action="/generate_download" class="BoxContent" method="post">
         <!--Wetter Daten-->
-        <table>
+        <nav class="Box1">
+            <b>Wetter Daten</b>
+        </nav>
+        <section>
             {% if error_weather or error_market %}
-            <p style="color: red;">{{ error_weather }}</p>
-            <p style="color: red;">{{ error_market }}</p>
+                <p class="error_class">{{ error_weather }}</p>
+                <p class="error_class">{{ error_market }}</p>
             {% endif %}
-            <tr>
-                <td class="Box1" colspan="4">
-                    <b>
-                        Wetter Daten
-                    </b>
-                </td>
-            </tr>
-            <tr>
-                <td><label for="start_date_weather">Start Datum:</label></td>
-                <td><input id="start_date_weather" minlength="1" name="start_date_weather" type="date"
-                           min="2022-06-08"
-                           {% if error_weather %} style="border-color: red; border-width: 3px" {% endif %}></td>
-                <td><label for="end_date_weather">End Datum:</label></td>
-                <td><input id="end_date_weather" minlength="1" name="end_date_weather" type="date"
-                           value="{{ config['date'] }}"></td>
-            </tr>
-            <tr>
-                <td><label for="excel_weather">Excel .xlsx</label></td>
-                <td><input id="excel_weather" name="excel_weather" type="checkbox"></td>
-                <td>{% if "excel_weather" in ret_weather %}
-                    <a style="align-items: stretch; font-size: 20px;" href="{{ url_for('download_file', name='weather_data.xlsx') }}">Download File</a>
-                    {% endif %}
-                </td>
-                <td></td>
-            </tr>
-            <tr>
-                <td><label for="plot_png_weather">Plot .png</label></td>
-                <td><input id="plot_png_weather" name="plot_png_weather" type="checkbox"></td>
-                <td>{% if "plot_weather" in ret_weather %}
+        
+            <div class="input-group">
+                <label for="start_date_weather">Start Datum:</label>
+                <input id="start_date_weather" minlength="1" name="start_date_weather" type="date" min="2022-06-08"
+                        {% if error_weather %} 
+                            class="error_class" 
+                        {% endif %}>
+            </div>
+            <div class="input-group">
+                <label for="end_date_weather">End Datum:</label>
+                <input id="end_date_weather" minlength="1" name="end_date_weather" type="date" value="{{ config['date'] }}">
+            </div>
+            <div class="input-group">
+                <label for="excel_weather">Excel .xlsx</label>
+                <input id="excel_weather" name="excel_weather" type="checkbox">
+            </div>
+            <div class="input-group">
+                {% if "excel_weather" in ret_weather %}
+                    <a style="align-items: stretch; font-size: 20px;" 
+                       href="{{ url_for('download_file', name='weather_data.xlsx') }}">Download File</a>
+                {% endif %}
+            </div>
+        
+            <div class="input-group">
+                <label for="plot_png_weather">Plot .png</label>
+                <input id="plot_png_weather" name="plot_png_weather" type="checkbox">
+            </div>
+            <div class="input-group">
+                {% if "plot_weather" in ret_weather %}
                     <a href="{{ url_for('download_file', name='weather_plot.png') }}"
                        style="align-items: stretch; font-size: 20px;">Download File</a>
-                    {% endif %}
-                </td>
-                <td></td>
-            </tr>
-            <!--Markt Daten-->
-            <tr>
-                <td class="Box1" colspan="4">
-                    <b>
-                        Strom Daten
-                    </b>
-                </td>
-            </tr>
-            <tr>
-                <td><label for="start_date_market">Start Datum:</label></td>
-                <td><input id="start_date_market" minlength="1" name="start_date_market" type="datetime-local"
-                           {% if error_market %} style="border-color: red; border-width: 3px" {% endif %}></td>
-                <td><label for="end_date_market">End Datum:</label></td>
-                <td><input id="end_date_market" minlength="1" name="end_date_market" type="datetime-local"
-                           value="{{ config['datetime'] }}"></td>
-            </tr>
-            <tr>
-                <td><label for="excel_market">Excel .xlsx</label></td>
-                <td><input id="excel_market" name="excel_market" type="checkbox"></td>
-                <td>
-                    {% if "excel_market" in ret_market%}
-                    <a style="align-items: stretch; font-size: 20px;" href="{{ url_for('download_file', name='market_data.xlsx') }}">Download File</a>
-                    {% endif %}
-                </td>
-            </tr>
-            <tr>
-                <td><label for="plot_png_market">Plot .png</label></td>
-                <td><input id="plot_png_market" name="plot_png_market" type="checkbox"></td>
-                <td>
-                    {% if "plot_market" in ret_market %}
-                    <a style="align-items: stretch; font-size: 20px;" href="{{ url_for('download_file', name='market_plot.png') }}">Download File</a>
-                    {% endif %}
-                </td>
-            </tr>
-            <tr>
-                <td></td>
-                <td>
-                    <button type="submit">Generieren</button>
-                </td>
-                <td></td>
-            </tr>
-
-        </table>
-        <table>
-
-
-        </table>
-
+                {% endif %}
+            </div>
+        </section>
+    
+        <nav class="Box1">
+            <b>Strom Daten</b>
+        </nav>
+        <section>
+            <div class="input-group">
+                <label for="start_date_market">Start Datum:</label>
+                <input id="start_date_market" minlength="1" name="start_date_market" type="datetime-local"
+                        {% if error_market %}
+                            class="error_class" 
+                        {% endif %}>
+            </div>
+            <div class="input-group">
+                <label for="end_date_market">End Datum:</label>
+                <input id="end_date_market" minlength="1" name="end_date_market" type="datetime-local"
+                       value="{{ config['datetime'] }}">
+            </div>
+            <div class="input-group">
+                <label for="excel_market">Excel .xlsx</label>
+                <input id="excel_market" name="excel_market" type="checkbox">
+            </div>
+            <div class="input-group">
+                {% if "excel_market" in ret_market%}
+                    <a style="align-items: stretch; font-size: 20px;" 
+                       href="{{ url_for('download_file', name='market_data.xlsx') }}">Download File</a>
+                {% endif %}
+            </div>
+        
+            <div class="input-group">
+                <label for="plot_png_market">Plot .png</label>
+                <input id="plot_png_market" name="plot_png_market" type="checkbox">
+            </div>
+            <div class="input-group">
+                {% if "plot_market" in ret_market %}
+                    <a style="align-items: stretch; font-size: 20px;" 
+                       href="{{ url_for('download_file', name='market_plot.png') }}">Download File</a>
+                {% endif %}
+            </div>
+        </section>
+        <section>
+            <div class="input-group">
+                <button type="submit">Generieren</button>
+            </div>
+        </section>
     </form>
-
-
 </div>
 
 </body>

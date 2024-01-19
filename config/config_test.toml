@@ -35,13 +35,13 @@ ir_remote = ""
 
 [house]
 house_year = 0
-window1_frame = "ENEV"
+window1_frame = ""
 window1_glazing = ""
 window1_year = 0
 window1_width = 0.0
 window1_height = 0.0
 window1_u_value = 0.0
-wall1 = "u_value"
+wall1 = ""
 construction_wall1 = ""
 wall1_type = 0
 wall1_width = 0.0
