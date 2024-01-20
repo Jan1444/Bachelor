@@ -277,14 +277,14 @@
                                     toggleFieldsetWindow('window1_frame','window1_data','window1_u_value_input','window1_data_year');">
                             <option value="">Rahmen wählen</option>
                             <option {% if config['house']['window1_frame'] == "Holzrahmen" %}
-                                selected="selected"
-                            {% endif %}
-                                value="Holzrahmen">Holzrahmen
+                                        selected="selected"
+                                    {% endif %}
+                                    value="Holzrahmen">Holzrahmen
                             </option>
-                            <option {% if config['house']['window1_frame'] == "Kunststoffrahmen" %}
-                                selected="selected"
-                            {% endif %}
-                                value="Kunststoffrahmen">Kunststoffrahmen
+                            <option value="Kunststoffrahmen">Kunststoffrahmen
+                                    {% if config['house']['window1_frame'] == "Kunststoffrahmen" %}
+                                        selected="selected"
+                                    {% endif %}
                             </option>
                             <option {% if config['house']['window1_frame'] == "Metallrahmen" %}
                                 selected="selected"

@@ -343,7 +343,7 @@ def get_ceiling(ceiling):
         'Decke über Außenbereich': ['Massiv', 'Holzbalkendecke'],
         'unbeheiztes Geschoss': ['Massiv', 'Holzbalkendecke'],
         'ENEV unbeheiztes Geschoss': ['2009', '2014', '2016'],
-        'ENEV beheiztes Geschos': ['2009', '2014', '2016'],
+        'ENEV beheiztes Geschoss': ['2009', '2014', '2016'],
         'ENEV Dach': ['2009', '2014', '2016'],
         'u_value': ['']
     }
@@ -360,4 +360,4 @@ def get_door(door):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='localhost', port=8888)
