@@ -54,23 +54,23 @@
         <section>
             <div class="input-group">
                 <label for="latitude">Breitengrad [°]:</label>
-                <input id="latitude" minlength="2" name="latitude" type="text" 
+                <input id="latitude" minlength="2" name="latitude" type="text"
                        value="{{ config['coordinates']['latitude'] }}" {% if error %} class="error_class" {% endif %}>
             </div>
             <div class="input-group">
                 <label for="longitude">Längengrad [°]:</label>
-                <input id="longitude" minlength="2" name="longitude" type="text" 
+                <input id="longitude" minlength="2" name="longitude" type="text"
                        value="{{ config['coordinates']['longitude'] }}" {% if error %} class="error_class" {% endif %}>
             </div>
         </section>
         <nav class="Box1">
             <b>PV-Anlage</b>
         </nav>
-        <section  >
+        <section>
             <div class="input-group">
                 <label for="tilt_angle">Neigungswinkel [°]:</label>
                 <input id="tilt_angle" minlength="2" name="tilt_angle" type="text"
-                           value="{{ config['pv']['tilt_angle'] }}">
+                       value="{{ config['pv']['tilt_angle'] }}">
             </div>
             <div class="input-group">
                 <label for="area">Modulfläche [qm]:</label>
@@ -79,39 +79,52 @@
             <div class="input-group">
                 <label for="module_efficiency">Modul-Effizienz [%]:</label>
                 <input id="module_efficiency" minlength="2" name="module_efficiency"
-                           type="text" value="{{ config['pv']['module_efficiency'] }}">
+                       type="text" value="{{ config['pv']['module_efficiency'] }}">
             </div>
             <div class="input-group">
                 <label for="exposure_angle">Ausrichtungswinkel [°]:</label>
                 <input id="exposure_angle" minlength="1" name="exposure_angle"
-                           type="text" value="{{ config['pv']['exposure_angle'] }}">
+                       type="text" value="{{ config['pv']['exposure_angle'] }}">
             </div>
             <div class="input-group">
                 {% if error_mounting_type %}
                     <p class="error_class">{{ error_mounting_type }}</p>
                 {% endif %}
                 <label for="mounting_type">Montagetyp:</label>
-                <select name="mounting_type" id="mounting_type" 
-                        {% if error_mounting_type %} 
-                            class="error_class" 
+                <select name="mounting_type" id="mounting_type"
+                        {% if error_mounting_type %}
+                        class="error_class"
                         {% endif %}>
                     <option value="-1">Montagetyp wählen</option>
                     <option {% if config['pv']['mounting_type'] == 0 %} selected="selected" {% endif %}
-                            value="0">Völlig freie Aufständerung</option>
+                                                                        value="0">Völlig freie Aufständerung
+                    </option>
                     <option {% if config['pv']['mounting_type'] == 1 %} selected="selected" {% endif %}
-                            value="1">Auf dem Dach, großer Abstand</option>
+                                                                        value="1">Auf dem Dach, großer Abstand
+                    </option>
                     <option {% if config['pv']['mounting_type'] == 2 %} selected="selected" {% endif %}
-                            value="2">Auf dem Dach bzw. dachintegriert, gute Hinterlüftung</option>
+                                                                        value="2">Auf dem Dach bzw. dachintegriert, gute
+                        Hinterlüftung
+                    </option>
                     <option {% if config['pv']['mounting_type'] == 3 %} selected="selected" {% endif %}
-                            value="3">Auf dem Dach bzw. dachintegriert, schlechte Hinterlüftung</option>
+                                                                        value="3">Auf dem Dach bzw. dachintegriert,
+                        schlechte Hinterlüftung
+                    </option>
                     <option {% if config['pv']['mounting_type'] == 4 %} selected="selected" {% endif %}
-                            value="4">An der Fassade bzw. fassadenintegriert, gute Hinterlüftung</option>
+                                                                        value="4">An der Fassade bzw.
+                        fassadenintegriert, gute Hinterlüftung
+                    </option>
                     <option {% if config['pv']['mounting_type'] == 5 %} selected="selected" {% endif %}
-                            value="5">An der Fassade bzw. fassadenintegriert, schlechte Hinterlüftung</option>
+                                                                        value="5">An der Fassade bzw.
+                        fassadenintegriert, schlechte Hinterlüftung
+                    </option>
                     <option {% if config['pv']['mounting_type'] == 6 %} selected="selected" {% endif %}
-                            value="6">Dachintegration, ohne Hinterlüftung</option>
+                                                                        value="6">Dachintegration, ohne Hinterlüftung
+                    </option>
                     <option {% if config['pv']['mounting_type'] == 7 %} selected="selected" {% endif %}
-                            value="7">Fassadenintegration, ohne Hinterlüftung</option>
+                                                                        value="7">Fassadenintegration, ohne
+                        Hinterlüftung
+                    </option>
                 </select>
             </div>
             <div class="input-group">
@@ -128,7 +141,7 @@
         <nav class="Box1">
             <b>Wechselrichter</b>
         </nav>
-        <section  >
+        <section>
             <div class="input-group">
                 <label for="converter_power">Wechselrichter Leistung [W]:</label>
                 <input id="converter_power" minlength="1" name="converter_power"
@@ -138,7 +151,7 @@
         <nav class="Box1">
             <b>Strompreis</b>
         </nav>
-        <section  >
+        <section>
             <div class="input-group">
                 <label for="consumer_price">Strompreis [ct]:</label>
                 <input id="consumer_price" minlength="1" name="consumer_price"
@@ -148,7 +161,7 @@
         <nav class="Box1">
             <b>Shelly-TRV</b>
         </nav>
-        <section  >
+        <section>
             <div class="input-group">
                 <label for="ip_address">IP Adresse:</label>
                 <input id="ip_address" minlength="13" name="ip_address"
@@ -158,61 +171,73 @@
         <nav class="Box1">
             <b>Split-Klimagerät:</b>
         </nav>
-        <section  >
+        <section>
             <div class="input-group">
                 <label for="air_conditioner">Hersteller:</label>
                 <select name="air_conditioner" id="air_conditioner"
                         onchange=toggleFieldset2("air_conditioner","air_conditioner_steering")>
-                    <option  value="">Gerät wählen</option>
-                    <option {% if config['air_conditioner']['air_conditioner'] == "Danfoss" %} selected="selected" {% endif %}
-                        value="Danfoss">Danfoss</option>
-                    <option {% if config['air_conditioner']['air_conditioner'] == "Mitsubishi" %} selected="selected" {% endif %}
-                        value="Mitsubishi">Mitsubishi</option>
+                    <option value="">Gerät wählen</option>
+                    <option {% if config['air_conditioner']['air_conditioner'] == "Danfoss" %}
+                                selected="selected" 
+                            {% endif %}
+                            value="Danfoss">Danfoss
+                    </option>
+                    <option {% if config['air_conditioner']['air_conditioner'] == "Mitsubishi" %}
+                                selected="selected" 
+                            {% endif %}
+                            value="Mitsubishi">Mitsubishi
+                    </option>
                 </select>
             </div>
             <div class="input-group">
                 <select name="air_conditioner_steering" id="air_conditioner_steering"
-                    onchange=toggleFieldset3("air_conditioner_steering","label_ip_cloud","ip_address_cloud","ir","label_ir")
-                    {% if config['air_conditioner']['air_conditioner_steering'] %} 
-                        class="visible"
-                    {% else %} 
-                        class="invisible" 
-                    {% endif %}>
+                        onchange=toggleFieldset3("air_conditioner_steering","label_ip_cloud","ip_address_cloud","ir","label_ir")
+                        {% if config['air_conditioner']['air_conditioner_steering'] %}
+                            class="visible"
+                        {% else %}
+                            class="invisible"
+                        {% endif %}>
                     <option value="">Ansteuerung wählen</option>
-                    <option {% if config['air_conditioner']['air_conditioner_steering'] == "cloud" %} selected="selected" {% endif %}
-                        value="cloud">Cloud</option>
-                    <option {% if config['air_conditioner']['air_conditioner_steering'] == "ir_remote" %} selected="selected" {% endif %}
-                        value="ir_remote">IR-Remote</option>
+                    <option {% if config['air_conditioner']['air_conditioner_steering'] == "cloud" %}
+                                selected="selected"
+                            {% endif %}
+                            value="cloud">Cloud
+                    </option>
+                    <option {% if config['air_conditioner']['air_conditioner_steering'] == "ir_remote" %}
+                                selected="selected" 
+                            {% endif %}
+                            value="ir_remote">IR-Remote
+                    </option>
                 </select>
             </div>
             <div class="input-group">
                 <label for="ip_address_cloud" id="label_ip_cloud"
-                {% if config['air_conditioner']['ip_address_cloud'] %} 
-                       class="visible"
-                {% else %} 
-                       class="invisible" 
-                {% endif %}>IP Adresse:</label>
-                <input id="ip_address_cloud" minlength="13" name="ip_address_cloud"
-                       {% if config['air_conditioner']['ip_address_cloud'] %} 
+                        {% if config['air_conditioner']['ip_address_cloud'] %}
                             class="visible"
-                        {% else %} 
+                        {% else %}
+                            class="invisible"
+                        {% endif %}>IP Adresse:</label>
+                <input id="ip_address_cloud" minlength="13" name="ip_address_cloud"
+                        {% if config['air_conditioner']['ip_address_cloud'] %}
+                            class="visible"
+                        {% else %}
                             class="invisible"
                         {% endif %}
                        type="text" value="{{ config['air_conditioner']['ip_address_cloud'] }}">
             </div>
             <div class="input-group">
                 <label for="ir" id="label_ir"
-                        {% if config['air_conditioner']['ir_remote'] %} 
+                        {% if config['air_conditioner']['ir_remote'] %}
                             class="visible"
-                        {% else %} 
-                            class="invisible" 
+                        {% else %}
+                            class="invisible"
                         {% endif %}
-                    >IR Button XXX:</label>
+                >IR Button XXX:</label>
                 <input id="ir" minlength="1" name="ir_remote"
-                       {% if config['air_conditioner']['ir_remote'] %} 
+                        {% if config['air_conditioner']['ir_remote'] %}
                             class="visible"
-                        {% else %} 
-                            class="invisible" 
+                        {% else %}
+                            class="invisible"
                         {% endif %}
                        type="text" value="{{ config['air_conditioner']['ir_remote'] }}">
             </div>
@@ -224,8 +249,9 @@
             <div class="container">
                 <div class="row">
                     <div class="cell">
-                        <label for="house_year" >Hausbaujahr:</label>
-                        <input id="house_year" name="house_year" type="number" value="{{ config['house']['house_year'] }}" >
+                        <label for="house_year">Hausbaujahr:</label>
+                        <input id="house_year" name="house_year" type="number"
+                               value="{{ config['house']['house_year'] }}">
                     </div>
                     <div class="cell">
                         <!-- leer-->
@@ -245,157 +271,268 @@
                         <!-- leer-->
                     </div>
                     <div class="cell">
-                        <label for="window1_frame"  >Fensterrahmen:</label>
-                            <select name="window1_frame" id="window1_frame"   
-                                    onchange="updateWindowDropdown('window1_frame','window1_glazing');
+                        <label for="window1_frame">Fensterrahmen:</label>
+                        <select name="window1_frame" id="window1_frame"
+                                onchange="updateWindowDropdown('window1_frame','window1_glazing');
                                     toggleFieldsetWindow('window1_frame','window1_data','window1_u_value_input','window1_data_year');">
-                                <option value="">Rahmen wählen</option>
-                                <option {% if config['house']['window1_frame'] == "Holzrahmen" %} selected="selected" {% endif %}
-                                    value="Holzrahmen">Holzrahmen</option>
-                                <option {% if config['house']['window1_frame'] == "Kunststoffrahmen" %} selected="selected" {% endif %}
-                                    value="Kunststoffrahmen">Kunststoffrahmen</option>
-                                <option {% if config['house']['window1_frame'] == "Metallrahmen" %} selected="selected" {% endif %}
-                                    value="Metallrahmen">Metallrahmen</option>
-                                <option {% if config['house']['window1_frame'] == "Metallrahmen" %} selected="selected" {% endif %}
-                                    value="ENEV">ENEV</option>
-                                <option{% if config['house']['window1_frame'] == "u_value" %} selected="selected" {% endif %}
-                                    value="u_value">Eigener U-Wert</option>
+                            <option value="">Rahmen wählen</option>
+                            <option {% if config['house']['window1_frame'] == "Holzrahmen" %}
+                                selected="selected"
+                            {% endif %}
+                                value="Holzrahmen">Holzrahmen
+                            </option>
+                            <option {% if config['house']['window1_frame'] == "Kunststoffrahmen" %}
+                                selected="selected"
+                            {% endif %}
+                                value="Kunststoffrahmen">Kunststoffrahmen
+                            </option>
+                            <option {% if config['house']['window1_frame'] == "Metallrahmen" %}
+                                selected="selected"
+                            {% endif %}
+                                value="Metallrahmen">Metallrahmen
+                            </option>
+                            <option {% if config['house']['window1_frame'] == "Metallrahmen" %}
+                                selected="selected"
+                            {% endif %}
+                                value="ENEV">ENEV
+                            </option>
+                            <option {% if config['house']['window1_frame'] == "u_value" %}
+                                selected="selected"
+                            {% endif %}
+                                value="u_value">Eigener U-Wert
+                            </option>
+                        </select>
+                        <div id="window1_data" 
+                                {% if config['house']['window1_frame'] == 'u_value' %}
+                                    class="invisible" 
+                                {% else %}
+                                    class="visible" 
+                                {% endif %}>
+                            <label for="window1_glazing">Verglasung:</label>
+                            <select id="window1_glazing" name="window1_glazing">
+                                <option value="">Verglasung wählen</option>
+                                {% if config['house']['window1_frame'] == "Holzrahmen" %}
+                                    <option {% if config['house']['window1_glazing'] == "Einfachverglasung" %}
+                                                selected="selected" 
+                                            {% endif %}
+                                            value="Einfachverglasung">Einfachverglasung
+                                    </option>
+                                    <option {% if config['house']['window1_glazing'] == "Doppelverglasung" %}
+                                                selected="selected" 
+                                            {% endif %}
+                                                value="Doppelverglasung">Doppelverglasung
+                                    </option>
+                                    <option {% if config['house']['window1_glazing'] == "Isolierverglasung" %}
+                                                selected="selected" 
+                                            {% endif %}
+                                            value="Isolierverglasung">Isolierverglasung
+                                    </option>
+                                {% endif %}
+                                {% if config['house']['window1_frame'] == "Kunststoffrahmen" %}
+                                    <option {% if config['house']['window1_glazing'] == "Isolierverglasung" %}
+                                                selected="selected" 
+                                            {% endif %}
+                                            value="Isolierverglasung">Isolierverglasung
+                                    </option>
+                                {% endif %}
+                                {% if config['house']['window1_frame'] == "Metallrahmen" %}
+                                    <option {% if config['house']['window1_glazing'] == "Isolierverglasung" %}
+                                                selected="selected" 
+                                            {% endif %}
+                                            value="Isolierverglasung">Isolierverglasung
+                                    </option>
+                                {% endif %}
                             </select>
-                            <div id="window1_data" {% if config['house']['window1_frame'] == 'u_value' %}  class="invisible" {% else %}
-                                  class="visible" {% endif %}>
-                                <label for="window1_glazing"  >Verglasung:</label>
-                                <select id="window1_glazing" name="window1_glazing"  >
-                                    <option value="">Verglasung wählen</option>
-                                    {% if config['house']['window1_frame'] == "Holzrahmen" %}
-                                        <option {% if config['house']['window1_glazing'] == "Einfachverglasung" %} selected="selected" {% endif %}
-                                        value="Einfachverglasung">Einfachverglasung</option>
-                                        <option {% if config['house']['window1_glazing'] == "Doppelverglasung" %} selected="selected" {% endif %}
-                                        value="Doppelverglasung">Doppelverglasung</option>
-                                        <option {% if config['house']['window1_glazing'] == "Isolierverglasung" %} selected="selected" {% endif %}
-                                        value="Isolierverglasung">Isolierverglasung</option>
-                                    {% endif %}
-                                    {% if config['house']['window1_frame'] == "Kunststoffrahmen" %}
-                                        <option {% if config['house']['window1_glazing'] == "Isolierverglasung" %} selected="selected" {% endif %}
-                                        value="Isolierverglasung">Isolierverglasung</option>
-                                    {% endif %}
-                                    {% if config['house']['window1_frame'] == "Metallrahmen" %}
-                                        <option {% if config['house']['window1_glazing'] == "Isolierverglasung" %} selected="selected" {% endif %}
-                                        value="Isolierverglasung">Isolierverglasung</option>
-                                    {% endif %}
-                                </select>
-                            </div>
-                        
-                            <div id="window1_data_year" {% if config['house']['window1_frame'] == 'u_value' or  config['house']['window1_frame'] == 'ENEV' %}
-                                  class="invisible" {% else %}  class="visible" {% endif %}>
-                                <label for="window1_year"  >Fensterbaujahr:</label>
-                                <input id="window1_year" minlength="1" name="window1_year" step="0.1" min="0" type="number"
-                                       value="{{ config['house']['window1_year'] }}"  >
-                            </div>
-                        
-                            <div id="window1_u_value_input" {% if config['house']['window1_frame'] == 'u_value' %}  class="visible" {% else %}
-                                      class="invisible" {% endif %}>
-                                <label for="window1_u_value"  >U-Wert:</label>
-                                <input id="window1_u_value" minlength="1" name="window1_u_value" step="0.01" min="0" type="number"
-                                           value="{{ config['house']['window1_u_value'] }}"  >
-                            </div>
-                        
-                            <label for="window1_width"  >Fensterbreite [m]:</label>
-                            <input id="window1_width" minlength="1" name="window1_width" step="0.1" min="0" type="number"
-                                   value="{{ config['house']['window1_width'] }}"  >
-    
-                            <label for="window1_height"  >Fensterhöhe [m]:</label>
-                            <input id="window1_height" minlength="1" name="window1_height" step="0.1" min="0" type="number"
-                                   value="{{ config['house']['window1_height'] }}"  >
-                            
+                        </div>
+
+                        <div id="window1_data_year"
+                                {% if config['house']['window1_frame'] == 'u_value' or config['house']['window1_frame'] == 'ENEV' %}
+                                    class="invisible" 
+                                {% else %}  
+                                    class="visible" 
+                                {% endif %}>
+                            <label for="window1_year">Fensterbaujahr:</label>
+                            <input id="window1_year" minlength="1" name="window1_year" step="0.1" min="0" type="number"
+                                   value="{{ config['house']['window1_year'] }}">
+                        </div>
+
+                        <div id="window1_u_value_input" 
+                                {% if config['house']['window1_frame'] == 'u_value' %}
+                                    class="visible" 
+                                {% else %}
+                                    class="invisible" 
+                                {% endif %}>
+                            <label for="window1_u_value">U-Wert:</label>
+                            <input id="window1_u_value" minlength="1" name="window1_u_value" step="0.01" min="0"
+                                   type="number" value="{{ config['house']['window1_u_value'] }}">
+                        </div>
+
+                        <label for="window1_width">Fensterbreite [m]:</label>
+                        <input id="window1_width" minlength="1" name="window1_width" step="0.1" min="0" type="number"
+                               value="{{ config['house']['window1_width'] }}">
+
+                        <label for="window1_height">Fensterhöhe [m]:</label>
+                        <input id="window1_height" minlength="1" name="window1_height" step="0.1" min="0" type="number"
+                               value="{{ config['house']['window1_height'] }}">
+
                     </div>
                     <div class="cell">
-                        <label for="wall1"  >Wand:</label>
-                            <select name="wall1" id="wall1"  
-                                    onchange="updateWallDropdown('wall1','construction_wall1');
-                                    toggleFieldsetWall('wall1','wall1_data','wall1_u_value','wall1_data','wall1_type_id');">
-                                <option value="">Wand typ wählen</option>
-                                <option {% if config['house']['wall1'] == "Außenwand" %} selected="selected" {% endif %}
-                                    value="Außenwand">Außenwand</option>
-                                <option {% if config['house']['wall1'] == "Innenwand" %} selected="selected" {% endif %}
-                                    value="Innenwand">Innenwand</option>
-                                <option {% if config['house']['wall1'] == "ENEV Außenwand" %} selected="selected" {% endif %}
-                                    value="ENEV Außenwand">ENEV Außenwand</option>
-                                <option {% if config['house']['wall1'] == "ENEV Innenwand" %} selected="selected" {% endif %}
-                                    value="ENEV Innenwand">ENEV Innenwand</option>
-                                <option {% if config['house']['wall1'] == "u_value" %} selected="selected" {% endif %}
-                                value="u_value">Eigener U-Wert</option>
+                        <label for="wall1">Wand:</label>
+                        <select name="wall1" id="wall1"
+                                onchange="updateWallDropdown('wall1','construction_wall1');
+                                            toggleFieldsetWall('wall1','wall1_data','wall1_u_value','wall1_data','wall1_type_id');">
+                            <option value="">Wand typ wählen</option>
+                            <option {% if config['house']['wall1'] == "Außenwand" %} 
+                                        selected="selected" 
+                                    {% endif %}
+                                    value="Außenwand">Außenwand
+                            </option>
+                            <option {% if config['house']['wall1'] == "Innenwand" %} 
+                                        selected="selected" 
+                                    {% endif %}
+                                        value="Innenwand">Innenwand
+                            </option>
+                            <option {% if config['house']['wall1'] == "ENEV Außenwand" %}
+                                        selected="selected" 
+                                    {% endif %}
+                                    value="ENEV Außenwand">ENEV Außenwand
+                            </option>
+                            <option {% if config['house']['wall1'] == "ENEV Innenwand" %}
+                                        selected="selected" 
+                                    {% endif %}
+                                    value="ENEV Innenwand">ENEV Innenwand
+                            </option>
+                            <option {% if config['house']['wall1'] == "u_value" %} 
+                                        selected="selected" 
+                                    {% endif %}
+                                    value="u_value">Eigener U-Wert
+                            </option>
+                        </select>
+
+                        <div id="wall1_data" 
+                                {% if config['house']['wall1'] == 'u_value' %}
+                                    class="invisible" 
+                                {% else %}
+                                    class="visible" 
+                                {% endif %}>
+                            <label for="construction_wall1">Bauweise:</label>
+                            <select id="construction_wall1" name="construction_wall1">
+                                <option value="">Bauweise wählen</option>
+                                {% if config['house']['wall1'] == "Außenwand" %}
+                                    <option {% if config['house']['construction_wall1'] == "Massivbauweise" %}
+                                                selected="selected" 
+                                            {% endif %}
+                                            value="Massivbauweise">Massivbauweise
+                                    </option>
+                                    <option {% if config['house']['construction_wall1'] == "Holzkonstruktion" %}
+                                                selected="selected" 
+                                            {% endif %}
+                                            value="Holzkonstruktion">Holzkonstruktion
+                                    </option>
+                                {% endif %}
+                                {% if config['house']['wall1'] == "Wand gegen Erdreich" %}
+                                    <option {% if config['house']['construction_wall1'] == "Massivbauweise" %}
+                                                selected="selected" 
+                                            {% endif %}
+                                            value="Massivbauweise">Massivbauweise
+                                    </option>
+                                    <option {% if config['house']['construction_wall1'] == "Holzkonstruktion" %}
+                                                selected="selected" 
+                                            {% endif %}
+                                            value="Holzkonstruktion">Holzkonstruktion
+                                    </option>
+                                {% endif %}
+                                {% if config['house']['wall1'] == "Innenwand gegen unbeheizte Kellergeschosse" %}
+                                    <option {% if config['house']['construction_wall1'] == "Massivbauweise" %}
+                                                selected="selected" 
+                                            {% endif %}
+                                            value="Massivbauweise">Massivbauweise
+                                    </option>
+                                    <option {% if config['house']['construction_wall1'] == "Holzkonstruktion" %}
+                                                selected="selected" 
+                                            {% endif %}
+                                            value="Holzkonstruktion">Holzkonstruktion
+                                    </option>
+                                {% endif %}
                             </select>
-                        
-                            <div id="wall1_data" {% if config['house']['wall1'] == 'u_value' %}  class="invisible" {% else %}
-                                  class="visible" {% endif %}>
-                                <label for="construction_wall1"  >Bauweise:</label>
-                                <select id="construction_wall1" name="construction_wall1"  >
-                                    <option value="">Bauweise wählen</option>
-                                    {% if config['house']['wall1'] == "Außenwand" %}
-                                        <option {% if config['house']['construction_wall1'] == "Massivbauweise" %} selected="selected" {% endif %}
-                                        value="Massivbauweise">Massivbauweise</option>
-                                        <option {% if config['house']['construction_wall1'] == "Holzkonstruktion" %} selected="selected" {% endif %}
-                                        value="Holzkonstruktion">Holzkonstruktion</option>
-                                    {% endif %}
-                                    {% if config['house']['wall1'] == "Wand gegen Erdreich" %}
-                                        <option {% if config['house']['construction_wall1'] == "Massivbauweise" %} selected="selected" {% endif %}
-                                        value="Massivbauweise">Massivbauweise</option>
-                                        <option {% if config['house']['construction_wall1'] == "Holzkonstruktion" %} selected="selected" {% endif %}
-                                        value="Holzkonstruktion">Holzkonstruktion</option>
-                                    {% endif %}
-                                    {% if config['house']['wall1'] == "Innenwand gegen unbeheizte Kellergeschosse" %}
-                                        <option {% if config['house']['construction_wall1'] == "Massivbauweise" %} selected="selected" {% endif %}
-                                        value="Massivbauweise">Massivbauweise</option>
-                                        <option {% if config['house']['construction_wall1'] == "Holzkonstruktion" %} selected="selected" {% endif %}
-                                        value="Holzkonstruktion">Holzkonstruktion</option>
-                                    {% endif %}
-                                </select>
-                            </div>
-                        
-                            <div id="wall1_u_value" {% if config['house']['wall1'] == 'u_value' %}  class="visible" {% else %}
-                                  class="invisible" {% endif %}>
-                                <label for="wall1_u_value"  >U-Wert:</label>
-                                <input id="wall1_u_value" minlength="1" name="wall1_u_value" step="0.01" min="0" type="number"
-                                       value="{{ config['house']['wall1_u_value'] }}"  >
-                                <label for="wall1_type"  >Wand Typ:</label>
-                                <select name="wall1_type" id="wall1_type"   onchange="toggleFieldset('wall1_type','wall1_type_id', '1')">
-                                    <option value="0" {% if not config['house']['wall1_type'] %} selected="selected"{% endif %}>Außenwand</option>
-                                    <option value="1" {% if config['house']['wall1_type'] %} selected="selected"{% endif %}>Innenwand</option>
-                                </select>
-                            </div>
-                        
-                            <div id="wall1_type_id" {% if config['house']['wall1_type'] %}   class="visible" {% else %}
-                                 class="invisible" {% endif %}>
-                                <label for="wall1_diff_temp"  >angrenzende Raumtemperatur [°C]:</label>
-                                <input id="wall1_diff_temp" minlength="1" name="wall1_diff_temp" step="0.1" min="0" type="number"
-                                       value="{{ config['house']['wall1_diff_temp'] }}"  >
-                            </div>
-                            
-                            <label for="wall1_width"  >Wandbreite [m]:</label>
-                            <input id="wall1_width" minlength="1" name="wall1_width" step="0.1" min="0" type="number"
-                                   value="{{ config['house']['wall1_width'] }}"  >
-                            
-                            <label for="wall1_height"  >Wandhöhe [m]:</label>
-                            <input id="wall1_height" minlength="1" name="wall1_height" step="0.1" min="0" type="number"
-                                   value="{{ config['house']['wall1_height'] }}"  >
-                            
+                        </div>
+
+                        <div id="wall1_u_value" 
+                                {% if config['house']['wall1'] == 'u_value' %}
+                                    class="visible" 
+                                {% else %}
+                                    class="invisible" 
+                                {% endif %}>
+                            <label for="wall1_u_value">U-Wert:</label>
+                            <input id="wall1_u_value" minlength="1" name="wall1_u_value" step="0.01" min="0"
+                                   type="number"
+                                   value="{{ config['house']['wall1_u_value'] }}">
+                            <label for="wall1_type">Wand Typ:</label>
+                            <select name="wall1_type" id="wall1_type"
+                                    onchange="toggleFieldset('wall1_type','wall1_type_id', '1')">
+                                <option value="0" 
+                                        {% if not config['house']['wall1_type'] %}
+                                            selected="selected"
+                                        {% endif %}>Außenwand
+                                </option>
+                                <option value="1" 
+                                        {% if config['house']['wall1_type'] %} 
+                                            selected="selected"
+                                        {% endif %}>
+                                    Innenwand
+                                </option>
+                            </select>
+                        </div>
+
+                        <div id="wall1_type_id" 
+                                {% if config['house']['wall1_type'] %}
+                                    class="visible" 
+                                {% else %}
+                                    class="invisible" 
+                                {% endif %}>
+                            <label for="wall1_diff_temp">angrenzende Raumtemperatur [°C]:</label>
+                            <input id="wall1_diff_temp" minlength="1" name="wall1_diff_temp" step="0.1" min="0"
+                                   type="number"
+                                   value="{{ config['house']['wall1_diff_temp'] }}">
+                        </div>
+
+                        <label for="wall1_width">Wandbreite [m]:</label>
+                        <input id="wall1_width" minlength="1" name="wall1_width" step="0.1" min="0" type="number"
+                               value="{{ config['house']['wall1_width'] }}">
+
+                        <label for="wall1_height">Wandhöhe [m]:</label>
+                        <input id="wall1_height" minlength="1" name="wall1_height" step="0.1" min="0" type="number"
+                               value="{{ config['house']['wall1_height'] }}">
+
                     </div>
                     <div class="cell">
-                        <label for="door_wall1"  >Tür:</label>
-                            <select name="door_wall1" id="door_wall1"  
-                                    onchange=toggleFieldset("door_wall1","fieldset_door_wall1")>
-                                <option {% if config['house']['door_wall1'] %} selected="selected" {% endif %} value="1">Ja</option>
-                                <option {% if not config['house']['door_wall1'] %} selected="selected" {% endif %} value="0">Keine Tür</option>
-                            </select>
-                            <div id="fieldset_door_wall1" {% if config['house']['door_wall1'] %}
-                            style="display: block;" {% else %} style="display: none;" {% endif %}>
-                            <label for="door_wall1_width"  >Türbreite [m]:</label>
+                        <label for="door_wall1">Tür:</label>
+                        <select name="door_wall1" id="door_wall1"
+                                onchange=toggleFieldset("door_wall1","fieldset_door_wall1","1")>
+                            <option {% if config['house']['door_wall1'] %}
+                                        selected="selected"
+                                    {% endif %} 
+                                    value="1">Ja
+                            </option>
+                            <option {% if not config['house']['door_wall1'] %}
+                                        selected="selected"
+                                    {% endif %} 
+                                    value="0">Keine Tür
+                            </option>
+                        </select>
+                        <div id="fieldset_door_wall1"
+                                {% if config['house']['door_wall1'] %}
+                                    class="visible"
+                                {% else %}
+                                    class="invisible"
+                                {% endif %}>
+                            <label for="door_wall1_width">Türbreite [m]:</label>
                             <input id="door_wall1_width" minlength="1" name="door_wall1_width" step="0.1" min="0"
-                                   type="number" value="{{ config['house']['door_wall1_width'] }}"  >
-                            <label for="door_wall1_height"  >Türhöhe [m]:</label>
+                                   type="number" value="{{ config['house']['door_wall1_width'] }}">
+                            <label for="door_wall1_height">Türhöhe [m]:</label>
                             <input id="door_wall1_height" minlength="1" name="door_wall1_height" step="0.1" min="0"
-                                   type="number" value="{{ config['house']['door_wall1_height'] }}"  >
-                            </div>
+                                   type="number" value="{{ config['house']['door_wall1_height'] }}">
+                        </div>
                     </div>
                     <div class="cell">
                         <!-- leer-->
@@ -403,46 +540,72 @@
                 </div>
                 <div class="row">
                     <div class="cell">
-                        <label for="window4_frame"  >Fensterrahmen:</label>
-                            <select name="window4_frame" id="window4_frame"   
-                                    onchange="updateWindowDropdown('window4_frame','window4_glazing')">
-                                <option value="">Rahmen wählen</option>
-                                <option {% if config['house']['window4_frame'] == "Holzrahmen" %} selected="selected" {% endif %}
-                                value="Holzrahmen">Holzrahmen</option>
-                                <option {% if config['house']['window4_frame'] == "Kunststoffrahmen" %} selected="selected" {% endif %}
-                                value="Kunststoffrahmen">Kunststoffrahmen</option>
-                                <option {% if config['house']['window4_frame'] == "Metallrahmen" %} selected="selected" {% endif %}
-                                value="Metallrahmen">Metallrahmen</option>
-                            </select>
-                            <label for="window4_glazing"  >Verglasung:</label>
-                            <select id="window4_glazing" name="window4_glazing"  >
-                                <option value="">Verglasung wählen</option>
-                                {% if config['house']['window4_frame'] == "Holzrahmen" %}
-                                    <option {% if config['house']['window4_glazing'] == "Einfachverglasung" %} selected="selected" {% endif %}
-                                    value="Einfachverglasung">Einfachverglasung</option>
-                                    <option {% if config['house']['window4_glazing'] == "Doppelverglasung" %} selected="selected" {% endif %}
-                                    value="Doppelverglasung">Doppelverglasung</option>
-                                    <option {% if config['house']['window4_glazing'] == "Isolierverglasung" %} selected="selected" {% endif %}
-                                    value="Isolierverglasung">Isolierverglasung</option>
-                                {% endif %}
-                                {% if config['house']['window4_frame'] == "Kunststoffrahmen" %}
-                                    <option {% if config['house']['window4_glazing'] == "Isolierverglasung" %} selected="selected" {% endif %}
-                                    value="Isolierverglasung">Isolierverglasung</option>
-                                {% endif %}
-                                {% if config['house']['window4_frame'] == "Metallrahmen" %}
-                                    <option {% if config['house']['window4_glazing'] == "Isolierverglasung" %} selected="selected" {% endif %}
-                                    value="Isolierverglasung">Isolierverglasung</option>
-                                {% endif %}
-                            </select>
-                            <label for="window4_year"  >Fensterbaujahr:</label>
-                            <input id="window4_year" minlength="1" name="window4_year" step="0.1" min="0" type="number"
-                                   value="{{ config['house']['window4_year'] }}"  >
-                            <label for="window4_width"  >Fensterbreite [m]:</label>
-                            <input id="window4_width" minlength="1" name="window4_width" step="0.1" min="0" type="number"
-                                   value="{{ config['house']['window4_width'] }}"  >
-                            <label for="window4_height"  >Fensterhöhe [m]:</label>
-                            <input id="window4_height" minlength="1" name="window4_height" step="0.1" min="0" type="number"
-                                   value="{{ config['house']['window4_height'] }}"  >
+                        <label for="window4_frame">Fensterrahmen:</label>
+                        <select name="window4_frame" id="window4_frame"
+                                onchange="updateWindowDropdown('window4_frame','window4_glazing')">
+                            <option value="">Rahmen wählen</option>
+                            <option {% if config['house']['window4_frame'] == "Holzrahmen" %}
+                                        selected="selected"
+                                    {% endif %}
+                                    value="Holzrahmen">Holzrahmen
+                            </option>
+                            <option
+                                    {% if config['house']['window4_frame'] == "Kunststoffrahmen" %}
+                                        selected="selected"
+                                    {% endif %}
+                                        value="Kunststoffrahmen">Kunststoffrahmen
+                            </option>
+                            <option
+                                    {% if config['house']['window4_frame'] == "Metallrahmen" %}
+                                        selected="selected"
+                                    {% endif %}
+                                        value="Metallrahmen">Metallrahmen
+                            </option>
+                        </select>
+                        <label for="window4_glazing">Verglasung:</label>
+                        <select id="window4_glazing" name="window4_glazing">
+                            <option value="">Verglasung wählen</option>
+                            {% if config['house']['window4_frame'] == "Holzrahmen" %}
+                                <option {% if config['house']['window4_glazing'] == "Einfachverglasung" %}
+                                            selected="selected" 
+                                        {% endif %}
+                                        value="Einfachverglasung">Einfachverglasung
+                                </option>
+                                <option {% if config['house']['window4_glazing'] == "Doppelverglasung" %}
+                                            selected="selected" 
+                                        {% endif %}
+                                        value="Doppelverglasung">Doppelverglasung
+                                </option>
+                                <option {% if config['house']['window4_glazing'] == "Isolierverglasung" %}
+                                            selected="selected" 
+                                        {% endif %}
+                                        value="Isolierverglasung">Isolierverglasung
+                                </option>
+                            {% endif %}
+                            {% if config['house']['window4_frame'] == "Kunststoffrahmen" %}
+                                <option {% if config['house']['window4_glazing'] == "Isolierverglasung" %}
+                                            selected="selected" 
+                                        {% endif %}
+                                        value="Isolierverglasung">Isolierverglasung
+                                </option>
+                            {% endif %}
+                            {% if config['house']['window4_frame'] == "Metallrahmen" %}
+                                <option {% if config['house']['window4_glazing'] == "Isolierverglasung" %}
+                                            selected="selected" 
+                                        {% endif %}
+                                        value="Isolierverglasung">Isolierverglasung
+                                </option>
+                            {% endif %}
+                        </select>
+                        <label for="window4_year">Fensterbaujahr:</label>
+                        <input id="window4_year" minlength="1" name="window4_year" step="0.1" min="0" type="number"
+                               value="{{ config['house']['window4_year'] }}">
+                        <label for="window4_width">Fensterbreite [m]:</label>
+                        <input id="window4_width" minlength="1" name="window4_width" step="0.1" min="0" type="number"
+                               value="{{ config['house']['window4_width'] }}">
+                        <label for="window4_height">Fensterhöhe [m]:</label>
+                        <input id="window4_height" minlength="1" name="window4_height" step="0.1" min="0" type="number"
+                               value="{{ config['house']['window4_height'] }}">
                     </div>
                     <div class="cell">
                         <!-- leer-->
@@ -454,151 +617,213 @@
                         <!-- leer-->
                     </div>
                     <div class="cell">
-                        <label for="window2_frame"  >Fensterrahmen:</label>
-                            <select name="window2_frame" id="window2_frame"   
-                                    onchange="updateWindowDropdown('window2_frame','window2_glazing')">
-                                <option value="">Rahmen wählen</option>
-                                <option {% if config['house']['window2_frame'] == "Holzrahmen" %} selected="selected" {% endif %}
-                                value="Holzrahmen">Holzrahmen</option>
-                                <option {% if config['house']['window2_frame'] == "Kunststoffrahmen" %} selected="selected" {% endif %}
-                                value="Kunststoffrahmen">Kunststoffrahmen</option>
-                                <option {% if config['house']['window2_frame'] == "Metallrahmen" %} selected="selected" {% endif %}
-                                value="Metallrahmen">Metallrahmen</option>
-                            </select>
-                            <label for="window2_glazing"  >Verglasung:</label>
-                            <select id="window2_glazing" name="window2_glazing"  >
-                                <option value="">Verglasung wählen</option>
-                                {% if config['house']['window2_frame'] == "Holzrahmen" %}
-                                    <option {% if config['house']['window2_glazing'] == "Einfachverglasung" %} selected="selected" {% endif %}
-                                    value="Einfachverglasung">Einfachverglasung</option>
-                                    <option {% if config['house']['window2_glazing'] == "Doppelverglasung" %} selected="selected" {% endif %}
-                                    value="Doppelverglasung">Doppelverglasung</option>
-                                    <option {% if config['house']['window2_glazing'] == "Isolierverglasung" %} selected="selected" {% endif %}
-                                    value="Isolierverglasung">Isolierverglasung</option>
-                                {% endif %}
-                                {% if config['house']['window2_frame'] == "Kunststoffrahmen" %}
-                                    <option {% if config['house']['window2_glazing'] == "Isolierverglasung" %} selected="selected" {% endif %}
-                                    value="Isolierverglasung">Isolierverglasung</option>
-                                {% endif %}
-                                {% if config['house']['window2_frame'] == "Metallrahmen" %}
-                                    <option {% if config['house']['window2_glazing'] == "Isolierverglasung" %} selected="selected" {% endif %}
-                                    value="Isolierverglasung">Isolierverglasung</option>
-                                {% endif %}
-                            </select>
-                            <label for="window2_year"  >Fensterbaujahr:</label>
-                            <input id="window2_year" minlength="1" name="window2_year" step="0.1" min="0" type="number"
-                                   value="{{ config['house']['window2_year'] }}"  >
-                            <label for="window2_width"  >Fensterbreite [m]:</label>
-                            <input id="window2_width" minlength="1" name="window2_width" step="0.1" min="0" type="number"
-                                   value="{{ config['house']['window2_width'] }}"  >
-                            <label for="window2_height"  >Fensterhöhe [m]:</label>
-                            <input id="window2_height" minlength="1" name="window2_height" step="0.1" min="0" type="number"
-                                   value="{{ config['house']['window2_height'] }}"  >
+                        <label for="window2_frame">Fensterrahmen:</label>
+                        <select name="window2_frame" id="window2_frame"
+                                onchange="updateWindowDropdown('window2_frame','window2_glazing')">
+                            <option value="">Rahmen wählen</option>
+                            <option {% if config['house']['window2_frame'] == "Holzrahmen" %}
+                                        selected="selected" 
+                                    {% endif %}
+                                    value="Holzrahmen">Holzrahmen
+                            </option>
+                            <option {% if config['house']['window2_frame'] == "Kunststoffrahmen" %}
+                                        selected="selected" 
+                                    {% endif %}
+                                    value="Kunststoffrahmen">Kunststoffrahmen
+                            </option>
+                            <option {% if config['house']['window2_frame'] == "Metallrahmen" %}
+                                        selected="selected" 
+                                    {% endif %}
+                                        value="Metallrahmen">Metallrahmen
+                            </option>
+                        </select>
+                        <label for="window2_glazing">Verglasung:</label>
+                        <select id="window2_glazing" name="window2_glazing">
+                            <option value="">Verglasung wählen</option>
+                            {% if config['house']['window2_frame'] == "Holzrahmen" %}
+                                <option {% if config['house']['window2_glazing'] == "Einfachverglasung" %}
+                                            selected="selected"
+                                        {% endif %}
+                                    value="Einfachverglasung">Einfachverglasung
+                                </option>
+                                <option {% if config['house']['window2_glazing'] == "Doppelverglasung" %}
+                                            selected="selected" 
+                                        {% endif %}
+                                        value="Doppelverglasung">Doppelverglasung
+                                </option>
+                                <option {% if config['house']['window2_glazing'] == "Isolierverglasung" %}
+                                            selected="selected" 
+                                        {% endif %}
+                                        value="Isolierverglasung">Isolierverglasung
+                                </option>
+                            {% endif %}
+                            {% if config['house']['window2_frame'] == "Kunststoffrahmen" %}
+                                <option {% if config['house']['window2_glazing'] == "Isolierverglasung" %}
+                                            selected="selected" 
+                                        {% endif %}
+                                        value="Isolierverglasung">Isolierverglasung
+                                </option>
+                            {% endif %}
+                            {% if config['house']['window2_frame'] == "Metallrahmen" %}
+                                <option {% if config['house']['window2_glazing'] == "Isolierverglasung" %}
+                                            selected="selected" 
+                                        {% endif %}
+                                        value="Isolierverglasung">Isolierverglasung
+                                </option>
+                            {% endif %}
+                        </select>
+                        <label for="window2_year">Fensterbaujahr:</label>
+                        <input id="window2_year" minlength="1" name="window2_year" step="0.1" min="0" type="number"
+                               value="{{ config['house']['window2_year'] }}">
+                        <label for="window2_width">Fensterbreite [m]:</label>
+                        <input id="window2_width" minlength="1" name="window2_width" step="0.1" min="0" type="number"
+                               value="{{ config['house']['window2_width'] }}">
+                        <label for="window2_height">Fensterhöhe [m]:</label>
+                        <input id="window2_height" minlength="1" name="window2_height" step="0.1" min="0" type="number"
+                               value="{{ config['house']['window2_height'] }}">
                     </div>
                 </div>
                 <div class="row">
                     <div class="cell">
-                        <label for="wall4"  >Wand:</label>
-                            <select name="wall4" id="wall4"   
-                                    onchange="updateWallDropdown('wall4','construction_wall4')">
-                                        <option value="">Wand typ wählen</option>
-                                        <option {% if config['house']['wall4'] == "Außenwand" %} selected="selected" {% endif %}
-                                        value="Außenwand">Außenwand</option>
-                                        <option {% if config['house']['wall4'] == "Wand gegen Erdreich" %} selected="selected" {% endif %}
-                                        value="Wand gegen Erdreich">Wand gegen Erdreich</option>
-                                        <option {% if config['house']['wall4'] == "Innenwand gegen unbeheizte Kellergeschosse" %} selected="selected" {% endif %}
-                                        value="Innenwand gegen unbeheizte Kellergeschosse">
-                                            Innenwand gegen unbeheizte Kellergeschosse</option>
-                            </select>
-                            <label for="construction_wall4"  >Bauweise:</label>
-                            <select id="construction_wall4" name="construction_wall4"  >
-                                <option value="">Bauweise wählen</option>
-                                {% if config['house']['wall4'] == "Außenwand" %}
-                                    <option {% if config['house']['construction_wall4'] == "Massivbauweise" %} selected="selected" {% endif %}
-                                    value="Massivbauweise">Massivbauweise</option>
-                                    <option {% if config['house']['construction_wall4'] == "Holzkonstruktion" %} selected="selected" {% endif %}
-                                    value="Holzkonstruktion">Holzkonstruktion</option>
-                                {% endif %}
-                                {% if config['house']['wall4'] == "Wand gegen Erdreich" %}
-                                    <option {% if config['house']['construction_wall4'] == "Massivbauweise" %} selected="selected" {% endif %}
-                                    value="Massivbauweise">Massivbauweise</option>
-                                    <option {% if config['house']['construction_wall4'] == "Holzkonstruktion" %} selected="selected" {% endif %}
-                                    value="Holzkonstruktion">Holzkonstruktion</option>
-                                {% endif %}
-                                {% if config['house']['wall4'] == "Innenwand gegen unbeheizte Kellergeschosse" %}
-                                    <option {% if config['house']['construction_wall4'] == "Massivbauweise" %} selected="selected" {% endif %}
-                                    value="Massivbauweise">Massivbauweise</option>
-                                    <option {% if config['house']['construction_wall4'] == "Holzkonstruktion" %} selected="selected" {% endif %}
-                                    value="Holzkonstruktion">Holzkonstruktion</option>
-                                {% endif %}
-                            </select>
-                    </div>
-                    <div class="cell">
-                        <!-- leer-->
-                    </div>
-                    <div class="cell">
-                        <!-- leer-->
-                    </div>
-                    <div class="cell">
-                        <!-- leer-->
-                    </div>
-                    <div class="cell">
-                        <label for="wall2"  >Wand:</label>
-                            <select name="wall2" id="wall2"   
-                                    onchange="updateWallDropdown('wall2','construction_wall2')">
-                                <option value="">Wand typ wählen</option>
-                                <option {% if config['house']['wall2'] == "Außenwand" %} selected="selected" {% endif %}
-                                value="Außenwand">Außenwand</option>
-                                <option {% if config['house']['wall2'] == "Wand gegen Erdreich" %} selected="selected" {% endif %}
-                                value="Wand gegen Erdreich">Wand gegen Erdreich</option>
-                                <option {% if config['house']['wall2'] == "Innenwand gegen unbeheizte Kellergeschosse" %} selected="selected" {% endif %}
+                        <label for="wall4">Wand:</label>
+                        <select name="wall4" id="wall4"
+                                onchange="updateWallDropdown('wall4','construction_wall4')">
+                            <option value="">Wand typ wählen</option>
+                            <option {% if config['house']['wall4'] == "Außenwand" %} selected="selected" {% endif %}
+                                                                                     value="Außenwand">Außenwand
+                            </option>
+                            <option {% if config['house']['wall4'] == "Wand gegen Erdreich" %}
+                                selected="selected" {% endif %}
+                                value="Wand gegen Erdreich">Wand gegen Erdreich
+                            </option>
+                            <option {% if config['house']['wall4'] == "Innenwand gegen unbeheizte Kellergeschosse" %}
+                                selected="selected" {% endif %}
                                 value="Innenwand gegen unbeheizte Kellergeschosse">
-                                    Innenwand gegen unbeheizte Kellergeschosse</option>
-                            </select>
-                            <label for="construction_wall2"  >Bauweise:</label>
-                            <select id="construction_wall2" name="construction_wall2"  >
-                                <option value="">Bauweise wählen</option>
-                                {% if config['house']['wall2'] == "Außenwand" %}
-                                    <option {% if config['house']['construction_wall2'] == "Massivbauweise" %} selected="selected" {% endif %}
-                                    value="Massivbauweise">Massivbauweise</option>
-                                    <option {% if config['house']['construction_wall2'] == "Holzkonstruktion" %} selected="selected" {% endif %}
-                                    value="Holzkonstruktion">Holzkonstruktion</option>
-                                {% endif %}
-                                {% if config['house']['wall2'] == "Wand gegen Erdreich" %}
-                                    <option {% if config['house']['construction_wall2'] == "Massivbauweise" %} selected="selected" {% endif %}
-                                    value="Massivbauweise">Massivbauweise</option>
-                                    <option {% if config['house']['construction_wall2'] == "Holzkonstruktion" %} selected="selected" {% endif %}
-                                    value="Holzkonstruktion">Holzkonstruktion</option>
-                                {% endif %}
-                                {% if config['house']['wall2'] == "Innenwand gegen unbeheizte Kellergeschosse" %}
-                                    <option {% if config['house']['construction_wall2'] == "Massivbauweise" %} selected="selected" {% endif %}
-                                    value="Massivbauweise">Massivbauweise</option>
-                                    <option {% if config['house']['construction_wall2'] == "Holzkonstruktion" %} selected="selected" {% endif %}
-                                    value="Holzkonstruktion">Holzkonstruktion</option>
-                                {% endif %}
-                            </select>
-                            <label for="wall2_width"  >Wandbreite [m]:</label>
-                            <input id="wall2_width" minlength="1" name="wall2_width" step="0.1" min="0"
-                                   value="{{ config['house']['wall2_width'] }}" type="number"  >
+                                Innenwand gegen unbeheizte Kellergeschosse
+                            </option>
+                        </select>
+                        <label for="construction_wall4">Bauweise:</label>
+                        <select id="construction_wall4" name="construction_wall4">
+                            <option value="">Bauweise wählen</option>
+                            {% if config['house']['wall4'] == "Außenwand" %}
+                                <option {% if config['house']['construction_wall4'] == "Massivbauweise" %}
+                                    selected="selected" {% endif %}
+                                    value="Massivbauweise">Massivbauweise
+                                </option>
+                                <option {% if config['house']['construction_wall4'] == "Holzkonstruktion" %}
+                                    selected="selected" {% endif %}
+                                    value="Holzkonstruktion">Holzkonstruktion
+                                </option>
+                            {% endif %}
+                            {% if config['house']['wall4'] == "Wand gegen Erdreich" %}
+                                <option {% if config['house']['construction_wall4'] == "Massivbauweise" %}
+                                    selected="selected" {% endif %}
+                                    value="Massivbauweise">Massivbauweise
+                                </option>
+                                <option {% if config['house']['construction_wall4'] == "Holzkonstruktion" %}
+                                    selected="selected" {% endif %}
+                                    value="Holzkonstruktion">Holzkonstruktion
+                                </option>
+                            {% endif %}
+                            {% if config['house']['wall4'] == "Innenwand gegen unbeheizte Kellergeschosse" %}
+                                <option {% if config['house']['construction_wall4'] == "Massivbauweise" %}
+                                    selected="selected" {% endif %}
+                                    value="Massivbauweise">Massivbauweise
+                                </option>
+                                <option {% if config['house']['construction_wall4'] == "Holzkonstruktion" %}
+                                    selected="selected" {% endif %}
+                                    value="Holzkonstruktion">Holzkonstruktion
+                                </option>
+                            {% endif %}
+                        </select>
+                    </div>
+                    <div class="cell">
+                        <!-- leer-->
+                    </div>
+                    <div class="cell">
+                        <!-- leer-->
+                    </div>
+                    <div class="cell">
+                        <!-- leer-->
+                    </div>
+                    <div class="cell">
+                        <label for="wall2">Wand:</label>
+                        <select name="wall2" id="wall2"
+                                onchange="updateWallDropdown('wall2','construction_wall2')">
+                            <option value="">Wand typ wählen</option>
+                            <option {% if config['house']['wall2'] == "Außenwand" %} selected="selected" {% endif %}
+                                                                                     value="Außenwand">Außenwand
+                            </option>
+                            <option {% if config['house']['wall2'] == "Wand gegen Erdreich" %}
+                                selected="selected" {% endif %}
+                                value="Wand gegen Erdreich">Wand gegen Erdreich
+                            </option>
+                            <option {% if config['house']['wall2'] == "Innenwand gegen unbeheizte Kellergeschosse" %}
+                                selected="selected" {% endif %}
+                                value="Innenwand gegen unbeheizte Kellergeschosse">
+                                Innenwand gegen unbeheizte Kellergeschosse
+                            </option>
+                        </select>
+                        <label for="construction_wall2">Bauweise:</label>
+                        <select id="construction_wall2" name="construction_wall2">
+                            <option value="">Bauweise wählen</option>
+                            {% if config['house']['wall2'] == "Außenwand" %}
+                                <option {% if config['house']['construction_wall2'] == "Massivbauweise" %}
+                                    selected="selected" {% endif %}
+                                    value="Massivbauweise">Massivbauweise
+                                </option>
+                                <option {% if config['house']['construction_wall2'] == "Holzkonstruktion" %}
+                                    selected="selected" {% endif %}
+                                    value="Holzkonstruktion">Holzkonstruktion
+                                </option>
+                            {% endif %}
+                            {% if config['house']['wall2'] == "Wand gegen Erdreich" %}
+                                <option {% if config['house']['construction_wall2'] == "Massivbauweise" %}
+                                    selected="selected" {% endif %}
+                                    value="Massivbauweise">Massivbauweise
+                                </option>
+                                <option {% if config['house']['construction_wall2'] == "Holzkonstruktion" %}
+                                    selected="selected" {% endif %}
+                                    value="Holzkonstruktion">Holzkonstruktion
+                                </option>
+                            {% endif %}
+                            {% if config['house']['wall2'] == "Innenwand gegen unbeheizte Kellergeschosse" %}
+                                <option {% if config['house']['construction_wall2'] == "Massivbauweise" %}
+                                    selected="selected" {% endif %}
+                                    value="Massivbauweise">Massivbauweise
+                                </option>
+                                <option {% if config['house']['construction_wall2'] == "Holzkonstruktion" %}
+                                    selected="selected" {% endif %}
+                                    value="Holzkonstruktion">Holzkonstruktion
+                                </option>
+                            {% endif %}
+                        </select>
+                        <label for="wall2_width">Wandbreite [m]:</label>
+                        <input id="wall2_width" minlength="1" name="wall2_width" step="0.1" min="0"
+                               value="{{ config['house']['wall2_width'] }}" type="number">
                     </div>
                 </div>
                 <div class="row">
                     <div class="cell">
-                        <label for="door_wall4"  >Tür:</label>
-                            <select name="door_wall4" id="door_wall4"  
-                                    onchange=toggleFieldset("door_wall4","fieldset_door_wall4")>
-                                <option {% if config['house']['door_wall4'] %} selected="selected" {% endif %} value="1">Ja</option>
-                                <option {% if not config['house']['door_wall4'] %} selected="selected" {% endif %} value="0">Keine Tür</option>
-                            </select>
-                            <div id="fieldset_door_wall4" {% if config['house']['door_wall4'] %}
-                            style="display: block;" {% else %} style="display: none;" {% endif %}>
-                            <label for="door_wall4_width"  >Türbreite [m]:</label>
+                        <label for="door_wall4">Tür:</label>
+                        <select name="door_wall4" id="door_wall4"
+                                onchange=toggleFieldset("door_wall4","fieldset_door_wall4")>
+                            <option {% if config['house']['door_wall4'] %} selected="selected" {% endif %} value="1">
+                                Ja
+                            </option>
+                            <option {% if not config['house']['door_wall4'] %} selected="selected" {% endif %}
+                                                                               value="0">Keine Tür
+                            </option>
+                        </select>
+                        <div id="fieldset_door_wall4" {% if config['house']['door_wall4'] %}
+                             class="visible" {% else %} class="invisible" {% endif %}>
+                            <label for="door_wall4_width">Türbreite [m]:</label>
                             <input id="door_wall4_width" minlength="1" name="door_wall4_width" step="0.1" min="0"
-                                   type="number" value="{{ config['house']['door_wall4_width'] }}"  >
-                            <label for="door_wall4_height"  >Türhöhe [m]:</label>
+                                   type="number" value="{{ config['house']['door_wall4_width'] }}">
+                            <label for="door_wall4_height">Türhöhe [m]:</label>
                             <input id="door_wall4_height" minlength="1" name="door_wall4_height" step="0.1" min="0"
-                                   type="number" value="{{ config['house']['door_wall4_height'] }}"  >
-                            </div>
+                                   type="number" value="{{ config['house']['door_wall4_height'] }}">
+                        </div>
                     </div>
                     <div class="cell">
                         <!-- leer-->
@@ -610,21 +835,25 @@
                         <!-- leer-->
                     </div>
                     <div class="cell">
-                        <label for="door_wall2"  >Tür:</label>
-                            <select name="door_wall2" id="door_wall2"  
-                                    onchange=toggleFieldset("door_wall2","fieldset_door_wall2")>
-                                <option {% if config['house']['door_wall2'] %} selected="selected" {% endif %} value="1">Ja</option>
-                                <option {% if not config['house']['door_wall2'] %} selected="selected" {% endif %} value="0">Keine Tür</option>
-                            </select>
-                            <div id="fieldset_door_wall2" {% if config['house']['door_wall2'] %}
-                            style="display: block;" {% else %} style="display: none;" {% endif %}>
-                            <label for="door_wall2_width"  >Türbreite [m]:</label>
+                        <label for="door_wall2">Tür:</label>
+                        <select name="door_wall2" id="door_wall2"
+                                onchange=toggleFieldset("door_wall2","fieldset_door_wall2")>
+                            <option {% if config['house']['door_wall2'] %} selected="selected" {% endif %} value="1">
+                                Ja
+                            </option>
+                            <option {% if not config['house']['door_wall2'] %} selected="selected" {% endif %}
+                                                                               value="0">Keine Tür
+                            </option>
+                        </select>
+                        <div id="fieldset_door_wall2" {% if config['house']['door_wall2'] %}
+                             class="visible" {% else %} class="invisible" {% endif %}>
+                            <label for="door_wall2_width">Türbreite [m]:</label>
                             <input id="door_wall2_width" minlength="1" name="door_wall2_width" step="0.1" min="0"
-                                   type="number" value="{{ config['house']['door_wall2_width'] }}"  >
-                            <label for="door_wall2_height"  >Türhöhe [m]:</label>
+                                   type="number" value="{{ config['house']['door_wall2_width'] }}">
+                            <label for="door_wall2_height">Türhöhe [m]:</label>
                             <input id="door_wall2_height" minlength="1" name="door_wall2_height" step="0.1" min="0"
-                                   type="number" value="{{ config['house']['door_wall2_height'] }}"  >
-                            </div>
+                                   type="number" value="{{ config['house']['door_wall2_height'] }}">
+                        </div>
                     </div>
                 </div>
                 <div class="row">
@@ -632,105 +861,142 @@
                         <!-- leer-->
                     </div>
                     <div class="cell">
-                        <label for="window3_frame"  >Fensterrahmen:</label>
-                            <select name="window3_frame" id="window3_frame"   
-                                    onchange="updateWindowDropdown('window3_frame','window3_glazing')">
-                                <option value="">Rahmen wählen</option>
-                                <option {% if config['house']['window3_frame'] == "Holzrahmen" %} selected="selected" {% endif %}
-                                value="Holzrahmen">Holzrahmen</option>
-                                <option {% if config['house']['window3_frame'] == "Kunststoffrahmen" %} selected="selected" {% endif %}
-                                value="Kunststoffrahmen">Kunststoffrahmen</option>
-                                <option {% if config['house']['window3_frame'] == "Metallrahmen" %} selected="selected" {% endif %}
-                                value="Metallrahmen">Metallrahmen</option>
-                            </select>
-                            <label for="window3_glazing"  >Verglasung:</label>
-                            <select id="window3_glazing" name="window3_glazing"  >
-                                <option value="">Verglasung wählen</option>
-                                {% if config['house']['window3_frame'] == "Holzrahmen" %}
-                                    <option {% if config['house']['window3_glazing'] == "Einfachverglasung" %} selected="selected" {% endif %}
-                                    value="Einfachverglasung">Einfachverglasung</option>
-                                    <option {% if config['house']['window3_glazing'] == "Doppelverglasung" %} selected="selected" {% endif %}
-                                    value="Doppelverglasung">Doppelverglasung</option>
-                                    <option {% if config['house']['window3_glazing'] == "Isolierverglasung" %} selected="selected" {% endif %}
-                                    value="Isolierverglasung">Isolierverglasung</option>
-                                {% endif %}
-                                {% if config['house']['window3_frame'] == "Kunststoffrahmen" %}
-                                    <option {% if config['house']['window3_glazing'] == "Isolierverglasung" %} selected="selected" {% endif %}
-                                    value="Isolierverglasung">Isolierverglasung</option>
-                                {% endif %}
-                                {% if config['house']['window3_frame'] == "Metallrahmen" %}
-                                    <option {% if config['house']['window3_glazing'] == "Isolierverglasung" %} selected="selected" {% endif %}
-                                    value="Isolierverglasung">Isolierverglasung</option>
-                                {% endif %}
-                            </select>
-                            <label for="window3_year"  >Fensterbaujahr:</label>
-                            <input id="window3_year" minlength="1" name="window3_year" step="0.1" min="0" type="number"
-                                   value="{{ config['house']['window3_year'] }}"  >
-                            <label for="window3_width"  >Fensterbreite [m]:</label>
-                            <input id="window3_width" minlength="1" name="window3_width" step="0.1" min="0" type="number"
-                                   value="{{ config['house']['window3_width'] }}"  >
-                            <label for="window3_height"  >Fensterhöhe [m]:</label>
-                            <input id="window3_height" minlength="1" name="window3_height" step="0.1" min="0" type="number"
-                                   value="{{ config['house']['window3_height'] }}"  >
+                        <label for="window3_frame">Fensterrahmen:</label>
+                        <select name="window3_frame" id="window3_frame"
+                                onchange="updateWindowDropdown('window3_frame','window3_glazing')">
+                            <option value="">Rahmen wählen</option>
+                            <option {% if config['house']['window3_frame'] == "Holzrahmen" %}
+                                selected="selected" {% endif %}
+                                value="Holzrahmen">Holzrahmen
+                            </option>
+                            <option {% if config['house']['window3_frame'] == "Kunststoffrahmen" %}
+                                selected="selected" {% endif %}
+                                value="Kunststoffrahmen">Kunststoffrahmen
+                            </option>
+                            <option {% if config['house']['window3_frame'] == "Metallrahmen" %}
+                                selected="selected" {% endif %}
+                                value="Metallrahmen">Metallrahmen
+                            </option>
+                        </select>
+                        <label for="window3_glazing">Verglasung:</label>
+                        <select id="window3_glazing" name="window3_glazing">
+                            <option value="">Verglasung wählen</option>
+                            {% if config['house']['window3_frame'] == "Holzrahmen" %}
+                                <option {% if config['house']['window3_glazing'] == "Einfachverglasung" %}
+                                    selected="selected" {% endif %}
+                                    value="Einfachverglasung">Einfachverglasung
+                                </option>
+                                <option {% if config['house']['window3_glazing'] == "Doppelverglasung" %}
+                                    selected="selected" {% endif %}
+                                    value="Doppelverglasung">Doppelverglasung
+                                </option>
+                                <option {% if config['house']['window3_glazing'] == "Isolierverglasung" %}
+                                    selected="selected" {% endif %}
+                                    value="Isolierverglasung">Isolierverglasung
+                                </option>
+                            {% endif %}
+                            {% if config['house']['window3_frame'] == "Kunststoffrahmen" %}
+                                <option {% if config['house']['window3_glazing'] == "Isolierverglasung" %}
+                                    selected="selected" {% endif %}
+                                    value="Isolierverglasung">Isolierverglasung
+                                </option>
+                            {% endif %}
+                            {% if config['house']['window3_frame'] == "Metallrahmen" %}
+                                <option {% if config['house']['window3_glazing'] == "Isolierverglasung" %}
+                                    selected="selected" {% endif %}
+                                    value="Isolierverglasung">Isolierverglasung
+                                </option>
+                            {% endif %}
+                        </select>
+                        <label for="window3_year">Fensterbaujahr:</label>
+                        <input id="window3_year" minlength="1" name="window3_year" step="0.1" min="0" type="number"
+                               value="{{ config['house']['window3_year'] }}">
+                        <label for="window3_width">Fensterbreite [m]:</label>
+                        <input id="window3_width" minlength="1" name="window3_width" step="0.1" min="0" type="number"
+                               value="{{ config['house']['window3_width'] }}">
+                        <label for="window3_height">Fensterhöhe [m]:</label>
+                        <input id="window3_height" minlength="1" name="window3_height" step="0.1" min="0" type="number"
+                               value="{{ config['house']['window3_height'] }}">
                     </div>
                     <div class="cell">
-                        <label for="wall3"  >Wand:</label>
-                            <select name="wall3" id="wall3"   
-                                    onchange="updateWallDropdown('wall3','construction_wall3')">
-                                <option value="">Wand typ wählen</option>
-                                <option {% if config['house']['wall3'] == "Außenwand" %} selected="selected" {% endif %}
-                                value="Außenwand">Außenwand</option>
-                                <option {% if config['house']['wall3'] == "Wand gegen Erdreich" %} selected="selected" {% endif %}
-                                value="Wand gegen Erdreich">Wand gegen Erdreich</option>
-                                <option {% if config['house']['wall3'] == "Innenwand gegen unbeheizte Kellergeschosse" %} selected="selected" {% endif %}
+                        <label for="wall3">Wand:</label>
+                        <select name="wall3" id="wall3"
+                                onchange="updateWallDropdown('wall3','construction_wall3')">
+                            <option value="">Wand typ wählen</option>
+                            <option {% if config['house']['wall3'] == "Außenwand" %} selected="selected" {% endif %}
+                                                                                     value="Außenwand">Außenwand
+                            </option>
+                            <option {% if config['house']['wall3'] == "Wand gegen Erdreich" %}
+                                selected="selected" {% endif %}
+                                value="Wand gegen Erdreich">Wand gegen Erdreich
+                            </option>
+                            <option {% if config['house']['wall3'] == "Innenwand gegen unbeheizte Kellergeschosse" %}
+                                selected="selected" {% endif %}
                                 value="Innenwand gegen unbeheizte Kellergeschosse">
-                                    Innenwand gegen unbeheizte Kellergeschosse</option>
-                            </select>
-                            <label for="construction_wall3"  >Bauweise:</label>
-                            <select id="construction_wall3" name="construction_wall3"  >
-                                <option value="">Bauweise wählen</option>
-                                {% if config['house']['wall3'] == "Außenwand" %}
-                                    <option {% if config['house']['construction_wall3'] == "Massivbauweise" %} selected="selected" {% endif %}
-                                    value="Massivbauweise">Massivbauweise</option>
-                                    <option {% if config['house']['construction_wall3'] == "Holzkonstruktion" %} selected="selected" {% endif %}
-                                    value="Holzkonstruktion">Holzkonstruktion</option>
-                                {% endif %}
-                                {% if config['house']['wall3'] == "Wand gegen Erdreich" %}
-                                    <option {% if config['house']['construction_wall3'] == "Massivbauweise" %} selected="selected" {% endif %}
-                                    value="Massivbauweise">Massivbauweise</option>
-                                    <option {% if config['house']['construction_wall3'] == "Holzkonstruktion" %} selected="selected" {% endif %}
-                                    value="Holzkonstruktion">Holzkonstruktion</option>
-                                {% endif %}
-                                {% if config['house']['wall3'] == "Innenwand gegen unbeheizte Kellergeschosse" %}
-                                    <option {% if config['house']['construction_wall3'] == "Massivbauweise" %} selected="selected" {% endif %}
-                                    value="Massivbauweise">Massivbauweise</option>
-                                    <option {% if config['house']['construction_wall3'] == "Holzkonstruktion" %} selected="selected" {% endif %}
-                                    value="Holzkonstruktion">Holzkonstruktion</option>
-                                {% endif %}
-                            </select>
+                                Innenwand gegen unbeheizte Kellergeschosse
+                            </option>
+                        </select>
+                        <label for="construction_wall3">Bauweise:</label>
+                        <select id="construction_wall3" name="construction_wall3">
+                            <option value="">Bauweise wählen</option>
+                            {% if config['house']['wall3'] == "Außenwand" %}
+                                <option {% if config['house']['construction_wall3'] == "Massivbauweise" %}
+                                    selected="selected" {% endif %}
+                                    value="Massivbauweise">Massivbauweise
+                                </option>
+                                <option {% if config['house']['construction_wall3'] == "Holzkonstruktion" %}
+                                    selected="selected" {% endif %}
+                                    value="Holzkonstruktion">Holzkonstruktion
+                                </option>
+                            {% endif %}
+                            {% if config['house']['wall3'] == "Wand gegen Erdreich" %}
+                                <option {% if config['house']['construction_wall3'] == "Massivbauweise" %}
+                                    selected="selected" {% endif %}
+                                    value="Massivbauweise">Massivbauweise
+                                </option>
+                                <option {% if config['house']['construction_wall3'] == "Holzkonstruktion" %}
+                                    selected="selected" {% endif %}
+                                    value="Holzkonstruktion">Holzkonstruktion
+                                </option>
+                            {% endif %}
+                            {% if config['house']['wall3'] == "Innenwand gegen unbeheizte Kellergeschosse" %}
+                                <option {% if config['house']['construction_wall3'] == "Massivbauweise" %}
+                                    selected="selected" {% endif %}
+                                    value="Massivbauweise">Massivbauweise
+                                </option>
+                                <option {% if config['house']['construction_wall3'] == "Holzkonstruktion" %}
+                                    selected="selected" {% endif %}
+                                    value="Holzkonstruktion">Holzkonstruktion
+                                </option>
+                            {% endif %}
+                        </select>
                     </div>
                     <div class="cell">
-                        <label for="door_wall3"  >Tür:</label>
-                            <select name="door_wall3" id="door_wall3"  
-                                    onchange=toggleFieldset("door_wall3","fieldset_door_wall3")>
-                                <option {% if config['house']['door_wall3'] %} selected="selected" {% endif %} value="1">Ja</option>
-                                <option {% if not config['house']['door_wall3'] %} selected="selected" {% endif %} value="0">Keine Tür</option>
-                            </select>
-                            <div id="fieldset_door_wall3" {% if config['house']['door_wall3'] %}
-                            style="display: block;" {% else %} style="display: none;" {% endif %}>
-                            <label for="door_wall3_width"  >Türbreite [m]:</label>
+                        <label for="door_wall3">Tür:</label>
+                        <select name="door_wall3" id="door_wall3"
+                                onchange=toggleFieldset("door_wall3","fieldset_door_wall3")>
+                            <option {% if config['house']['door_wall3'] %} selected="selected" {% endif %} value="1">
+                                Ja
+                            </option>
+                            <option {% if not config['house']['door_wall3'] %} selected="selected" {% endif %}
+                                                                               value="0">Keine Tür
+                            </option>
+                        </select>
+                        <div id="fieldset_door_wall3" {% if config['house']['door_wall3'] %}
+                             class="visible" {% else %} class="invisible" {% endif %}>
+                            <label for="door_wall3_width">Türbreite [m]:</label>
                             <input id="door_wall3_width" minlength="1" name="door_wall3_width" step="0.1" min="0"
-                                   type="number" value="{{ config['house']['door_wall3_width'] }}"  >
-                            <label for="door_wall3_height"  >Türhöhe [m]:</label>
+                                   type="number" value="{{ config['house']['door_wall3_width'] }}">
+                            <label for="door_wall3_height">Türhöhe [m]:</label>
                             <input id="door_wall3_height" minlength="1" name="door_wall3_height" step="0.1" min="0"
-                                   type="number" value="{{ config['house']['door_wall3_height'] }}"  >
-                            </div>
+                                   type="number" value="{{ config['house']['door_wall3_height'] }}">
+                        </div>
                     </div>
                     <div class="cell">
                         <!-- leer-->
                     </div>
                 </div>
-            <div class="row">
+                <div class="row">
                     <div class="cell">
                         <!-- leer-->
                     </div>
