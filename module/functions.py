@@ -756,62 +756,91 @@ def heating_power():
 
     room = hp.Room
 
-    room.Floor.area = house_data.get("wall1_width", 0) * house_data.get("wall2_width", 0)
+    floor = room.Floor
+    ceiling = room.Ceiling
 
-    room.Floor.u_wert = hp.u_value[house_data.get("floor", 0)][house_data.get("construction_floor", 0)][
+    wall1 = room.Wall1
+    wall2 = room.Wall2
+    wall3 = room.Wall3
+    wall4 = room.Wall4
+
+    window1 = wall1.Window1
+    window2 = wall2.Window1
+    window3 = wall3.Window1
+    window4 = wall4.Window1
+
+    door1 = wall1.Door
+    door2 = wall2.Door
+    door3 = wall3.Door
+    door4 = wall4.Door
+
+    floor.area = house_data.get("wall1_width", 0) * house_data.get("wall2_width", 0)
+
+    floor.u_wert = hp.u_value[house_data.get("floor", 0)][house_data.get("construction_floor", 0)][
         house_data.get("house_year" if house_data["house_year"] < 1995 else 1995, 0)]
 
     room.Ceiling.area = house_data.get("wall1_width", 0) * house_data.get("wall2_width", 0)
 
-    room.Ceiling.u_wert = hp.u_value.get(house_data["ceiling"], 0).get(house_data["construction_ceiling"], 0).get(
+    ceiling.u_wert = hp.u_value.get(house_data["ceiling"], 0).get(house_data["construction_ceiling"], 0).get(
         house_data["house_year"] if house_data["house_year"] < 1995 else 1995, 0)
 
-    room.Wall1.area = house_data.get("wall1_width", 0) * house_data.get("wall1_height", 0)
+    wall1.area = house_data.get("wall1_width", 0) * house_data.get("wall1_height", 0)
 
-    room.Wall1.u_wert = hp.u_value.get(house_data["wall1"], 0).get(house_data["construction_wall1"], 0).get(
-        house_data["house_year"] if house_data["house_year"] < 1995 else 1995, 0)
-    room.Wall1.Window1.area = house_data.get("window1_width", 0) * house_data.get("window1_height", 0)
-    room.Wall1.Window1.u_wert = hp.u_value.get("Fenster", {}).get(house_data["window1_frame"], {}).get(
-        house_data["window1_glazing"], {}).get(
-        house_data["window1_year"] if house_data["window1_year"] < 1995 else 1995, 0)
-    room.Wall1.Door.area = house_data.get("door_wall1_width", 0) * house_data.get("door_wall1_height", 0)
-    room.Wall1.Door.u_wert = hp.u_value.get("Türen", 0).get("alle", 0).get(
+    if house_data.get("wall1") == "ENEV Außenwand" or house_data.get("wall") == "ENEV Innenwand":
+        wall1.u_wert = hp.u_value.get(house_data["wall1"], 0).get(house_data["construction_wall1"], 0)
+
+    else:
+        wall1.u_wert = hp.u_value.get(house_data["wall1"], 0).get(house_data["construction_wall1"], 0).get(
+            house_data["house_year"] if house_data["house_year"] < 1995 else 1995, 0)
+
+    window1.area = house_data.get("window1_width", 0) * house_data.get("window1_height", 0)
+
+    if house_data.get("window1_frame") == "ENEV":
+        window1.u_wert = hp.u_value.get("Fenster", {}).get(house_data["window1_frame"], {}).get(
+            house_data["window1_glazing"], 0)
+    else:
+        window1.u_wert = hp.u_value.get("Fenster", {}).get(house_data["window1_frame"], {}).get(
+            house_data["window1_glazing"], {}).get(
+            house_data["window1_year"] if house_data["window1_year"] < 1995 else 1995, 0)
+
+    door1.area = house_data.get("door_wall1_width", 0) * house_data.get("door_wall1_height", 0)
+    door1.u_wert = hp.u_value.get("Türen", 0).get("alle", 0).get(
         house_data["house_year"] if house_data["house_year"] < 1995 else 1995, 0)
 
-    room.Wall2.area = house_data.get("wall2_width", 0) * house_data.get("wall1_height", 0)
+    wall2.area = house_data.get("wall2_width", 0) * house_data.get("wall1_height", 0)
 
-    room.Wall2.u_wert = hp.u_value.get(house_data["wall2"], 0).get(house_data["construction_wall2"], 0).get(
+    wall2.u_wert = hp.u_value.get(house_data["wall2"], 0).get(house_data["construction_wall2"], 0).get(
         house_data["house_year"] if house_data["house_year"] < 1995 else 1995, 0)
-    room.Wall2.Window1.area = house_data.get("window2_width", 0) * house_data.get("window2_height", 0)
-    room.Wall2.Window1.u_wert = hp.u_value.get("Fenster").get(house_data["window2_frame"], {}).get(
+    window2.area = house_data.get("window2_width", 0) * house_data.get("window2_height", 0)
+    window2.u_wert = hp.u_value.get("Fenster").get(house_data["window2_frame"], {}).get(
         house_data["window2_glazing"], {}).get(
         house_data["window2_year"] if house_data["window2_year"] < 1995 else 1995, 0)
-    room.Wall2.Door.area = house_data.get("door_wall2_width", 0) * house_data.get("door_wall2_height", 0)
-    room.Wall2.Door.u_wert = hp.u_value.get("Türen", 0).get("alle", 0).get(
+    door2.area = house_data.get("door_wall2_width", 0) * house_data.get("door_wall2_height", 0)
+    door2.u_wert = hp.u_value.get("Türen", 0).get("alle", 0).get(
         house_data["house_year"] if house_data["house_year"] < 1995 else 1995, 0)
 
-    room.Wall3.area = house_data.get("wall1_width", 0) * house_data.get("wall1_height", 0)
+    wall3.area = house_data.get("wall1_width", 0) * house_data.get("wall1_height", 0)
 
-    room.Wall3.u_wert = hp.u_value.get(house_data["wall3"], 0).get(house_data["construction_wall3"], 0).get(
+    wall3.u_wert = hp.u_value.get(house_data["wall3"], 0).get(house_data["construction_wall3"], 0).get(
         house_data["house_year"] if house_data["house_year"] < 1995 else 1995, 0)
-    room.Wall3.Window1.area = house_data.get("window3_width", 0) * house_data.get("window3_height", 0)
-    room.Wall3.Window1.u_wert = hp.u_value.get("Fenster", {}).get(house_data["window3_frame"], {}).get(
+    window3.area = house_data.get("window3_width", 0) * house_data.get("window3_height", 0)
+    window3.u_wert = hp.u_value.get("Fenster", {}).get(house_data["window3_frame"], {}).get(
         house_data["window3_glazing"], {}).get(
         house_data["window3_year"] if house_data["window3_year"] < 1995 else 1995, 0)
-    room.Wall3.Door.area = house_data.get("door_wall3_width", 0) * house_data.get("door_wall3_height", 0)
-    room.Wall3.Door.u_wert = hp.u_value.get("Türen", 0).get("alle", 0).get(
+    door3.area = house_data.get("door_wall3_width", 0) * house_data.get("door_wall3_height", 0)
+    door3.u_wert = hp.u_value.get("Türen", 0).get("alle", 0).get(
         house_data["house_year"] if house_data["house_year"] < 1995 else 1995, 0)
 
-    room.Wall4.area = house_data.get("wall2_width", 0) * house_data.get("wall1_height", 0)
+    wall4.area = house_data.get("wall2_width", 0) * house_data.get("wall1_height", 0)
 
-    room.Wall4.u_wert = hp.u_value.get(house_data["wall4"], 0).get(house_data["construction_wall4"]).get(
+    wall4.u_wert = hp.u_value.get(house_data["wall4"], 0).get(house_data["construction_wall4"]).get(
         house_data["house_year"] if house_data["house_year"] < 1995 else 1995, 0)
-    room.Wall4.Window1.area = house_data["window4_width"] * house_data["window4_height"]
-    room.Wall4.Window1.u_wert = hp.u_value.get("Fenster", {}).get(house_data["window4_frame"], {}).get(
+    window4.area = house_data["window4_width"] * house_data["window4_height"]
+    window4.u_wert = hp.u_value.get("Fenster", {}).get(house_data["window4_frame"], {}).get(
         house_data["window4_glazing"], {}).get(
         house_data["window4_year"] if house_data["window4_year"] < 1995 else 1995, 0)
-    room.Wall4.Door.area = house_data.get("door_wall4_width", 0) * house_data.get("door_wall4_height", 0)
-    room.Wall4.Door.u_wert = hp.u_value.get("Türen", 0).get("alle", 0).get(
+    door4.area = house_data.get("door_wall4_width", 0) * house_data.get("door_wall4_height", 0)
+    door4.u_wert = hp.u_value.get("Türen", 0).get("alle", 0).get(
         house_data["house_year"] if house_data["house_year"] < 1995 else 1995, 0)
 
     room.volume = house_data.get("wall1_width", 0) * house_data.get("wall1_height", 0) * house_data.get("wall2_width",
@@ -851,6 +880,102 @@ def heating_power():
 
     debug.printer(diff_data, ret_dat)
     # print((room.volume * 1.225 * 1000 * diff_temp) / (3000 - ret_dat))
+
+
+def heating_power2():
+    def _calc_area(data_house: dict, prefix: str, prefix2: str | None = None):
+        if prefix2 is None:
+            prefix2 = prefix
+        area = data_house.get(f"{prefix}_width", 0) * data_house.get(f"{prefix2}_width", 0)
+        return area
+
+    def _get_u_value(data_house: dict, u_value: dict, prefix: str):
+
+        if "wall" in prefix:
+
+            wall_: str = data_house.get(prefix, "")
+            wall_type: str = data_house.get(f"construction_{prefix}", 0)
+            year: int = data_house.get(f"house_year", 0) if data_house.get(f"house_year") < 1995 else 1995
+
+            if wall_ == "ENEV Außenwand" or wall_ == "ENEV Innenwand":
+                return u_value.get("Wand").get(wall).get(wall_type)
+            elif wall_ == "u_value":
+                return data_house.get(f"{prefix}_u_value", 0)
+            else:
+                return u_value.get("Wand").get(wall_).get(wall_type).get(year)
+
+        elif "window" in prefix:
+            window_: str = data_house.get(f"{prefix}_frame", "")
+            glazing: str = data_house.get(f"{prefix}_glazing", "")
+            window_year: int = data_house.get(f"{prefix}_year", 0) if data_house.get(f"{prefix}_year") < 1995 else 1995
+
+            if window_ == "ENEV":
+                return u_value.get("Fenster").get(window_).get(glazing)
+            elif window_ == "u_value":
+                return data_house.get(f"{prefix}_u_value", 0)
+            else:
+                return u_value.get("Fenster").get(window_).get(glazing).get(window_year)
+
+        elif "door" in prefix:
+            year: int = data_house.get(f"house_year", 0) if data_house.get(f"house_year") < 1995 else 1995
+            return u_value.get("Türen", 0).get("alle", 0).get(year, 0)
+
+        elif "floor" in prefix:
+            floor_: str = data_house.get(f"floor", "")
+            floor_type: str = data_house.get(f"construction_floor", "")
+            year: int = data_house.get(f"house_year", 0) if data_house.get(f"house_year") < 1995 else 1995
+            if floor_ == "ENEV unbeheiztes Geschoss" or floor_ == "ENEV beheiztes Geschoss":
+                return u_value.get("Boden").get(floor_).get(floor_type)
+            elif floor_ == "u_value":
+                return data_house.get(f"{prefix}_u_value", 0)
+            else:
+                return u_value.get("Boden").get(floor_).get(floor_type).get(year)
+
+        elif "ceiling" in prefix:
+            ceiling_: str = data_house.get(f"ceiling", "")
+            ceiling_type: str = data_house.get(f"construction_ceiling", "")
+            year: int = data_house.get(f"house_year", 0) if data_house.get(f"house_year") < 1995 else 1995
+            if ceiling_ == "ENEV unbeheiztes Geschoss" or ceiling_ == "ENEV beheiztes Geschoss" or ceiling_ == "ENEV Dach":
+                return u_value.get("Decke").get(ceiling_).get(ceiling_type)
+            elif ceiling_ == "u_value":
+                return data_house.get(f"{prefix}_u_value", 0)
+            else:
+                return u_value.get("Decke").get(ceiling_).get(ceiling_type).get(year)
+
+    file_data: dict = read_data_from_file(consts.config_file_Path)
+
+    data: dict = file_data["house"]
+    weather_data = file_data["coordinates"]
+    shelly_data = file_data["shelly"]
+
+    hp: classes.RequiredHeatingPower = classes.RequiredHeatingPower()
+    weather: classes.Weather = classes.Weather(weather_data["latitude"], weather_data["longitude"])
+    trv: classes.ShellyTRVControl = classes.ShellyTRVControl(shelly_data["ip_address"])
+
+    room = hp.Room
+
+    floor = room.Floor
+    ceiling = room.Ceiling
+
+    floor.area = _calc_area(data, f"wall1", f"wall2")
+    ceiling.area = _calc_area(data, f"wall1", f"wall2")
+
+    floor.u_wert = _get_u_value(data, hp.u_value, "floor")
+    ceiling.u_wert = _get_u_value(data, hp.u_value, "ceiling")
+
+    for wall_number in range(1, 5):
+        window_number: int = 1
+        wall = getattr(room, f"Wall{wall_number}")
+        window = getattr(wall, f"Window{window_number}")
+        door = getattr(wall, "Door")
+
+        wall.area = _calc_area(data, f"wall{wall_number}")
+        window.area = _calc_area(data, f"window{window_number}")
+        door.area = _calc_area(data, f"door_wall{wall_number}")
+
+        wall.u_wert = _get_u_value(data, hp.u_value, f"wall{wall_number}")
+        window.u_wert = _get_u_value(data, hp.u_value, f"window{window_number}")
+        door.u_wert = _get_u_value(data, hp.u_value, f"door")
 
 
 if __name__ == "__main__":

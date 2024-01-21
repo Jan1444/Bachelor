@@ -291,7 +291,7 @@
                             {% endif %}
                                 value="Metallrahmen">Metallrahmen
                             </option>
-                            <option {% if config['house']['window1_frame'] == "Metallrahmen" %}
+                            <option {% if config['house']['window1_frame'] == "ENEV" %}
                                 selected="selected"
                             {% endif %}
                                 value="ENEV">ENEV
@@ -340,6 +340,23 @@
                                                 selected="selected" 
                                             {% endif %}
                                             value="Isolierverglasung">Isolierverglasung
+                                    </option>
+                                {% endif %}
+                                {% if config['house']['window1_frame'] == "ENEV" %}
+                                    <option {% if config['house']['window1_glazing'] == "2009" %}
+                                                selected="selected"
+                                            {% endif %}
+                                            value="2009">2009
+                                    </option>
+                                    <option {% if config['house']['window1_glazing'] == "2014" %}
+                                                selected="selected"
+                                            {% endif %}
+                                            value="2014">2014
+                                    </option>
+                                    <option {% if config['house']['window1_glazing'] == "2016" %}
+                                                selected="selected"
+                                            {% endif %}
+                                            value="2016">2016
                                     </option>
                                 {% endif %}
                             </select>
