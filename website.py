@@ -15,6 +15,8 @@ from werkzeug.utils import secure_filename
 from module import consts, debug
 from module import functions as fc
 
+import time
+
 UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS: set[str] = {'json'}
 
