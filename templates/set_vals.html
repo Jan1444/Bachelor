@@ -628,7 +628,63 @@
                         <!-- leer-->
                     </div>
                     <div class="cell">
-                        <!-- leer-->
+                        <label for="ceiling">Decke:</label>
+                            <select name="ceiling" id="ceiling"
+                                    onchange="updateCeilingDropdown('ceiling','construction_ceiling')">
+                                <option value="">Wand typ wählen</option>
+                                <option {% if config['house']['ceiling'] == "Decke über Außenbereich" %} selected="selected" {% endif %}
+                                value="Decke über Außenbereich">Decke über Außenbereich</option>
+                                <option {% if config['house']['ceiling'] == "unbeheiztes Geschoss" %} selected="selected" {% endif %}
+                                value="unbeheiztes Geschoss">unbeheiztes Geschoss</option>
+                                <option {% if config['house']['ceiling'] == "ENEV unbeheiztes Geschoss" %} selected="selected" {% endif %}
+                                value="ENEV unbeheiztes Geschoss">ENEV unbeheiztes Geschoss</option>
+                                <option {% if config['house']['ceiling'] == "ENEV beheiztes Geschoss" %} selected="selected" {% endif %}
+                                value="ENEV beheiztes Geschoss">ENEV beheiztes Geschoss</option>
+                                <option {% if config['house']['ceiling'] == "ENEV Dach" %} selected="selected" {% endif %}
+                                value="ENEV Dach">ENEV Dach</option>
+                                <option {% if config['house']['ceiling'] == "u_value" %} selected="selected" {% endif %}
+                                value="u_value">u_value</option>
+                            </select>
+                            <label for="construction_ceiling">Bauweise:</label>
+                            <select id="construction_ceiling" name="construction_ceiling">
+                                <option value="">Bauweise wählen</option>
+                                {% if config['house']['ceiling'] == "Decke über Außenbereich" %}
+                                    <option {% if config['house']['construction_ceiling'] == "Massiv" %} selected="selected" {% endif %}
+                                    value="Massiv">Massiv</option>
+                                    <option {% if config['house']['construction_ceiling'] == "Holzbalkendecke" %} selected="selected" {% endif %}
+                                    value="Holzbalkendecke">Holzbalkendecke</option>
+                                {% endif %}
+                                {% if config['house']['ceiling'] == "unbeheiztes Geschoss" %}
+                                    <option {% if config['house']['construction_ceiling'] == "Massiv" %} selected="selected" {% endif %}
+                                    value="Massiv">Massiv</option>
+                                    <option {% if config['house']['construction_ceiling'] == "Holzbalkendecke" %} selected="selected" {% endif %}
+                                    value="Holzbalkendecke">Holzbalkendecke</option>
+                                {% endif %}
+                                {% if config['house']['ceiling'] == "ENEV unbeheiztes Geschoss" %}
+                                    <option {% if config['house']['construction_ceiling'] == "2009" %} selected="selected" {% endif %}
+                                    value="2009">2009</option>
+                                    <option {% if config['house']['construction_ceiling'] == "2014" %} selected="selected" {% endif %}
+                                    value="2014">2014</option>
+                                    <option {% if config['house']['construction_ceiling'] == "2016" %} selected="selected" {% endif %}
+                                    value="2016">2016</option>
+                                {% endif %}
+                                {% if config['house']['ceiling'] == "ENEV beheiztes Geschoss" %}
+                                    <option {% if config['house']['construction_ceiling'] == "2009" %} selected="selected" {% endif %}
+                                    value="2009">2009</option>
+                                    <option {% if config['house']['construction_ceiling'] == "2014" %} selected="selected" {% endif %}
+                                    value="2014">2014</option>
+                                    <option {% if config['house']['construction_ceiling'] == "2016" %} selected="selected" {% endif %}
+                                    value="2016">2016</option>
+                                {% endif %}
+                                {% if config['house']['ceiling'] == "ENEV Dach" %}
+                                    <option {% if config['house']['construction_ceiling'] == "2009" %} selected="selected" {% endif %}
+                                    value="2009">2009</option>
+                                    <option {% if config['house']['construction_ceiling'] == "2014" %} selected="selected" {% endif %}
+                                    value="2014">2014</option>
+                                    <option {% if config['house']['construction_ceiling'] == "2016" %} selected="selected" {% endif %}
+                                    value="2016">2016</option>
+                                {% endif %}
+                            </select>
                     </div>
                     <div class="cell">
                         <!-- leer-->
@@ -846,7 +902,61 @@
                         <!-- leer-->
                     </div>
                     <div class="cell">
-                        <!-- leer-->
+                        <label for="floor">Fußboden:</label>
+                            <select name="floor" id="floor"
+                                    onchange="updateFloorDropdown('floor','construction_floor')">
+                                <option value="">Wand typ wählen</option>
+                                <option {% if config['house']['floor'] == "gegen Erdreich" %} selected="selected" {% endif %}
+                                    value="gegen Erdreich">gegen Erdreich</option>
+                                <option {% if config['house']['floor'] == "unbeheiztes Geschoss" %} selected="selected" {% endif %}
+                                    value="unbeheiztes Geschoss">unbeheiztes Geschoss</option>
+                                <option {% if config['house']['floor'] == "beheiztes Geschoss" %} selected="selected" {% endif %}
+                                    value="beheiztes Geschoss">beheiztes Geschoss</option>
+                                <option {% if config['house']['floor'] == "ENEV unbeheiztes Geschoss" %} selected="selected" {% endif %}
+                                    value="ENEV unbeheiztes Geschoss">ENEV unbeheiztes Geschoss</option>
+                                <option {% if config['house']['floor'] == "ENEV beheiztes Geschoss" %} selected="selected" {% endif %}
+                                    value="ENEV beheiztes Geschoss">ENEV beheiztes Geschoss</option>
+                                <option {% if config['house']['floor'] == "u_value" %} selected="selected" {% endif %}
+                                    value="u_value">u_value</option>
+                            </select>
+                            <label for="construction_floor">Bauweise:</label>
+                            <select id="construction_floor" name="construction_floor">
+                                <option value="">Bauweise wählen</option>
+                                {% if config['house']['floor'] == "gegen Erdreich" %}
+                                    <option {% if config['house']['construction_floor'] == "Massivbauweise" %} selected="selected" {% endif %}
+                                    value="Massivbauweise">Massivbauweise</option>
+                                    <option {% if config['house']['construction_floor'] == "Holzkonstruktion" %} selected="selected" {% endif %}
+                                    value="Holzkonstruktion">Holzkonstruktion</option>
+                                {% endif %}
+                                {% if config['house']['floor'] == "unbeheiztes Geschoss" %}
+                                    <option {% if config['house']['construction_floor'] == "Massivbauweise" %} selected="selected" {% endif %}
+                                    value="Massivbauweise">Massivbauweise</option>
+                                    <option {% if config['house']['construction_floor'] == "Holzkonstruktion" %} selected="selected" {% endif %}
+                                    value="Holzkonstruktion">Holzkonstruktion</option>
+                                {% endif %}
+                                {% if config['house']['floor'] == "beheiztes Geschoss" %}
+                                    <option {% if config['house']['construction_floor'] == "Massivbauweise" %} selected="selected" {% endif %}
+                                    value="Massivbauweise">Massivbauweise</option>
+                                    <option {% if config['house']['construction_floor'] == "Holzkonstruktion" %} selected="selected" {% endif %}
+                                    value="Holzkonstruktion">Holzkonstruktion</option>
+                                {% endif %}
+                                {% if config['house']['floor'] == "ENEV unbeheiztes Geschoss" %}
+                                    <option {% if config['house']['construction_floor'] == "2009" %} selected="selected" {% endif %}
+                                    value="2009">2009</option>
+                                    <option {% if config['house']['construction_floor'] == "2014" %} selected="selected" {% endif %}
+                                    value="2014">2014</option>
+                                    <option {% if config['house']['construction_floor'] == "2016" %} selected="selected" {% endif %}
+                                    value="2016">2016</option>
+                                {% endif %}
+                                {% if config['house']['floor'] == "ENEV beheiztes Geschoss" %}
+                                    <option {% if config['house']['construction_floor'] == "2009" %} selected="selected" {% endif %}
+                                    value="2009">2009</option>
+                                    <option {% if config['house']['construction_floor'] == "2014" %} selected="selected" {% endif %}
+                                    value="2014">2014</option>
+                                    <option {% if config['house']['construction_floor'] == "2016" %} selected="selected" {% endif %}
+                                    value="2016">2016</option>
+                                {% endif %}
+                            </select>
                     </div>
                     <div class="cell">
                         <!-- leer-->

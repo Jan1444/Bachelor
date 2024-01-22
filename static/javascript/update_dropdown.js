@@ -42,6 +42,48 @@ function updateWallDropdown(first,second) {
         });
 }
 
+function updateCeilingDropdown(first,second) {
+    const ceiling = document.getElementById(first).value;
+    const construction = document.getElementById(second);
+
+    fetch('/get_ceiling/' + ceiling)
+        .then(response => response.json())
+        .then(data => {
+            if (ceiling === "ENEV unbeheiztes Geschoss" || ceiling === "ENEV beheiztes Geschoss" || ceiling === "ENEV Dach"){
+                construction.innerHTML = '<option value="">ENEV wählen</option>';
+            }else{
+                construction.innerHTML = '<option value="">Bauweise wählen</option>';
+            }
+            data.forEach(function (glazing) {
+                const option = document.createElement('option');
+                option.value = glazing;
+                option.text = glazing;
+                construction.appendChild(option);
+            });
+        });
+}
+function updateFloorDropdown(first,second) {
+    const floor = document.getElementById(first).value;
+    const construction = document.getElementById(second);
+
+    fetch('/get_floor/' + floor)
+        .then(response => response.json())
+        .then(data => {
+            if (floor === "ENEV unbeheiztes Geschoss" || floor === "ENEV beheiztes Geschoss"){
+                construction.innerHTML = '<option value="">ENEV wählen</option>';
+            }else{
+                construction.innerHTML = '<option value="">Bauweise wählen</option>';
+            }
+            data.forEach(function (glazing) {
+                const option = document.createElement('option');
+                option.value = glazing;
+                option.text = glazing;
+                construction.appendChild(option);
+            });
+        });
+}
+
+
 function toggleFieldsetWindow(selectId, FieldSetId1, FieldSetId2, FieldSetId3) {
     const selectValue = document.getElementById(selectId).value;
     const fieldSet1 = document.getElementById(FieldSetId1);
