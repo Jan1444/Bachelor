@@ -28,8 +28,7 @@ app.secret_key = os.urandom(24)
 @app.route('/', methods=['GET', 'POST'])
 def index():
     toml_file_path = consts.config_file_Path
-    with open(toml_file_path, 'rb') as f:
-        config_data = tomli.load(f)
+    config_data = fc.read_data_from_file(toml_file_path)
 
     return render_template('index.html', config=config_data)
 
@@ -38,17 +37,15 @@ def index():
 def dashboard():
     toml_file_path = consts.config_file_Path
 
-    # TOML-Datei lesen
-    with open(toml_file_path, 'rb') as f:
-        config_data = tomli.load(f)
+    config_data = fc.read_data_from_file(toml_file_path)
 
     return render_template('dashboard.html', config=config_data)
 
 
 @app.route('/analytics')
 def analytics():
-    with open(consts.config_file_Path, 'rb') as f:
-        config_data = tomli.load(f)
+    toml_file_path = consts.config_file_Path
+    config_data = fc.read_data_from_file(toml_file_path)
 
     analy = config_data['analytics']
     coordinates = config_data["coordinates"]
@@ -76,7 +73,7 @@ def analytics():
                                        energy_data=data["energy"]["energy"])
 
             analy['reload'] = False
-            tomli_w.dump(config_data, open(consts.config_file_Path, 'wb'))
+            write_data_to_file(config_data, consts.config_file_Path)
 
     weather, market, sun, pv, hp, trv = fc.init_classes(coordinates["latitude"], coordinates["longitude"],
                                                         pv_consts["module_efficiency"], pv_consts["area"],
@@ -113,8 +110,8 @@ def analytics():
         market_time.append(t["start_timestamp"])
         market_price.append(t["consumerprice"])
 
-    fc.write_data_to_file(None, None, None, None, time=weather_time, radiation_dni=radiation_data_dni,
-                          power=power_data, market_price=market_price, energy=energy)
+    fc.write_data_to_data_file(None, None, None, None, time=weather_time, radiation_dni=radiation_data_dni,
+                               power=power_data, market_price=market_price, energy=energy)
 
     plt.clf()
     plt.figure(figsize=(60, 25))
@@ -156,8 +153,7 @@ def download():
     err_msg_market: str = ""
     date_now: dict = {}
 
-    with open(toml_file_path, 'rb') as f:
-        config_data = tomli.load(f)
+    config_data = fc.read_config_data(toml_file_path)
 
     if request.method == 'POST':
         date_now = fc.date_time_download()
@@ -211,22 +207,16 @@ def allowed_file(filename):
 @app.route('/settings')
 def settings():
     toml_file_path = consts.config_file_Path
-    config_data: dict = {}
-    try:
-        with open(toml_file_path, 'rb') as f:
-            config_data = tomli.load(f)
+    config_data = fc.read_data_from_file(toml_file_path)
 
-    except FileNotFoundError:
-        open(toml_file_path, "x")
-        config_data = consts.config_data
-    finally:
-        return render_template('set_vals.html', config=config_data)
+    return render_template('set_vals.html', config=config_data)
 
 
 @app.route('/save_settings', methods=['POST'])
 def safe_settings():
     if request.method == 'POST':
-        config_data = tomli.load(open(consts.config_file_Path, 'rb'))
+        toml_file_path = consts.config_file_Path
+        config_data = fc.read_data_from_file(toml_file_path)
 
         data = request.form.to_dict()
 

@@ -207,7 +207,7 @@ def write_data_to_config(data: dict, path: str = None) -> int:
         return -1
 
 
-def write_data_to_file(weather_data: None | dict = None, sun: None | classes.CalcSunPos = None,
+def write_data_to_data_file(weather_data: None | dict = None, sun: None | classes.CalcSunPos = None,
                        pv: None | classes.PVProfit = None, market: None | classes.MarketData = None,
                        time: None | list[str] = None, radiation: None | list[float] = None,
                        radiation_dni: None | list[float] = None, power: None | list[float] = None,
@@ -353,7 +353,40 @@ def read_data_from_file(file_path: str) -> dict | None:
         return data
     except FileNotFoundError:
         print("No File at " + file_path)
-        return None
+        print("Try again")
+        file_path = file_path[1:]
+        print("Try again with: " + file_path)
+        try:
+            with open(file_path, 'rb') as f:
+                data = tomli.load(f)
+            return data
+        except FileNotFoundError:
+            return None
+
+
+def write_data_to_file(data: dict, file_path: str) -> None:
+    """
+
+    :param data:
+    :param file_path:
+    :return:
+    """
+    try:
+        with open(file_path, 'wb') as f:
+            tomli_w.dump(data, f)
+        return data
+    except FileNotFoundError:
+        print("No File at " + file_path)
+        print("Try again")
+        file_path = file_path[1:]
+        print("Try again with: " + file_path)
+        try:
+            with open(file_path, 'wb') as f:
+                tomli_w.dump(data, f)
+        except FileNotFoundError:
+            print("No File at " + file_path)
+
+
 
 
 def get_coord(street: str, nr: str, city: str, postalcode: int, country: str) -> (str, str):
@@ -1109,24 +1142,24 @@ if __name__ == "__main__":
     radiation_test_data: list = [10_000, 10_100, 10_200, 10_300, 10_400, 10_500, 10_600, 10_700, 10_800, 10_900, 11_000,
                                  11_100, 11_200]
 
-    ret = write_data_to_file(weather_test_data, classes.CalcSunPos(49.5198371, 11.2948653),
-                             classes.PVProfit(20, 10, 0, 30, -0.1, 25, 1),
-                             classes.MarketData(13), path=r'../data/test_data_classes.toml')
+    ret = write_data_to_data_file(weather_test_data, classes.CalcSunPos(49.5198371, 11.2948653),
+                                  classes.PVProfit(20, 10, 0, 30, -0.1, 25, 1), classes.MarketData(13),
+                                  path=r'../data/test_data_classes.toml')
     if ret == 1:
         print('✅', "PASS, classes")
     elif ret == -1:
         print('❌', "FAIL, classes")
 
-    """ret = write_data_to_file(time=time_test_data, radiation=radiation_test_data, power=power_test_data,
-                             market_price=market_price_test_data, path=r'../data/test_data_direct.toml')"""
+    ret = write_data_to_data_file(time=time_test_data, radiation=radiation_test_data, power=power_test_data,
+                             market_price=market_price_test_data, path=r'../data/test_data_direct.toml')
 
     if ret == 1:
         print('✅', "PASS, direct radiation")
     elif ret == -1:
         print('❌', "FAIL, direct radiation")
 
-    """ret = write_data_to_file(time=time_test_data, radiation_dni=radiation_dni_test_data, power=power_test_data,
-                             market_price=market_price_test_data, path=r'../data/test_data_dni.toml')"""
+    ret = write_data_to_data_file(time=time_test_data, radiation_dni=radiation_dni_test_data, power=power_test_data,
+                             market_price=market_price_test_data, path=r'../data/test_data_dni.toml')
 
     if ret == 1:
         print('✅', "PASS, dni radiation")
