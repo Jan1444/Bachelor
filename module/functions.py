@@ -211,7 +211,7 @@ def write_data_to_file(weather_data: None | dict = None, sun: None | classes.Cal
                        pv: None | classes.PVProfit = None, market: None | classes.MarketData = None,
                        time: None | list[str] = None, radiation: None | list[float] = None,
                        radiation_dni: None | list[float] = None, power: None | list[float] = None,
-                       market_price: None | list[float] = None, path: None | str = None, energy: None | float = None
+                       market_price: None | list[float] = None, path: None | str = None, energy: float = 0
                        ) -> int:
     """
 
@@ -631,7 +631,7 @@ def data_analyzer(path: None | str = None) -> int | tuple[
 
     config_pv: dict = config_data["pv"]
     if path is None:
-        path = rf"uploads/{os.listdir("uploads")[0]}"
+        path = rf"../uploads/{os.listdir("../uploads")[0]}"
 
     data = json.load(open(path, "rb+"))
 
@@ -996,7 +996,7 @@ if __name__ == "__main__":
         "ip_address": "IP"
     }
 
-    ret = write_data_to_config(test_data, "config/function_tes.toml")
+    ret = write_data_to_config(test_data, "../config/function_tes.toml")
     if ret == 1:
         print('✅', "PASS")
     elif ret == -1:
@@ -1111,22 +1111,22 @@ if __name__ == "__main__":
 
     ret = write_data_to_file(weather_test_data, classes.CalcSunPos(49.5198371, 11.2948653),
                              classes.PVProfit(20, 10, 0, 30, -0.1, 25, 1),
-                             classes.MarketData(13), path=r'data/test_data_classes.toml')
+                             classes.MarketData(13), path=r'../data/test_data_classes.toml')
     if ret == 1:
         print('✅', "PASS, classes")
     elif ret == -1:
         print('❌', "FAIL, classes")
 
-    ret = write_data_to_file(time=time_test_data, radiation=radiation_test_data, power=power_test_data,
-                             market_price=market_price_test_data, path=r'data/test_data_direct.toml')
+    """ret = write_data_to_file(time=time_test_data, radiation=radiation_test_data, power=power_test_data,
+                             market_price=market_price_test_data, path=r'../data/test_data_direct.toml')"""
 
     if ret == 1:
         print('✅', "PASS, direct radiation")
     elif ret == -1:
         print('❌', "FAIL, direct radiation")
 
-    ret = write_data_to_file(time=time_test_data, radiation_dni=radiation_dni_test_data, power=power_test_data,
-                             market_price=market_price_test_data, path=r'data/test_data_dni.toml')
+    """ret = write_data_to_file(time=time_test_data, radiation_dni=radiation_dni_test_data, power=power_test_data,
+                             market_price=market_price_test_data, path=r'../data/test_data_dni.toml')"""
 
     if ret == 1:
         print('✅', "PASS, dni radiation")
@@ -1134,7 +1134,7 @@ if __name__ == "__main__":
         print('❌', "FAIL, dni radiation")
 
     print("Test read_data_from_file")
-    ret = read_data_from_file(r"data/test_data_dni.toml")
+    ret = read_data_from_file(r"../data/test_data_dni.toml")
     if ret is not None:
         print('✅', "PASS")
     else:
@@ -1169,3 +1169,10 @@ if __name__ == "__main__":
         print('✅', "PASS")
     else:
         print('❌', "FAIL")
+
+    print("Test heating_power")
+    #heating_power()
+    heating_power2()
+
+
+
