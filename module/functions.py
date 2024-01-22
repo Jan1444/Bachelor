@@ -198,7 +198,7 @@ def write_data_to_config(data: dict, path: str = None) -> int:
         house['door_wall4_width'] = float(data.get('door_wall4_width', 0))
         house['door_wall4_height'] = float(data.get('door_wall4_height', 0))
 
-        tomli_w.dump(config_data, open(path, 'wb'))
+        write_data_to_file(config_data, path)
 
         return 1
 
@@ -208,11 +208,11 @@ def write_data_to_config(data: dict, path: str = None) -> int:
 
 
 def write_data_to_data_file(weather_data: None | dict = None, sun: None | classes.CalcSunPos = None,
-                       pv: None | classes.PVProfit = None, market: None | classes.MarketData = None,
-                       time: None | list[str] = None, radiation: None | list[float] = None,
-                       radiation_dni: None | list[float] = None, power: None | list[float] = None,
-                       market_price: None | list[float] = None, path: None | str = None, energy: float = 0
-                       ) -> int:
+                            pv: None | classes.PVProfit = None, market: None | classes.MarketData = None,
+                            time: None | list[str] = None, radiation: None | list[float] = None,
+                            radiation_dni: None | list[float] = None, power: None | list[float] = None,
+                            market_price: None | list[float] = None, path: None | str = None, energy: float = 0
+                            ) -> int:
     """
 
     :param energy:
@@ -258,8 +258,8 @@ def write_data_to_data_file(weather_data: None | dict = None, sun: None | classe
                 if (i - 4) % 4 == 0:
                     h += 1
 
-            with open(data_file_path, 'wb') as f:
-                tomli_w.dump(data, f)
+            write_data_to_file(data, data_file_path)
+
             return 1
 
     except KeyError as error:
@@ -290,8 +290,8 @@ def write_data_to_data_file(weather_data: None | dict = None, sun: None | classe
                 if (i - 4) % 4 == 0:
                     h += 1
 
-            with open(data_file_path, 'wb') as f:
-                tomli_w.dump(data, f)
+            write_data_to_file(data, data_file_path)
+
             return 1
 
     except KeyError as error:
@@ -332,8 +332,8 @@ def write_data_to_data_file(weather_data: None | dict = None, sun: None | classe
             if (z - 4) % 4 == 0:
                 zeit += 1
 
-        with open(data_file_path, 'wb') as f:
-            tomli_w.dump(data, f)
+        write_data_to_file(data, data_file_path)
+
         return 1
 
     except KeyError as error:
@@ -385,8 +385,6 @@ def write_data_to_file(data: dict, file_path: str) -> None:
                 tomli_w.dump(data, f)
         except FileNotFoundError:
             print("No File at " + file_path)
-
-
 
 
 def get_coord(street: str, nr: str, city: str, postalcode: int, country: str) -> (str, str):
@@ -658,8 +656,8 @@ def unpack_data(data: dict) -> (list[str], list[float], list[float], list[float]
 
 
 @lru_cache(maxsize=None)
-def data_analyzer(path: None | str = None) -> int | tuple[
-    float, float, float, str, str, str, str, list, list, float, str, float]:
+def data_analyzer(path: None | str = None) -> int | tuple[float, float, float, str, str, str, str, list, list, float,
+str, float]:
     config_data: dict = read_data_from_file(consts.config_file_Path)
 
     config_pv: dict = config_data["pv"]
@@ -770,7 +768,7 @@ def data_analyzer(path: None | str = None) -> int | tuple[
     plt.xticks(np.linspace(0, len(date_time_data), 100), rotation=90, ha='right', fontsize=8)
     plt.tight_layout()
     plt.margins(0.01)
-    plt.savefig(f"{consts.downloads_file_Path}plot_uploaded_data.png", dpi=300)
+    plt.savefig(f".{consts.downloads_file_Path}plot_uploaded_data.png", dpi=300)
 
     return (lat, lon, ele, rad_database, meteo_database, year_min, year_max, power_data, date_time_data,
             max_energy, time_max_energy, average_energy)
@@ -917,63 +915,72 @@ def heating_power():
 
 def heating_power2():
     def _calc_area(data_house: dict, prefix: str, prefix2: str | None = None):
-        if prefix2 is None:
-            prefix2 = prefix
-        area = data_house.get(f"{prefix}_width", 0) * data_house.get(f"{prefix2}_width", 0)
-        return area
+        try:
+            if prefix2 is None:
+                prefix2 = prefix
+            area = data_house.get(f"{prefix}_width", 0) * data_house.get(f"{prefix2}_width", 0)
+            return area
+
+        except AttributeError as err:
+            print(f"Attribute Missing: {err}")
+            return 0
 
     def _get_u_value(data_house: dict, u_value: dict, prefix: str):
+        try:
+            if "wall" in prefix:
 
-        if "wall" in prefix:
+                wall_: str = data_house.get(prefix, "")
+                wall_type: str = data_house.get(f"construction_{prefix}", 0)
+                year: int = data_house.get(f"house_year", 0) if data_house.get(f"house_year") < 1995 else 1995
 
-            wall_: str = data_house.get(prefix, "")
-            wall_type: str = data_house.get(f"construction_{prefix}", 0)
-            year: int = data_house.get(f"house_year", 0) if data_house.get(f"house_year") < 1995 else 1995
+                if wall_ == "ENEV Außenwand" or wall_ == "ENEV Innenwand":
+                    return u_value.get("Wand").get(wall).get(wall_type)
+                elif wall_ == "u_value":
+                    return data_house.get(f"{prefix}_u_value", 0)
+                else:
+                    return u_value.get("Wand").get(wall_).get(wall_type).get(year)
 
-            if wall_ == "ENEV Außenwand" or wall_ == "ENEV Innenwand":
-                return u_value.get("Wand").get(wall).get(wall_type)
-            elif wall_ == "u_value":
-                return data_house.get(f"{prefix}_u_value", 0)
-            else:
-                return u_value.get("Wand").get(wall_).get(wall_type).get(year)
+            elif "window" in prefix:
+                window_: str = data_house.get(f"{prefix}_frame", "")
+                glazing: str = data_house.get(f"{prefix}_glazing", "")
+                window_year: int = data_house.get(f"{prefix}_year", 0) if data_house.get(
+                    f"{prefix}_year") < 1995 else 1995
 
-        elif "window" in prefix:
-            window_: str = data_house.get(f"{prefix}_frame", "")
-            glazing: str = data_house.get(f"{prefix}_glazing", "")
-            window_year: int = data_house.get(f"{prefix}_year", 0) if data_house.get(f"{prefix}_year") < 1995 else 1995
+                if window_ == "ENEV":
+                    return u_value.get("Fenster").get(window_).get(glazing)
+                elif window_ == "u_value":
+                    return data_house.get(f"{prefix}_u_value", 0)
+                else:
+                    return u_value.get("Fenster").get(window_).get(glazing).get(window_year)
 
-            if window_ == "ENEV":
-                return u_value.get("Fenster").get(window_).get(glazing)
-            elif window_ == "u_value":
-                return data_house.get(f"{prefix}_u_value", 0)
-            else:
-                return u_value.get("Fenster").get(window_).get(glazing).get(window_year)
+            elif "door" in prefix:
+                year: int = data_house.get(f"house_year", 0) if data_house.get(f"house_year") < 1995 else 1995
+                return u_value.get("Türen", 0).get("alle", 0).get(year, 0)
 
-        elif "door" in prefix:
-            year: int = data_house.get(f"house_year", 0) if data_house.get(f"house_year") < 1995 else 1995
-            return u_value.get("Türen", 0).get("alle", 0).get(year, 0)
+            elif "floor" in prefix:
+                floor_: str = data_house.get(f"floor", "")
+                floor_type: str = data_house.get(f"construction_floor", "")
+                year: int = data_house.get(f"house_year", 0) if data_house.get(f"house_year") < 1995 else 1995
+                if floor_ == "ENEV unbeheiztes Geschoss" or floor_ == "ENEV beheiztes Geschoss":
+                    return u_value.get("Boden").get(floor_).get(floor_type)
+                elif floor_ == "u_value":
+                    return data_house.get(f"{prefix}_u_value", 0)
+                else:
+                    return u_value.get("Boden").get(floor_).get(floor_type).get(year)
 
-        elif "floor" in prefix:
-            floor_: str = data_house.get(f"floor", "")
-            floor_type: str = data_house.get(f"construction_floor", "")
-            year: int = data_house.get(f"house_year", 0) if data_house.get(f"house_year") < 1995 else 1995
-            if floor_ == "ENEV unbeheiztes Geschoss" or floor_ == "ENEV beheiztes Geschoss":
-                return u_value.get("Boden").get(floor_).get(floor_type)
-            elif floor_ == "u_value":
-                return data_house.get(f"{prefix}_u_value", 0)
-            else:
-                return u_value.get("Boden").get(floor_).get(floor_type).get(year)
-
-        elif "ceiling" in prefix:
-            ceiling_: str = data_house.get(f"ceiling", "")
-            ceiling_type: str = data_house.get(f"construction_ceiling", "")
-            year: int = data_house.get(f"house_year", 0) if data_house.get(f"house_year") < 1995 else 1995
-            if ceiling_ == "ENEV unbeheiztes Geschoss" or ceiling_ == "ENEV beheiztes Geschoss" or ceiling_ == "ENEV Dach":
-                return u_value.get("Decke").get(ceiling_).get(ceiling_type)
-            elif ceiling_ == "u_value":
-                return data_house.get(f"{prefix}_u_value", 0)
-            else:
-                return u_value.get("Decke").get(ceiling_).get(ceiling_type).get(year)
+            elif "ceiling" in prefix:
+                ceiling_: str = data_house.get(f"ceiling", "")
+                ceiling_type: str = data_house.get(f"construction_ceiling", "")
+                year: int = data_house.get(f"house_year", 0) if data_house.get(f"house_year") < 1995 else 1995
+                if ceiling_ == "ENEV unbeheiztes Geschoss" or ceiling_ == "ENEV beheiztes Geschoss" or ceiling_ == "ENEV Dach":
+                    return u_value.get("Decke").get(ceiling_).get(ceiling_type)
+                elif ceiling_ == "u_value":
+                    return data_house.get(f"{prefix}_u_value", 0)
+                else:
+                    return u_value.get("Decke").get(ceiling_).get(ceiling_type).get(year)
+        except AttributeError as err:
+            print(f"Attribute Missing: {err}")
+            return 0
 
     file_data: dict = read_data_from_file(consts.config_file_Path)
 
@@ -996,6 +1003,8 @@ def heating_power2():
     floor.u_wert = _get_u_value(data, hp.u_value, "floor")
     ceiling.u_wert = _get_u_value(data, hp.u_value, "ceiling")
 
+    room.volume = data.get("wall1_width", 0) * data.get("wall1_height", 0) * data.get("wall2_width", 0)
+
     for wall_number in range(1, 5):
         window_number: int = 1
         wall = getattr(room, f"Wall{wall_number}")
@@ -1009,6 +1018,42 @@ def heating_power2():
         wall.u_wert = _get_u_value(data, hp.u_value, f"wall{wall_number}")
         window.u_wert = _get_u_value(data, hp.u_value, f"window{window_number}")
         door.u_wert = _get_u_value(data, hp.u_value, f"door")
+
+    trv_data: dict = trv.get_thermostat()
+    if trv_data is None:
+        trv_data: dict = trv.get_thermostat(timeout=10)
+
+    indoor_temp: float = (trv_data.get("tmp").get("value")) if trv_data is not None else 18
+
+    ret_dat: list = []
+    diff_data: list = []
+
+    today = weather.data[list(weather.data.keys())[0]]
+    i = 0
+
+    for t in today.keys():
+        print(t)
+        if t != "daily":
+            print(today[t])
+            outdoor_temp: float = today[t]["temp"]
+            diff_temp: float = (indoor_temp + i) - outdoor_temp
+
+            i += 1
+
+            room.Floor.temp_diff = diff_temp
+            room.Ceiling.temp_diff = diff_temp
+            room.Wall1.temp_diff = diff_temp
+            room.Wall2.temp_diff = diff_temp
+            room.Wall3.temp_diff = diff_temp
+            room.Wall4.temp_diff = diff_temp
+            d = hp.calc_heating_power(room)
+
+            diff_data.append(diff_temp)
+            ret_dat.append(d)
+
+    debug.printer(diff_data, ret_dat)
+
+    return 1
 
 
 if __name__ == "__main__":
@@ -1034,6 +1079,7 @@ if __name__ == "__main__":
         print('✅', "PASS")
     elif ret == -1:
         print('❌', "FAIL")
+    ret = 0
 
     print("Test write_data_to_file")
     weather_test_data: dict = {
@@ -1149,22 +1195,25 @@ if __name__ == "__main__":
         print('✅', "PASS, classes")
     elif ret == -1:
         print('❌', "FAIL, classes")
+    ret = 0
 
     ret = write_data_to_data_file(time=time_test_data, radiation=radiation_test_data, power=power_test_data,
-                             market_price=market_price_test_data, path=r'../data/test_data_direct.toml')
+                                  market_price=market_price_test_data, path=r'../data/test_data_direct.toml')
 
     if ret == 1:
         print('✅', "PASS, direct radiation")
     elif ret == -1:
         print('❌', "FAIL, direct radiation")
+    ret = 0
 
     ret = write_data_to_data_file(time=time_test_data, radiation_dni=radiation_dni_test_data, power=power_test_data,
-                             market_price=market_price_test_data, path=r'../data/test_data_dni.toml')
+                                  market_price=market_price_test_data, path=r'../data/test_data_dni.toml')
 
     if ret == 1:
         print('✅', "PASS, dni radiation")
     elif ret == -1:
         print('❌', "FAIL, dni radiation")
+    ret = 0
 
     print("Test read_data_from_file")
     ret = read_data_from_file(r"../data/test_data_dni.toml")
@@ -1172,6 +1221,7 @@ if __name__ == "__main__":
         print('✅', "PASS")
     else:
         print('❌', "FAIL")
+    ret = 0
 
     print("Test get_coord")
     ret = get_coord("Hirschenau", "2", "Rückersdorf", 90607, 'Deutschland')
@@ -1180,6 +1230,7 @@ if __name__ == "__main__":
         print('✅', "PASS")
     else:
         print('❌', "FAIL")
+    ret = 0
 
     print("Test calc_energy")
     energy_test: list[float] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
@@ -1188,6 +1239,7 @@ if __name__ == "__main__":
         print('✅', "PASS")
     else:
         print('❌', "FAIL")
+    ret = 0
 
     print("Test generate_weather_data")
 
@@ -1202,10 +1254,14 @@ if __name__ == "__main__":
         print('✅', "PASS")
     else:
         print('❌', "FAIL")
+    ret = 0
 
     print("Test heating_power")
-    #heating_power()
-    heating_power2()
+    # heating_power()
+    ret = heating_power2()
 
-
-
+    if ret == 1:
+        print('✅', "PASS")
+    else:
+        print('❌', "FAIL")
+    ret = 0

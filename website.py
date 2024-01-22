@@ -153,7 +153,7 @@ def download():
     err_msg_market: str = ""
     date_now: dict = {}
 
-    config_data = fc.read_config_data(toml_file_path)
+    config_data = fc.read_data_from_file(toml_file_path)
 
     if request.method == 'POST':
         date_now = fc.date_time_download()
