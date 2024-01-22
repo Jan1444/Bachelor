@@ -1,0 +1,16 @@
+Flask
+frozendict
+matplotlib
+numpy
+pandas
+Requests
+requests_cache
+tomli
+tomli_w
+
+Werkzeug
+pymelcloud
+paho-mqtt
+pyperclip
+playwright
+daikinapi

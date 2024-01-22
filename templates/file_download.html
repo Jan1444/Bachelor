@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="de">
+<meta charset="utf-8">
+
+<head>
+    <!--Title-->
+    <title>Photovoltaik-Download</title>
+    <!--Navigator-->
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+          rel="stylesheet">
+    <link href="../static/css/navigator.css" rel="stylesheet" type="text/css">
+    <!--Favicon-->
+    <meta content="#da532c" name="msapplication-TileColor">
+    <meta content="#ffffff" name="theme-color">
+    <link href="../static/favicon/apple-touch-icon.png" rel="apple-touch-icon" sizes="180x180">
+    <link href="../static/favicon/favicon-32x32.png" rel="icon" sizes="32x32" type="image/png">
+    <link href="../static/favicon/favicon-16x16.png" rel="icon" sizes="16x16" type="image/png">
+    <link href="../static/favicon/site.webmanifest" rel="manifest">
+    <link color="#5bbad5" href="../static/favicon/safari-pinned-tab.svg" rel="mask-icon">
+    <!--Stylesheet-->
+    <link href="../static/css/style_file_download.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<div id="main-container">
+    <div class="menu">
+        <ul class="menu-content">
+            <!-- https://fonts.google.com/icons -->
+            <li><a href="/"><span class="material-symbols-outlined">home</span><span>Home</span></a></li>
+            <li><a href="/dashboard"><span class="material-symbols-outlined">dashboard</span><span>DashBoard</span></a>
+            </li>
+            <li><a href="/analytics"><span class="material-symbols-outlined">analytics</span><span>Analytics</span></a>
+            </li>
+            <li><a href="/file_download"><span
+                    class="material-symbols-outlined">file_download</span><span>File Download</span></a></li>
+            <li><a href="/file_upload"><span
+                    class="material-symbols-outlined">file_upload</span><span>File Upload</span></a></li>
+            <li><a href="/settings"><span class="material-symbols-outlined">settings</span><span>Settings</span></a>
+            </li>
+        </ul>
+    </div>
+
+    <header class="BoxHeader">
+        <img class="HeaderImage" src="../static/favicon/android-chrome-512x512.png" alt="">
+        <h1 class="Headerh1">Datei Download</h1>
+    </header>
+
+    <form action="/generate_download" class="BoxContent" method="post">
+        <!--Wetter Daten-->
+        <nav class="Box1">
+            <b>Wetter Daten</b>
+        </nav>
+        <section>
+            {% if error_weather or error_market %}
+                <p class="error_class">{{ error_weather }}</p>
+                <p class="error_class">{{ error_market }}</p>
+            {% endif %}
+        
+            <div class="input-group">
+                <label for="start_date_weather">Start Datum:</label>
+                <input id="start_date_weather" minlength="1" name="start_date_weather" type="date" min="2022-06-08"
+                        {% if error_weather %} 
+                            class="error_class" 
+                        {% endif %}>
+            </div>
+            <div class="input-group">
+                <label for="end_date_weather">End Datum:</label>
+                <input id="end_date_weather" minlength="1" name="end_date_weather" type="date" value="{{ config['date'] }}">
+            </div>
+            <div class="input-group">
+                <label for="excel_weather">Excel .xlsx</label>
+                <input id="excel_weather" name="excel_weather" type="checkbox">
+            </div>
+            <div class="input-group">
+                {% if "excel_weather" in ret_weather %}
+                    <a style="align-items: stretch; font-size: 20px;" 
+                       href="{{ url_for('download_file', name='weather_data.xlsx') }}">Download File</a>
+                {% endif %}
+            </div>
+        
+            <div class="input-group">
+                <label for="plot_png_weather">Plot .png</label>
+                <input id="plot_png_weather" name="plot_png_weather" type="checkbox">
+            </div>
+            <div class="input-group">
+                {% if "plot_weather" in ret_weather %}
+                    <a href="{{ url_for('download_file', name='weather_plot.png') }}"
+                       style="align-items: stretch; font-size: 20px;">Download File</a>
+                {% endif %}
+            </div>
+        </section>
+    
+        <nav class="Box1">
+            <b>Strom Daten</b>
+        </nav>
+        <section>
+            <div class="input-group">
+                <label for="start_date_market">Start Datum:</label>
+                <input id="start_date_market" minlength="1" name="start_date_market" type="datetime-local"
+                        {% if error_market %}
+                            class="error_class" 
+                        {% endif %}>
+            </div>
+            <div class="input-group">
+                <label for="end_date_market">End Datum:</label>
+                <input id="end_date_market" minlength="1" name="end_date_market" type="datetime-local"
+                       value="{{ config['datetime'] }}">
+            </div>
+            <div class="input-group">
+                <label for="excel_market">Excel .xlsx</label>
+                <input id="excel_market" name="excel_market" type="checkbox">
+            </div>
+            <div class="input-group">
+                {% if "excel_market" in ret_market%}
+                    <a style="align-items: stretch; font-size: 20px;" 
+                       href="{{ url_for('download_file', name='market_data.xlsx') }}">Download File</a>
+                {% endif %}
+            </div>
+        
+            <div class="input-group">
+                <label for="plot_png_market">Plot .png</label>
+                <input id="plot_png_market" name="plot_png_market" type="checkbox">
+            </div>
+            <div class="input-group">
+                {% if "plot_market" in ret_market %}
+                    <a style="align-items: stretch; font-size: 20px;" 
+                       href="{{ url_for('download_file', name='market_plot.png') }}">Download File</a>
+                {% endif %}
+            </div>
+        </section>
+        <section>
+            <div class="input-group">
+                <button type="submit">Generieren</button>
+            </div>
+        </section>
+    </form>
+</div>
+
+</body>
+</html>
