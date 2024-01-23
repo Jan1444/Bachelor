@@ -6,6 +6,46 @@ downloads_file_Path: Final[str] = r'./downloads/'
 uploads_file_Path: Final[str] = r'uploads/'
 plot_path: Final[str] = r'./static/plots/'
 
+window_data: Final[dict] = {
+    'Holzrahmen': ['Einfachverglasung', 'Doppelverglasung', 'Isolierverglasung'],
+    'Kunststoffrahmen': ['Isolierverglasung'],
+    'Metallrahmen': ['Isolierverglasung'],
+    'ENEV': ['2009', '2014', '2016'],
+    'u_value': ['']
+}
+
+wall_data: Final[dict] = {
+    'Außenwand': ['Massivbauweise', 'Holzkonstruktion'],
+    'Innenwand': ['Massivbauweise', 'Holzkonstruktion'],
+    'gegen Erdreich': ['Massivbauweise', 'Holzkonstruktion'],
+    'ENEV Außenwand': ['2009', '2014', '2016'],
+    'ENEV Innenwand': ['2009', '2014', '2016'],
+    'u_value': ['']
+}
+
+door_data: Final[dict] = {
+    'ENEV': ['2009', '2014', '2016'],
+    'u_value': ['']
+}
+
+ceiling_data: Final[dict] = {
+    'Decke über Außenbereich': ['Massiv', 'Holzbalkendecke'],
+    'unbeheiztes Geschoss': ['Massiv', 'Holzbalkendecke'],
+    'ENEV unbeheiztes Geschoss': ['2009', '2014', '2016'],
+    'ENEV beheiztes Geschoss': ['2009', '2014', '2016'],
+    'ENEV Dach': ['2009', '2014', '2016'],
+    'u_value': ['']
+}
+
+floor_data: Final[dict] = {
+    'gegen Erdreich': ['Massivbauweise', 'Holzkonstruktion'],
+    'unbeheiztes Geschoss': ['Massivbauweise', 'Holzkonstruktion'],
+    'beheiztes Geschoss': ['Massivbauweise', 'Holzkonstruktion'],
+    'ENEV unbeheiztes Geschoss': ['2009', '2014', '2016'],
+    'ENEV beheiztes Geschoss': ['2009', '2014', '2016'],
+    'u_value': ['']
+}
+
 config_data: Final[dict] = {
     "write_time": {
         "time": "",

@@ -825,3 +825,159 @@
 
 </body>
 </html>
+
+
+
+
+
+                            <!--
+                            <option value="">Rahmen wählen</option>
+                            <option {% if config['house']['window1_frame'] == "Holzrahmen" %}
+                                        selected="selected"
+                                    {% endif %}
+                                    value="Holzrahmen">Holzrahmen
+                            </option>
+                            <option value="Kunststoffrahmen">Kunststoffrahmen
+                                    {% if config['house']['window1_frame'] == "Kunststoffrahmen" %}
+                                        selected="selected"
+                                    {% endif %}
+                            </option>
+                            <option {% if config['house']['window1_frame'] == "Metallrahmen" %}
+                                selected="selected"
+                            {% endif %}
+                                value="Metallrahmen">Metallrahmen
+                            </option>
+                            <option {% if config['house']['window1_frame'] == "ENEV" %}
+                                selected="selected"
+                            {% endif %}
+                                value="ENEV">ENEV
+                            </option>
+                            <option {% if config['house']['window1_frame'] == "u_value" %}
+                                selected="selected"
+                            {% endif %}
+                                value="u_value">Eigener U-Wert
+                            </option>-->
+
+
+
+
+                                <!--
+                                {% if config['house']['window1_frame'] == "Holzrahmen" %}
+                                    <option {% if config['house']['window1_glazing'] == "Einfachverglasung" %}
+                                                selected="selected"
+                                            {% endif %}
+                                            value="Einfachverglasung">Einfachverglasung
+                                    </option>
+                                    <option {% if config['house']['window1_glazing'] == "Doppelverglasung" %}
+                                                selected="selected"
+                                            {% endif %}
+                                                value="Doppelverglasung">Doppelverglasung
+                                    </option>
+                                    <option {% if config['house']['window1_glazing'] == "Isolierverglasung" %}
+                                                selected="selected"
+                                            {% endif %}
+                                            value="Isolierverglasung">Isolierverglasung
+                                    </option>
+                                {% endif %}
+                                {% if config['house']['window1_frame'] == "Kunststoffrahmen" %}
+                                    <option {% if config['house']['window1_glazing'] == "Isolierverglasung" %}
+                                                selected="selected"
+                                            {% endif %}
+                                            value="Isolierverglasung">Isolierverglasung
+                                    </option>
+                                {% endif %}
+                                {% if config['house']['window1_frame'] == "Metallrahmen" %}
+                                    <option {% if config['house']['window1_glazing'] == "Isolierverglasung" %}
+                                                selected="selected"
+                                            {% endif %}
+                                            value="Isolierverglasung">Isolierverglasung
+                                    </option>
+                                {% endif %}
+                                {% if config['house']['window1_frame'] == "ENEV" %}
+                                    <option {% if config['house']['window1_glazing'] == "2009" %}
+                                                selected="selected"
+                                            {% endif %}
+                                            value="2009">2009
+                                    </option>
+                                    <option {% if config['house']['window1_glazing'] == "2014" %}
+                                                selected="selected"
+                                            {% endif %}
+                                            value="2014">2014
+                                    </option>
+                                    <option {% if config['house']['window1_glazing'] == "2016" %}
+                                                selected="selected"
+                                            {% endif %}
+                                            value="2016">2016
+                                    </option>-->
+
+
+
+
+
+                            <option {% if config['house']['wall1'] == "Außenwand" %}
+                                        selected="selected"
+                                    {% endif %}
+                                    value="Außenwand">Außenwand
+                            </option>
+                            <option {% if config['house']['wall1'] == "Innenwand" %}
+                                        selected="selected"
+                                    {% endif %}
+                                        value="Innenwand">Innenwand
+                            </option>
+                            <option {% if config['house']['wall1'] == "ENEV Außenwand" %}
+                                        selected="selected"
+                                    {% endif %}
+                                    value="ENEV Außenwand">ENEV Außenwand
+                            </option>
+                            <option {% if config['house']['wall1'] == "ENEV Innenwand" %}
+                                        selected="selected"
+                                    {% endif %}
+                                    value="ENEV Innenwand">ENEV Innenwand
+                            </option>
+                            <option {% if config['house']['wall1'] == "u_value" %}
+                                        selected="selected"
+                                    {% endif %}
+                                    value="u_value">Eigener U-Wert
+                            </option>
+
+{% if config['house']['wall1'] == "Außenwand" %}
+                                    <option {% if config['house']['construction_wall1'] == "Massivbauweise" %}
+                                                selected="selected"
+                                            {% endif %}
+                                            value="Massivbauweise">Massivbauweise
+                                    </option>
+                                    <option {% if config['house']['construction_wall1'] == "Holzkonstruktion" %}
+                                                selected="selected"
+                                            {% endif %}
+                                            value="Holzkonstruktion">Holzkonstruktion
+                                    </option>
+                                {% endif %}
+                                {% if config['house']['wall1'] == "Innenwand" %}
+                                    <option {% if config['house']['construction_wall1'] == "Massivbauweise" %}
+                                                selected="selected"
+                                            {% endif %}
+                                            value="Massivbauweise">Massivbauweise
+                                    </option>
+                                    <option {% if config['house']['construction_wall1'] == "Holzkonstruktion" %}
+                                                selected="selected"
+                                            {% endif %}
+                                            value="Holzkonstruktion">Holzkonstruktion
+                                    </option>
+                                {% endif %}
+                                {% if config['house']['wall1'] == "ENEV Außenwand" %}
+                                    <option {% if config['house']['construction_wall1'] == "2009" %}
+                                                selected="selected"
+                                            {% endif %}
+                                            value="2009">2009
+                                    </option>
+                                    <option {% if config['house']['construction_wall1'] == "2014" %}
+                                                selected="selected"
+                                            {% endif %}
+                                            value="2014">2014
+                                    </option>
+                                    <option {% if config['house']['construction_wall1'] == "2016" %}
+                                                selected="selected"
+                                            {% endif %}
+                                            value="2016">2016
+                                    </option>
+                                {% endif %}

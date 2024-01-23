@@ -189,7 +189,8 @@ def allowed_file(filename):
 
 @app.route('/settings')
 def settings():
-    return render_template('set_vals.html', config=config_data)
+    return render_template('set_vals.html', config=config_data, window_data=consts.window_data,
+                           wall_data=consts.wall_data, door_data=consts.door_data, ceiling_data=consts.ceiling_data)
 
 
 @app.route('/save_settings', methods=['POST'])
@@ -271,62 +272,27 @@ def analyze_file():
 
 @app.route('/get_window/<frame>')
 def get_window(frame):
-    door_data = {
-        'Holzrahmen': ['Einfachverglasung', 'Doppelverglasung', 'Isolierverglasung'],
-        'Kunststoffrahmen': ['Isolierverglasung'],
-        'Metallrahmen': ['Isolierverglasung'],
-        'ENEV': ['2009', '2014', '2016'],
-        'u_value': ['']
-    }
-    return jsonify(door_data.get(frame, []))
+    return jsonify(consts.window_data.get(frame, []))
 
 
 @app.route('/get_wall/<wall>')
 def get_wall(wall):
-    wall_data = {
-        'Außenwand': ['Massivbauweise', 'Holzkonstruktion'],
-        'Innenwand': ['Massivbauweise', 'Holzkonstruktion'],
-        'gegen Erdreich': ['Massivbauweise', 'Holzkonstruktion'],
-        'ENEV Außenwand': ['2009', '2014', '2016'],
-        'ENEV Innenwand': ['2009', '2014', '2016'],
-        'u_value': ['']
-    }
-    return jsonify(wall_data.get(wall, []))
+    return jsonify(consts.wall_data.get(wall, []))
 
 
 @app.route('/get_floor/<floor>')
 def get_floor(floor):
-    floor_data = {
-        'gegen Erdreich': ['Massivbauweise', 'Holzkonstruktion'],
-        'unbeheiztes Geschoss': ['Massivbauweise', 'Holzkonstruktion'],
-        'beheiztes Geschoss': ['Massivbauweise', 'Holzkonstruktion'],
-        'ENEV unbeheiztes Geschoss': ['2009', '2014', '2016'],
-        'ENEV beheiztes Geschoss': ['2009', '2014', '2016'],
-        'u_value': ['']
-    }
-    return jsonify(floor_data.get(floor, []))
+    return jsonify(consts.floor_data.get(floor, []))
 
 
 @app.route('/get_ceiling/<ceiling>')
 def get_ceiling(ceiling):
-    ceiling_data = {
-        'Decke über Außenbereich': ['Massiv', 'Holzbalkendecke'],
-        'unbeheiztes Geschoss': ['Massiv', 'Holzbalkendecke'],
-        'ENEV unbeheiztes Geschoss': ['2009', '2014', '2016'],
-        'ENEV beheiztes Geschoss': ['2009', '2014', '2016'],
-        'ENEV Dach': ['2009', '2014', '2016'],
-        'u_value': ['']
-    }
-    return jsonify(ceiling_data.get(ceiling, []))
+    return jsonify(consts.ceiling_data.get(ceiling, []))
 
 
 @app.route('/get_ceiling/<door>')
 def get_door(door):
-    door_data = {
-        'ENEV': ['2009', '2014', '2016'],
-        'u_value': ['']
-    }
-    return jsonify(door_data.get(door, []))
+    return jsonify(consts.door_data.get(door, []))
 
 
 if __name__ == '__main__':

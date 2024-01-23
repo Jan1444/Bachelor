@@ -1,6 +1,6 @@
 // update_dropdown.js
 
-function updateWindowDropdown(first_id, second_id) {
+function updateGlazingDropdown(first_id, second_id) {
     const frame = document.getElementById(first_id).value;
     const glazingDropdown = document.getElementById(second_id);
 
@@ -21,7 +21,7 @@ function updateWindowDropdown(first_id, second_id) {
         });
 }
 
-function updateWallDropdown(first,second) {
+function updateConstructionDropdown(first,second) {
     const wall = document.getElementById(first).value;
     const construction = document.getElementById(second);
 

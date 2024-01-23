@@ -1,5 +1,5 @@
 [write_time]
-time = "23-01-2024 18:05:27"
+time = "23-01-2024 19:43:10"
 format = "%d-%m-%Y %H:%M:%S"
 
 [analytics]
@@ -41,7 +41,7 @@ window1_year = 0
 window1_width = 1.0
 window1_height = 0.4
 window1_u_value = 3.0
-wall1 = "ENEV Außenwand"
+wall1 = "ENEV"
 construction_wall1 = "2014"
 wall1_type = 0
 wall1_width = 4.0
