@@ -4,7 +4,6 @@ import datetime
 import json
 import os
 from functools import lru_cache, wraps
-from typing import Tuple
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -14,7 +13,9 @@ import tomli
 import tomli_w
 from frozendict import frozendict
 
+from config import config_data
 from module import classes, consts, debug
+from data import energy_data, write_energy_data
 
 
 def init_classes(latitude: float, longitude: float, module_efficiency: float, module_area: int, tilt_angle: float,
@@ -74,14 +75,6 @@ def write_data_to_config(data: dict, path: str = None) -> int:
     """
     if path is None:
         path = consts.config_file_Path
-
-    config_data = read_data_from_file(path)
-    if config_data is None:
-        folder: str = consts.config_file_Path[:1 + consts.config_file_Path.rfind("/")]
-        if os.path.exists(folder):
-            os.mkdir(folder)
-        tomli_w.dump(consts.config_data, open(path, 'xb'))
-        config_data = read_data_from_file(path)
 
     try:
         debug.printer(data)
@@ -260,7 +253,10 @@ def write_data_to_data_file(weather_data: None | dict = None, sun: None | classe
                 if (i - 4) % 4 == 0:
                     h += 1
 
-            write_data_to_file(data, data_file_path)
+            if path is None:
+                write_energy_data(data)
+            else:
+                write_data_to_file(data, data_file_path)
 
             return 1
 
@@ -292,7 +288,10 @@ def write_data_to_data_file(weather_data: None | dict = None, sun: None | classe
                 if (i - 4) % 4 == 0:
                     h += 1
 
-            write_data_to_file(data, data_file_path)
+            if path is None:
+                write_energy_data(data)
+            else:
+                write_data_to_file(data, data_file_path)
 
             return 1
 
@@ -334,7 +333,10 @@ def write_data_to_data_file(weather_data: None | dict = None, sun: None | classe
             if (z - 4) % 4 == 0:
                 zeit += 1
 
-        write_data_to_file(data, data_file_path)
+        if path is None:
+            write_energy_data(data)
+        else:
+            write_data_to_file(data, data_file_path)
 
         return 1
 
@@ -457,18 +459,18 @@ def date_time_download() -> dict:
 
 @freeze_all
 @lru_cache(maxsize=None)
-def generate_weather_data(data: dict, config_data: dict) -> list[str]:
+def generate_weather_data(data: dict, config_data_: dict) -> list[str]:
     """
 
     :param data:
-    :param config_data:
+    :param config_data_:
     :return:
     """
     if not os.path.exists(consts.downloads_file_Path):
         os.mkdir(consts.downloads_file_Path)
 
-    config_coordinates = config_data["coordinates"]
-    config_pv = config_data["pv"]
+    config_coordinates = config_data_["coordinates"]
+    config_pv = config_data_["pv"]
 
     start_date = datetime.datetime.strptime(data['start_date_weather'], "%Y-%m-%d")
     end_date = datetime.datetime.strptime(data['end_date_weather'], "%Y-%m-%d")
@@ -553,22 +555,22 @@ def generate_weather_data(data: dict, config_data: dict) -> list[str]:
 
 @freeze_all
 @lru_cache(maxsize=None)
-def generate_market_data(data: dict, config_data: dict) -> list[str]:
+def generate_market_data(data: dict, config_data_: dict) -> list[str]:
     """
 
     :param data:
-    :param config_data:
+    :param config_data_:
     :return:
     """
     if not os.path.exists(consts.downloads_file_Path):
         os.mkdir(consts.downloads_file_Path)
 
-    market_datas = classes.MarketData(config_data["market"]["consumer_price"], data['start_date_market'],
+    market_datas = classes.MarketData(config_data_["market"]["consumer_price"], data['start_date_market'],
                                       data['end_date_market']).data
 
     msg: list[str] = []
     price_data: list[float] = []
-    time_data: list[float] = []
+    time_data: list[str] = []
     data_dict: dict = {}
 
     for i, market_data in enumerate(market_datas):
@@ -660,7 +662,6 @@ def unpack_data(data: dict) -> (list[str], list[float], list[float], list[float]
 @lru_cache(maxsize=None)
 def data_analyzer(path: None | str = None) -> int | tuple[float, float, float, str, str, str, str, list, list, float,
 str, float]:
-    config_data: dict = read_data_from_file(consts.config_file_Path)
 
     config_pv: dict = config_data["pv"]
     if path is None:
@@ -777,11 +778,10 @@ str, float]:
 
 
 def heating_power():
-    data = read_data_from_file(consts.config_file_Path)
 
-    house_data: dict = data["house"]
-    weather_data = data["coordinates"]
-    shelly_data = data["shelly"]
+    house_data: dict = config_data["house"]
+    weather_data = config_data["coordinates"]
+    shelly_data = config_data["shelly"]
 
     hp: classes.RequiredHeatingPower = classes.RequiredHeatingPower()
     weather: classes.Weather = classes.Weather(weather_data["latitude"], weather_data["longitude"])
@@ -987,11 +987,10 @@ def heating_power2():
             print(f"Attribute Missing: {err}")
             return 0
 
-    file_data: dict = read_data_from_file(consts.config_file_Path)
 
-    data: dict = file_data["house"]
-    weather_data = file_data["coordinates"]
-    shelly_data = file_data["shelly"]
+    data: dict = config_data["house"]
+    weather_data = config_data["coordinates"]
+    shelly_data = config_data["shelly"]
 
     hp: classes.RequiredHeatingPower = classes.RequiredHeatingPower()
     weather: classes.Weather = classes.Weather(weather_data["latitude"], weather_data["longitude"])

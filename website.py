@@ -9,6 +9,9 @@ import numpy as np
 from flask import Flask, render_template, request, send_from_directory, flash, redirect, jsonify
 from werkzeug.utils import secure_filename
 
+from config import config_data
+from data import energy_data, write_energy_data
+
 from module import consts, debug
 from module import functions as fc
 
@@ -22,26 +25,16 @@ app.secret_key = os.urandom(24)
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    toml_file_path = consts.config_file_Path
-    config_data = fc.read_data_from_file(toml_file_path)
-
     return render_template('index.html', config=config_data)
 
 
 @app.route('/dashboard')
 def dashboard():
-    toml_file_path = consts.config_file_Path
-
-    config_data = fc.read_data_from_file(toml_file_path)
-
     return render_template('dashboard.html', config=config_data)
 
 
 @app.route('/analytics')
 def analytics():
-    toml_file_path = consts.config_file_Path
-    config_data = fc.read_data_from_file(toml_file_path)
-
     analy = config_data['analytics']
     coordinates = config_data["coordinates"]
     pv_consts = config_data["pv"]
@@ -54,21 +47,19 @@ def analytics():
     market_time: list = []
     market_price: list = []
 
-    if os.path.exists(consts.data_file_Path):
-        data = fc.read_data_from_file(consts.data_file_Path)
+    time_write_data = datetime.datetime.strptime(energy_data.get("write_time", {"time": "0"}).get("time"),
+                                                 energy_data.get("write_time", {"format": "0"}).get("format"))
+    time_now = datetime.datetime.now()
 
-        time_write_data = datetime.datetime.strptime(data["write_time"]["time"], data["write_time"]["format"])
-        time_now = datetime.datetime.now()
+    if (time_now - time_write_data).seconds < (60 * 60) and (time_now - time_write_data).days <= 0:
+        if not analy['reload']:
+            return render_template('analytics.html', name="new_plot",
+                                   url_weather=f"{consts.plot_path}output_weather.png",
+                                   url_market=f"{consts.plot_path}output_market.png",
+                                   energy_data=energy_data["energy"]["energy"])
 
-        if (time_now - time_write_data).seconds < (60 * 60) and (time_now - time_write_data).days <= 0:
-            if not analy['reload']:
-                return render_template('analytics.html', name="new_plot",
-                                       url_weather=f"{consts.plot_path}output_weather.png",
-                                       url_market=f"{consts.plot_path}output_market.png",
-                                       energy_data=data["energy"]["energy"])
-
-            analy['reload'] = False
-            fc.write_data_to_file(config_data, consts.config_file_Path)
+        analy['reload'] = False
+        fc.write_data_to_file(config_data, consts.config_file_Path)
 
     weather, market, sun, pv, hp, trv = fc.init_classes(coordinates["latitude"], coordinates["longitude"],
                                                         pv_consts["module_efficiency"], pv_consts["area"],
@@ -140,15 +131,12 @@ def analytics():
 
 @app.route('/generate_download', methods=['POST'])
 def download():
-    toml_file_path: str = consts.config_file_Path
     msg: str = ""
     msg_market: list[str] = []
     msg_weather: list[str] = []
     err_msg_weather: str = ""
     err_msg_market: str = ""
     date_now: dict = {}
-
-    config_data = fc.read_data_from_file(toml_file_path)
 
     if request.method == 'POST':
         date_now = fc.date_time_download()
@@ -201,17 +189,12 @@ def allowed_file(filename):
 
 @app.route('/settings')
 def settings():
-    toml_file_path = consts.config_file_Path
-    config_data = fc.read_data_from_file(toml_file_path)
-
     return render_template('set_vals.html', config=config_data)
 
 
 @app.route('/save_settings', methods=['POST'])
 def safe_settings():
     if request.method == 'POST':
-        toml_file_path = consts.config_file_Path
-        config_data = fc.read_data_from_file(toml_file_path)
 
         data = request.form.to_dict()
 

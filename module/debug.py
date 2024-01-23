@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from pprint import pprint
 import inspect
+from pprint import pprint
 
 debug_on: bool = True
 
