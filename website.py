@@ -6,16 +6,11 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 
-import tomli
-import tomli_w
-
 from flask import Flask, render_template, request, send_from_directory, flash, redirect, jsonify
 from werkzeug.utils import secure_filename
 
 from module import consts, debug
 from module import functions as fc
-
-import time
 
 UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS: set[str] = {'json'}
@@ -73,7 +68,7 @@ def analytics():
                                        energy_data=data["energy"]["energy"])
 
             analy['reload'] = False
-            write_data_to_file(config_data, consts.config_file_Path)
+            fc.write_data_to_file(config_data, consts.config_file_Path)
 
     weather, market, sun, pv, hp, trv = fc.init_classes(coordinates["latitude"], coordinates["longitude"],
                                                         pv_consts["module_efficiency"], pv_consts["area"],

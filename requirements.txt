@@ -11,7 +11,4 @@ openpyxl
 
 Werkzeug
 pymelcloud
-paho-mqtt
-pyperclip
-playwright
 daikinapi
