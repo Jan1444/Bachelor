@@ -75,11 +75,13 @@ def write_data_to_config(data: dict, path: str = None) -> int:
     if path is None:
         path = consts.config_file_Path
 
-    try:
-        config_data = tomli.load(open(path, 'rb'))
-    except FileNotFoundError:
+    config_data = read_data_from_file(path)
+    if config_data is None:
+        folder: str = consts.config_file_Path[:1 + consts.config_file_Path.rfind("/")]
+        if os.path.exists(folder):
+            os.mkdir(folder)
         tomli_w.dump(consts.config_data, open(path, 'xb'))
-        config_data = tomli.load(open(path, 'rb'))
+        config_data = read_data_from_file(path)
 
     try:
         debug.printer(data)
@@ -922,6 +924,7 @@ def heating_power2():
             return area
 
         except AttributeError as err:
+            print(prefix, prefix2)
             print(f"Attribute Missing: {err}")
             return 0
 
@@ -930,11 +933,11 @@ def heating_power2():
             if "wall" in prefix:
 
                 wall_: str = data_house.get(prefix, "")
-                wall_type: str = data_house.get(f"construction_{prefix}", 0)
+                wall_type: str = data_house.get(f"construction_{prefix}", "")
                 year: int = data_house.get(f"house_year", 0) if data_house.get(f"house_year") < 1995 else 1995
 
                 if wall_ == "ENEV Außenwand" or wall_ == "ENEV Innenwand":
-                    return u_value.get("Wand").get(wall).get(wall_type)
+                    return u_value.get("Wand").get(wall).get(int(wall_type))
                 elif wall_ == "u_value":
                     return data_house.get(f"{prefix}_u_value", 0)
                 else:
@@ -947,7 +950,7 @@ def heating_power2():
                     f"{prefix}_year") < 1995 else 1995
 
                 if window_ == "ENEV":
-                    return u_value.get("Fenster").get(window_).get(glazing)
+                    return u_value.get("Fenster").get(window_).get(int(glazing))
                 elif window_ == "u_value":
                     return data_house.get(f"{prefix}_u_value", 0)
                 else:
@@ -955,14 +958,15 @@ def heating_power2():
 
             elif "door" in prefix:
                 year: int = data_house.get(f"house_year", 0) if data_house.get(f"house_year") < 1995 else 1995
-                return u_value.get("Türen", 0).get("alle", 0).get(year, 0)
+                return u_value.get("Türen").get("alle").get(year)
 
             elif "floor" in prefix:
                 floor_: str = data_house.get(f"floor", "")
                 floor_type: str = data_house.get(f"construction_floor", "")
                 year: int = data_house.get(f"house_year", 0) if data_house.get(f"house_year") < 1995 else 1995
                 if floor_ == "ENEV unbeheiztes Geschoss" or floor_ == "ENEV beheiztes Geschoss":
-                    return u_value.get("Boden").get(floor_).get(floor_type)
+                    u = u_value.get("Boden").get(floor_).get(int(floor_type))
+                    return u
                 elif floor_ == "u_value":
                     return data_house.get(f"{prefix}_u_value", 0)
                 else:
@@ -973,12 +977,13 @@ def heating_power2():
                 ceiling_type: str = data_house.get(f"construction_ceiling", "")
                 year: int = data_house.get(f"house_year", 0) if data_house.get(f"house_year") < 1995 else 1995
                 if ceiling_ == "ENEV unbeheiztes Geschoss" or ceiling_ == "ENEV beheiztes Geschoss" or ceiling_ == "ENEV Dach":
-                    return u_value.get("Decke").get(ceiling_).get(ceiling_type)
+                    return u_value.get("Decke").get(ceiling_).get(int(ceiling_type))
                 elif ceiling_ == "u_value":
                     return data_house.get(f"{prefix}_u_value", 0)
                 else:
                     return u_value.get("Decke").get(ceiling_).get(ceiling_type).get(year)
         except AttributeError as err:
+            print(prefix)
             print(f"Attribute Missing: {err}")
             return 0
 
@@ -992,7 +997,7 @@ def heating_power2():
     weather: classes.Weather = classes.Weather(weather_data["latitude"], weather_data["longitude"])
     trv: classes.ShellyTRVControl = classes.ShellyTRVControl(shelly_data["ip_address"])
 
-    room = hp.Room
+    room: classes.RequiredHeatingPower.Room = hp.Room
 
     floor = room.Floor
     ceiling = room.Ceiling

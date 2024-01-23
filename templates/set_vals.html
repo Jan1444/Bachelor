@@ -447,7 +447,7 @@
                                             value="Holzkonstruktion">Holzkonstruktion
                                     </option>
                                 {% endif %}
-                                {% if config['house']['wall1'] == "Wand gegen Erdreich" %}
+                                {% if config['house']['wall1'] == "Innenwand" %}
                                     <option {% if config['house']['construction_wall1'] == "Massivbauweise" %}
                                                 selected="selected" 
                                             {% endif %}
@@ -459,18 +459,24 @@
                                             value="Holzkonstruktion">Holzkonstruktion
                                     </option>
                                 {% endif %}
-                                {% if config['house']['wall1'] == "Innenwand gegen unbeheizte Kellergeschosse" %}
-                                    <option {% if config['house']['construction_wall1'] == "Massivbauweise" %}
-                                                selected="selected" 
+                                {% if config['house']['wall1'] == "ENEV Außenwand" %}
+                                    <option {% if config['house']['construction_wall1'] == "2009" %}
+                                                selected="selected"
                                             {% endif %}
-                                            value="Massivbauweise">Massivbauweise
+                                            value="2009">2009
                                     </option>
-                                    <option {% if config['house']['construction_wall1'] == "Holzkonstruktion" %}
-                                                selected="selected" 
+                                    <option {% if config['house']['construction_wall1'] == "2014" %}
+                                                selected="selected"
                                             {% endif %}
-                                            value="Holzkonstruktion">Holzkonstruktion
+                                            value="2014">2014
+                                    </option>
+                                    <option {% if config['house']['construction_wall1'] == "2016" %}
+                                                selected="selected"
+                                            {% endif %}
+                                            value="2016">2016
                                     </option>
                                 {% endif %}
+
                             </select>
                         </div>
 

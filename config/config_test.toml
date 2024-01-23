@@ -1,5 +1,5 @@
 [write_time]
-time = "21-01-2024 23:49:09"
+time = "23-01-2024 12:59:49"
 format = "%d-%m-%Y %H:%M:%S"
 
 [analytics]
@@ -55,8 +55,8 @@ window4_glazing = ""
 window4_year = 0
 window4_width = 0.0
 window4_height = 0.0
-ceiling = ""
-construction_ceiling = ""
+ceiling = "ENEV unbeheiztes Geschoss"
+construction_ceiling = "2014"
 window2_frame = ""
 window2_glazing = ""
 window2_year = 0
@@ -70,8 +70,8 @@ wall2_width = 3.0
 door_wall4 = 0
 door_wall4_width = 0.0
 door_wall4_height = 0.0
-floor = ""
-construction_floor = ""
+floor = "ENEV unbeheiztes Geschoss"
+construction_floor = "2014"
 door_wall2 = 0
 door_wall2_width = 0.0
 door_wall2_height = 0.0
