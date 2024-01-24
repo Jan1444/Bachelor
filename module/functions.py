@@ -128,70 +128,32 @@ def write_data_to_config(data: dict, path: str = None) -> int:
 
         house['house_year'] = int(data.get('house_year', 0))
 
-        house['window1_frame'] = str(data.get('window1_frame', ''))
-        house['window1_glazing'] = str(data.get('window1_glazing', ''))
-        house['window1_year'] = int(data.get('window1_year', 0))
-        house['window1_width'] = float(data.get('window1_width', 0))
-        house['window1_height'] = float(data.get('window1_height', 0))
-        house['window1_u_value'] = float(data.get('window1_u_value', 0))
+        for i in range(1, 5):
+            house[f'window{i}_frame'] = str(data.get(f'window{i}_frame', ''))
+            house[f'window{i}_glazing'] = str(data.get(f'window{i}_glazing', ''))
+            house[f'window{i}_year'] = int(data.get(f'window{i}_year', 0))
+            house[f'window{i}_width'] = float(data.get(f'window{i}_width', 0))
+            house[f'window{i}_height'] = float(data.get(f'window{i}_height', 0))
+            house[f'window{i}_u_value'] = float(data.get(f'window{i}_u_value', 0))
 
-        house['wall1'] = str(data.get('wall1', ''))
-        house['wall1_width'] = float(data.get('wall1_width', 0))
-        house['wall1_height'] = float(data.get('wall1_height', 0))
-        house['construction_wall1'] = str(data.get('construction_wall1', ''))
-        house['wall1_type'] = int(data.get('wall1_type', 0))
-        house['wall1_u_value'] = float(data.get('wall1_u_value', 0))
-        house['wall1_diff_temp'] = float(data.get('wall1_diff_temp', 0))
+            house[f'wall{i}'] = str(data.get(f'wall{i}', ''))
+            house[f'wall{i}_width'] = float(data.get(f'wall{i}_width', 0))
+            house[f'wall{i}_height'] = float(data.get(f'wall{i}_height', 0))
+            house[f'construction_wall{i}'] = str(data.get(f'construction_wall{i}', ''))
+            house[f'wall{i}_type'] = int(data.get(f'wall{i}_type', 0))
+            house[f'wall{i}_u_value'] = float(data.get(f'wall{i}_u_value', 0))
+            house[f'wall{i}_diff_temp'] = float(data.get(f'wall{i}_diff_temp', 0))
 
-        house['door_wall1'] = int(data.get('door_wall1', 0))
-        house['door_wall1_width'] = float(data.get('door_wall1_width', 0))
-        house['door_wall1_height'] = float(data.get('door_wall1_height', 0))
-
-        house['window2_frame'] = str(data.get('window2_frame', ''))
-        house['window2_glazing'] = str(data.get('window2_glazing', ''))
-        house['window2_year'] = int(data.get('window2_year', 0))
-        house['window2_width'] = float(data.get('window2_width', 0))
-        house['window2_height'] = float(data.get('window2_height', 0))
-
-        house['wall2'] = str(data.get('wall2', ''))
-        house['wall2_width'] = float(data.get('wall2_width', 0))
-        house['construction_wall2'] = str(data.get('construction_wall2', ''))
-
-        house['door_wall2'] = int(data.get('door_wall2', 0))
-        house['door_wall2_width'] = float(data.get('door_wall2_width', 0))
-        house['door_wall2_height'] = float(data.get('door_wall2_height', 0))
-
-        house['window3_frame'] = str(data.get('window3_frame', ''))
-        house['window3_glazing'] = str(data.get('window3_glazing', ''))
-        house['window3_year'] = int(data.get('window3_year', 0))
-        house['window3_width'] = float(data.get('window3_width', 0))
-        house['window3_height'] = float(data.get('window3_height', 0))
-
-        house['wall3'] = str(data.get('wall3', ''))
-        house['construction_wall3'] = str(data.get('construction_wall3', ''))
-
-        house['door_wall3'] = int(data.get('door_wall3', 0))
-        house['door_wall3_width'] = float(data.get('door_wall3_width', 0))
-        house['door_wall3_height'] = float(data.get('door_wall3_height', 0))
-
-        house['window4_frame'] = str(data.get('window4_frame', ''))
-        house['window4_glazing'] = str(data.get('window4_glazing', ''))
-        house['window4_year'] = int(data.get('window4_year', 0))
-        house['window4_width'] = float(data.get('window4_width', 0))
-        house['window4_height'] = float(data.get('window4_height', 0))
+            house[f'door_wall{i}'] = int(data.get(f'door_wall{i}', 0))
+            house[f'door_wall{i}_enev'] = str(data.get(f'door_wall{i}_enev', 0))
+            house[f'door_wall{i}_width'] = float(data.get(f'door_wall{i}_width', 0))
+            house[f'door_wall{i}_height'] = float(data.get(f'door_wall{i}_height', 0))
 
         house['ceiling'] = str(data.get('ceiling', ''))
         house['construction_ceiling'] = str(data.get('construction_ceiling', ''))
 
         house['floor'] = str(data.get('floor', ''))
         house['construction_floor'] = str(data.get('construction_floor', ''))
-
-        house['wall4'] = str(data.get('wall4', ''))
-        house['construction_wall4'] = str(data.get('construction_wall4', ''))
-
-        house['door_wall4'] = int(data.get('door_wall4', 0))
-        house['door_wall4_width'] = float(data.get('door_wall4_width', 0))
-        house['door_wall4_height'] = float(data.get('door_wall4_height', 0))
 
         write_data_to_file(config_data, path)
 
@@ -662,7 +624,6 @@ def unpack_data(data: dict) -> (list[str], list[float], list[float], list[float]
 @lru_cache(maxsize=None)
 def data_analyzer(path: None | str = None) -> int | tuple[float, float, float, str, str, str, str, list, list, float,
 str, float]:
-
     config_pv: dict = config_data["pv"]
     if path is None:
         path = rf"../uploads/{os.listdir("../uploads")[0]}"
@@ -778,7 +739,6 @@ str, float]:
 
 
 def heating_power():
-
     house_data: dict = config_data["house"]
     weather_data = config_data["coordinates"]
     shelly_data = config_data["shelly"]
@@ -986,7 +946,6 @@ def heating_power2():
             print(prefix)
             print(f"Attribute Missing: {err}")
             return 0
-
 
     data: dict = config_data["house"]
     weather_data = config_data["coordinates"]

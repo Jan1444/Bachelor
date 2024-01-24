@@ -83,7 +83,6 @@ function updateFloorDropdown(first,second) {
         });
 }
 
-
 function toggleFieldsetWindow(selectId, FieldSetId1, FieldSetId2, FieldSetId3) {
     const selectValue = document.getElementById(selectId).value;
     const fieldSet1 = document.getElementById(FieldSetId1);
@@ -111,6 +110,7 @@ function toggleFieldsetWall(selectId, FieldSetId1, FieldSetId2, FieldSetId3, Fie
     const fieldSet2 = document.getElementById(FieldSetId2);
     const fieldSet3 = document.getElementById(FieldSetId3);
     const fieldSet4 = document.getElementById(FieldSetId4);
+    console.log(selectValue)
     if (selectValue === "Innenwand" || selectValue === 'ENEV Innenwand'){
         fieldSet1.style.display = "block";
         fieldSet2.style.display = "none";
@@ -127,6 +127,18 @@ function toggleFieldsetWall(selectId, FieldSetId1, FieldSetId2, FieldSetId3, Fie
         fieldSet2.style.display = "none";
         fieldSet3.style.display = "block";
         fieldSet4.style.display = "none";
+    }
+}
+
+
+function toggleFieldsetDoor(selectId, FieldSetId) {
+    const selectValue = document.getElementById(selectId).value;
+    const fieldSet = document.getElementById(FieldSetId);
+    console.log(selectValue);
+    if (selectValue === "1" || selectValue === "2") {
+        fieldSet.style.display = "block";
+    } else {
+        fieldSet.style.display = "none";
     }
 }
 
