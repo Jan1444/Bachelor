@@ -1221,6 +1221,81 @@ class RequiredHeatingPower:
 
         return heating_power
 
+    @staticmethod
+    def calculate_thermal_mass_factor(volume: float, optimized_material_mass: float, c_air: float = 1005,
+                                      rho_air: float = 1.225):
+        """
+        Berechnet den thermischen Massenfaktor des Raumes.
+
+        :param volume: Volumen des Raumes in m³
+        :param optimized_material_mass: Optimierter Faktor für die thermische Masse der Materialien
+        :param c_air: Spezifische Wärmekapazität der Luft in J/(kg·K)
+        :param rho_air: Dichte der Luft in kg/m³
+        :return: Thermischer Massenfaktor des Raumes
+        """
+        # Berechnung der thermischen Masse der Luft
+        thermal_mass_air: float = volume * rho_air * c_air
+
+        # Gesamte thermische Masse
+        total_thermal_mass: float = thermal_mass_air + optimized_material_mass
+
+        # Thermischer Massenfaktor
+        thermal_mass_factor: float = total_thermal_mass / volume
+
+        return thermal_mass_factor
+
+    @staticmethod
+    @lru_cache(maxsize=None)
+    def optimize_thermal_mass_factor(p, v, delta_temp, time_interval, initial_factor, c_air=1005, rho_air=1.225,
+                                     c_material=840, rho_material=2300):
+        """
+        Optimiert den Faktor für die thermische Masse der Materialien im Raum.
+
+        :param p: Heizleistung in Watt (W)
+        :param v: Luftvolumen des Raumes in m³
+        :param delta_temp: Beobachtete Temperaturänderung in °C
+        :param time_interval: Zeitintervall in Sekunden
+        :param initial_factor: Anfänglicher Schätzwert für den Volumenanteil der Materialien im Raum
+        :param c_air: Spezifische Wärmekapazität der Luft in J/(kg·K)
+        :param rho_air: Dichte der Luft in kg/m³
+        :param c_material: Spezifische Wärmekapazität des Materials in J/(kg·K)
+        :param rho_material: Dichte des Materials in kg/m³
+        :return: Optimierter Faktor
+        """
+        current_factor = initial_factor
+        step = 1_000  # Unabhängiger Anpassungsschritt
+        tolerance = 0.1  # Toleranz für die Annäherung
+        i = 0
+        for _ in range(100):
+        # while True:
+            material_volume = v * current_factor
+            thermal_mass_material = material_volume * rho_material * c_material
+            thermal_mass_air = v * rho_air * c_air
+
+            # Berechnete Temperaturänderung
+            expected_temp_change = p * time_interval / (thermal_mass_air + thermal_mass_material)
+            print(expected_temp_change)
+            # Vergleich mit tatsächlicher Temperaturänderung
+            temp_diff = abs(expected_temp_change - delta_temp)
+            print(temp_diff)
+            if temp_diff < tolerance:
+                print(i)
+
+                break
+            elif expected_temp_change < delta_temp:
+                current_factor += step
+                print("up")
+            else:
+                current_factor -= step
+                print("down")
+
+            # Anpassung des Schrittes basierend auf der Differenz
+            step = min(step, temp_diff / 2) if temp_diff > tolerance else step / 2
+            print(i)
+            i += 1
+
+        return current_factor
+
 
 class ShellyTRVControl:
     """
