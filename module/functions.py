@@ -418,6 +418,32 @@ def date_time_download() -> dict:
     return data
 
 
+def weather_data():
+    coord = config_data["coordinates"]
+    w = classes.Weather(coord["lat"], coord["lon"])
+    return w.data
+
+
+def sun_data(tme: float) -> (float, float):
+    coord = config_data["coordinates"]
+    s = classes.CalcSunPos(coord["lat"], coord["lon"])
+    az = s.calc_azimuth(tme)
+    el = s.calc_solar_elevation(tme)
+    return az, el
+
+
+def pv_data(temp: float, rad: float, incidence_angle: float, elevation: float, dni: bool = False) -> (float, float) :
+    pv = config_data["pv"]
+    p = classes.PVProfit(pv["module_efficiency"], pv["area"], pv["tilt_angle"], pv["exposure_angle"],
+                         pv["temperature_coefficient"], pv["nominal_temperature"], pv["mounting_type"])
+    if dni:
+        power: float = p.calc_power_with_dni(rad, incidence_angle, temp)
+        return power
+    eff: float = p.calc_temp_dependency(temp, rad)
+    power: float = p.calc_power(rad, incidence_angle, elevation, eff)
+    return power
+
+
 @freeze_all
 @lru_cache(maxsize=None)
 def generate_weather_data(data: dict, config_data_: dict) -> list[str]:

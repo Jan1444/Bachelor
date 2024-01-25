@@ -9,6 +9,8 @@ import numpy as np
 from flask import Flask, render_template, request, send_from_directory, flash, redirect, jsonify
 from werkzeug.utils import secure_filename
 
+from flask_apscheduler import APScheduler
+
 from config import config_data, write_config_data
 from data import energy_data, write_energy_data
 
@@ -21,6 +23,11 @@ ALLOWED_EXTENSIONS: set[str] = {'json'}
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.secret_key = os.urandom(24)
+
+scheduler = APScheduler()
+scheduler.api_enabled = True
+scheduler.init_app(app)
+scheduler.start()
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -294,6 +301,17 @@ def get_ceiling(ceiling):
 @app.route('/get_ceiling/<door>')
 def get_door(door):
     return jsonify(consts.door_data.get(door, []))
+
+
+@scheduler.task("cron", id="morning_saver", hour="5")
+def save_morning():
+    print("save_data3")
+
+
+@scheduler.task("cron", id="evening_saver", hour="9")
+def save_evening():
+    print("save_data2")
+
 
 
 if __name__ == '__main__':
