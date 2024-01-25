@@ -13,7 +13,7 @@ import tomli
 import tomli_w
 from frozendict import frozendict
 
-from config import config_data
+from config import config_data, write_config_data
 from module import classes, consts, debug
 from data import energy_data, write_energy_data
 
@@ -154,8 +154,7 @@ def write_data_to_config(data: dict, path: str = None) -> int:
 
         house['floor'] = str(data.get('floor', ''))
         house['construction_floor'] = str(data.get('construction_floor', ''))
-
-        write_data_to_file(config_data, path)
+        write_config_data(config_data)
 
         return 1
 
@@ -1019,7 +1018,47 @@ def heating_power2():
     return 1
 
 
+def comp_mor_ev_data(error: float = 1):
+    from data import evening_data, morning_data
+
+    tme_ev = evening_data.get("write_time", {"time": "0", "format": "0"})
+    time_evening = datetime.datetime.strptime(tme_ev.get("time"), tme_ev.get("format"))
+
+    tme_mor = morning_data.get("write_time", {"time": "0", "format": "0"})
+    time_morning = datetime.datetime.strptime(tme_mor.get("time"), tme_mor.get("format"))
+
+    if time_evening > time_morning:
+
+        energy_mor = evening_data.get("energy", {"energy": 0}).get("energy", 0)
+        energy_ev = evening_data.get("energy", {"energy": 0}).get("energy", 0)
+
+        error_count: int = 0
+
+        if abs(energy_ev - energy_mor) > error:
+            error_count += 1
+
+        count: int = 1
+
+        for t_mor in (morning_data.keys()):
+            if t_mor != "energy" and t_mor != "write_time":
+                mor: float = morning_data.get(t_mor, {"dni_radiation": 0}).get("dni_radiation")
+                ev: float = evening_data.get(t_mor, {"dni_radiation": 0}).get("dni_radiation")
+                count += 1
+                if abs(ev - mor) > error:
+                    error_count += 1
+
+        return error_count / count if count > 0 else 1
+
+    else:
+        print("No comparison available, no right time!")
+        return -1
+
+
 if __name__ == "__main__":
+    z = comp_mor_ev_data()
+    print(z)
+
+if __name__ == "__main_":
     print("Run test, functions.py")
     print("Test write_data_to_config")
     test_data: dict = {

@@ -1,31 +1,31 @@
 [write_time]
-time = "24-01-2024 19:28:13"
+time = "25-01-2024 18:58:52"
 format = "%d-%m-%Y %H:%M:%S"
 
 [analytics]
 reload = true
 
 [coordinates]
-latitude = 49.5198371
-longitude = 11.2948653
+latitude = 1.0
+longitude = 2.0
 
 [pv]
-tilt_angle = 35.5
-area = 5.16
-module_efficiency = 20.0
-exposure_angle = 0.0
-temperature_coefficient = -0.35
-nominal_temperature = 25.0
-mounting_type = 0
+tilt_angle = 3.0
+area = 4.0
+module_efficiency = 5.0
+exposure_angle = 6.0
+temperature_coefficient = 7.0
+nominal_temperature = 8.0
+mounting_type = 9
 
 [converter]
-max_power = 800.0
+max_power = 10.0
 
 [market]
-consumer_price = 13.35
+consumer_price = 11.0
 
 [shelly]
-ip_address = "192.168.178.95"
+ip_address = "IP"
 
 [air_conditioner]
 air_conditioner = ""
@@ -34,7 +34,7 @@ ip_address_cloud = ""
 ir_remote = ""
 
 [house]
-house_year = 2007
+house_year = 0
 window1_frame = ""
 window1_glazing = ""
 window1_year = 0
@@ -48,8 +48,8 @@ wall1_width = 0.0
 wall1_height = 0.0
 wall1_diff_temp = 0.0
 door_wall1 = 0
-door_wall1_width = 1.5
-door_wall1_height = 2.0
+door_wall1_width = 0.0
+door_wall1_height = 0.0
 window4_frame = ""
 window4_glazing = ""
 window4_year = 0
@@ -87,24 +87,24 @@ door_wall3_width = 0.0
 door_wall3_height = 0.0
 wall1_u_value = 0.0
 door_enev_wall1 = ""
-door_wall1_enev = ""
+door_wall1_enev = "0"
 window2_u_value = 0.0
 wall2_height = 0.0
 wall2_type = 0
 wall2_u_value = 0.0
 wall2_diff_temp = 0.0
-door_wall2_enev = ""
+door_wall2_enev = "0"
 window3_u_value = 0.0
 wall3_width = 0.0
 wall3_height = 0.0
 wall3_type = 0
 wall3_u_value = 0.0
 wall3_diff_temp = 0.0
-door_wall3_enev = ""
+door_wall3_enev = "0"
 window4_u_value = 0.0
 wall4_width = 0.0
 wall4_height = 0.0
 wall4_type = 0
 wall4_u_value = 0.0
 wall4_diff_temp = 0.0
-door_wall4_enev = ""
+door_wall4_enev = "0"

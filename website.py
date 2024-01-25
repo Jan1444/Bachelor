@@ -9,7 +9,7 @@ import numpy as np
 from flask import Flask, render_template, request, send_from_directory, flash, redirect, jsonify
 from werkzeug.utils import secure_filename
 
-from config import config_data
+from config import config_data, write_config_data
 from data import energy_data, write_energy_data
 
 from module import consts, debug
@@ -50,6 +50,7 @@ def analytics():
     time_write_data = datetime.datetime.strptime(energy_data.get("write_time", {"time": "0"}).get("time"),
                                                  energy_data.get("write_time", {"format": "0"}).get("format"))
     time_now = datetime.datetime.now()
+    debug.printer(time_now)
 
     if (time_now - time_write_data).seconds < (60 * 60) and (time_now - time_write_data).days <= 0:
         if not analy['reload']:
@@ -59,7 +60,7 @@ def analytics():
                                    energy_data=energy_data["energy"]["energy"])
 
         analy['reload'] = False
-        fc.write_data_to_file(config_data, consts.config_file_Path)
+        write_config_data(config_data)
 
     weather, market, sun, pv, hp, trv = fc.init_classes(coordinates["latitude"], coordinates["longitude"],
                                                         pv_consts["module_efficiency"], pv_consts["area"],
