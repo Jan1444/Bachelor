@@ -1,2 +1,11 @@
-/marketdata.cache
-/weatherdata.cache
+/.idea/.gitignore
+/.idea/Bachelor.iml
+/.idea/misc.xml
+/.idea/modules.xml
+/.idea/inspectionProfiles/profiles_settings.xml
+/.idea/inspectionProfiles/Project_Default.xml
+/data/test_data_classes.toml
+/data/test_data_direct.toml
+/data/test_data_dni.toml
+/.idea/vcs.xml
+/.idea/webResources.xml
