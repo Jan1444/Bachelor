@@ -13,9 +13,14 @@ import tomli
 import tomli_w
 from frozendict import frozendict
 
-from config import config_data, write_config_data
+# from config import config_data, write_config_data
+from config import ConfigManager as ConfigManager_config
 from module import classes, consts, debug
 from data import energy_data, write_energy_data
+from data import EnergyManager as ConfigManager_data
+
+config_manager_config = ConfigManager_config("config_test.toml")
+config_manager_data = ConfigManager_data("data.toml")
 
 
 def init_classes(latitude: float, longitude: float, module_efficiency: float, module_area: int, tilt_angle: float,
@@ -73,6 +78,9 @@ def write_data_to_config(data: dict, path: str = None) -> int:
     :param data:
     :return:
     """
+    config_manager_config.reload_config()
+    config_data = config_manager_config.config_data
+
     if path is None:
         path = consts.config_file_Path
 
@@ -154,7 +162,8 @@ def write_data_to_config(data: dict, path: str = None) -> int:
 
         house['floor'] = str(data.get('floor', ''))
         house['construction_floor'] = str(data.get('construction_floor', ''))
-        write_config_data(config_data)
+        config_manager_config.write_config_data(config_data)
+        # write_config_data(config_data)
 
         return 1
 
@@ -163,27 +172,9 @@ def write_data_to_config(data: dict, path: str = None) -> int:
         return -1
 
 
-def write_data_to_data_file(weather_data: None | dict = None, sun: None | classes.CalcSunPos = None,
-                            pv: None | classes.PVProfit = None, market: None | classes.MarketData = None,
-                            time: None | list[str] = None, radiation: None | list[float] = None,
-                            radiation_dni: None | list[float] = None, power: None | list[float] = None,
-                            market_price: None | list[float] = None, path: None | str = None, energy: float = 0
-                            ) -> int:
-    """
-
-    :param energy:
-    :param path:
-    :param radiation_dni:
-    :param weather_data:
-    :param sun:
-    :param pv:
-    :param market:
-    :param time:
-    :param radiation:
-    :param power:
-    :param market_price:
-    :return:
-    """
+def write_data_to_data_file(time, power: list[float], market_price: list[float], energy: float,
+                            radiation: None | list[float] = None, radiation_dni: None | list[float] = None,
+                            path: None | str = None) -> int:
     if path is None:
         data_file_path = consts.data_file_Path
     else:
@@ -198,8 +189,9 @@ def write_data_to_data_file(weather_data: None | dict = None, sun: None | classe
             "energy": energy
         }
     }
+    # write radiation
     try:
-        if time is not None and radiation is not None and power is not None and market_price is not None:
+        if radiation is not None:
             h = -1
             for i, k in enumerate(time):
                 if k != "daily":
@@ -234,8 +226,9 @@ def write_data_to_data_file(weather_data: None | dict = None, sun: None | classe
               f"{error}")
         return -1
 
+    # write radiation_dni
     try:
-        if time is not None and radiation_dni is not None and power is not None and market_price is not None:
+        if radiation_dni:
             h = -1
             for i, k in enumerate(time):
                 if k != "daily":
@@ -267,42 +260,6 @@ def write_data_to_data_file(weather_data: None | dict = None, sun: None | classe
               f"len(power) -> {len(power)}, {'✅' if len(power) == len(time) else '❌'}\n"
               f"len(market_price) -> {len(market_price)}, {'✅' if len(market_price) == len(time) else '❌'}\n"
               f"{error}")
-        return -1
-
-    try:
-        zeit: int = -1
-        for z, t in enumerate(weather_data.keys()):
-            if t != "daily":
-                radiation = float(weather_data[t]["direct_radiation"])
-                radiation_dni = float(weather_data[t]["dni_radiation"])
-                time_float = float(t[:2]) + float(t[3:]) / 100
-                sun_height = sun.calc_solar_elevation(time_float)
-                sun_azimuth = sun.calc_azimuth(time_float)
-                incidence = pv.calc_incidence_angle(sun_height, sun_azimuth)
-                curr_eff = pv.calc_temp_dependency(weather_data[t]["temp"], radiation)
-                power = pv.calc_power(radiation, incidence, sun_height, curr_eff)
-
-                data.update({
-                    t: {
-                        "direct_radiation": radiation,
-                        "dni_radiation": radiation_dni,
-                        "power": round(power, 3),
-                        "market_price": market.data[zeit]["consumerprice"]
-                    }
-                })
-
-            if (z - 4) % 4 == 0:
-                zeit += 1
-
-        if path is None:
-            write_energy_data(data)
-        else:
-            write_data_to_file(data, data_file_path)
-
-        return 1
-
-    except KeyError as error:
-        print(f"Key {error} is not a valid")
         return -1
 
 
@@ -387,12 +344,13 @@ def get_coord(street: str, nr: str, city: str, postalcode: int, country: str) ->
 
 @freeze_all
 @lru_cache(maxsize=None)
-def calc_energy(energy: list, interval: float = 0.25, kwh: bool = True) -> float:
+def calc_energy(energy: list, interval: float = 0.25, kwh: bool = True, round_: None | int = None) -> float:
     """
 
     :param energy:
     :param interval:
     :param kwh:
+    :param round_:
     :return:
     """
     multiplier = 1
@@ -400,6 +358,10 @@ def calc_energy(energy: list, interval: float = 0.25, kwh: bool = True) -> float
         multiplier = 1000
     power_values = list(map(lambda x: x / multiplier, energy))
     total_energy = sum((power_values[i] + power_values[i + 1]) / 2 * interval for i in range(len(power_values) - 1))
+    total_energy = sum(power_values[i] * interval for i in range(len(power_values) - 1))
+
+    if round_ is not None:
+        total_energy = round(total_energy, round_)
     debug.printer(total_energy)
     return total_energy
 
@@ -418,30 +380,83 @@ def date_time_download() -> dict:
     return data
 
 
-def weather_data():
-    coord = config_data["coordinates"]
-    w = classes.Weather(coord["lat"], coord["lon"])
+def get_weather_data(config_data_: dict):
+    coord = config_data_["coordinates"]
+    w = classes.Weather(coord["latitude"], coord["longitude"])
     return w.data
 
 
-def sun_data(tme: float) -> (float, float):
-    coord = config_data["coordinates"]
-    s = classes.CalcSunPos(coord["lat"], coord["lon"])
+def get_sun_data(config_data_: dict, tme: float) -> (float, float):
+    coord = config_data_["coordinates"]
+    s = classes.CalcSunPos(coord["latitude"], coord["longitude"])
     az = s.calc_azimuth(tme)
     el = s.calc_solar_elevation(tme)
     return az, el
 
 
-def pv_data(temp: float, rad: float, incidence_angle: float, elevation: float, dni: bool = False) -> (float, float) :
-    pv = config_data["pv"]
+def get_pv_data(config_data_: dict, temp: float, rad: float, azimuth: float, elevation: float, dni: bool = False) -> (
+        float, float):
+    pv = config_data_["pv"]
     p = classes.PVProfit(pv["module_efficiency"], pv["area"], pv["tilt_angle"], pv["exposure_angle"],
                          pv["temperature_coefficient"], pv["nominal_temperature"], pv["mounting_type"])
+    incidence_angle = p.calc_incidence_angle(elevation, azimuth)
     if dni:
         power: float = p.calc_power_with_dni(rad, incidence_angle, temp)
         return power
     eff: float = p.calc_temp_dependency(temp, rad)
     power: float = p.calc_power(rad, incidence_angle, elevation, eff)
     return power
+
+
+def string_time_to_float(tme: str) -> float:
+    tme_list: list = tme.split(":")
+    return int(tme_list[0]) + float(tme_list[1]) / 100
+
+
+def save_mor_ev_data(config_data: dict) -> dict:
+    power_list: list = []
+    write_dict: dict = {
+        "write_time": {
+            "time": datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S"),
+            "format": "%d-%m-%Y %H:%M:%S"
+        }
+    }
+
+    weather_data: dict = get_weather_data(config_data)
+    today_data = list(weather_data.keys())[0]
+    weather_data_today = weather_data[today_data]
+    weather_data_today.pop("daily")
+
+    for tme in weather_data_today:
+        data: dict = weather_data_today[tme]
+        tme_float: float = string_time_to_float(tme)
+        azimuth, elevation = get_sun_data(config_data, tme_float)
+        temp: float = float(data.get("temp", 0))
+        radiation: float = float(data.get("dni_radiation", 0))
+        power: float = get_pv_data(config_data, temp, radiation, azimuth, elevation, True)
+
+        write_dict.update(
+            {
+                tme: {
+                    "dni_radiation": radiation,
+                    "cloudcover": data.get("cloudcover", 0),
+                    "temp": temp,
+                    "power": power
+                }
+            }
+        )
+
+        power_list.append(power)
+
+    energy: float = calc_energy(power_list, round_=3)
+
+    write_dict.update(
+        {
+            "energy": energy
+        }
+    )
+
+    return write_dict
 
 
 @freeze_all
@@ -485,7 +500,7 @@ def generate_weather_data(data: dict, config_data_: dict) -> list[str]:
         energy_data_list: list[float] = []
         for t in weather_date[date].keys():
             if t != "daily":
-                time_float: float = int(t[:2]) + int(t[3:]) / 100
+                time_float = string_time_to_float(t)
                 azimuth: float = sun.calc_azimuth(time_float)
                 elevation: float = sun.calc_solar_elevation(time_float)
                 incidence: float = pv.calc_incidence_angle(elevation, azimuth)
@@ -517,12 +532,12 @@ def generate_weather_data(data: dict, config_data_: dict) -> list[str]:
 
             plt.figure(figsize=(x, y))
             plt.grid()
-            plt.plot(list(energy_data.keys()), list(energy_data.values()), label="Energy[kWh]")
+            plt.step(list(energy_data.keys()), list(energy_data.values()), label="Energy[kWh]")
             plt.xticks(rotation=90, ha="right", fontsize=18)
-            x = len(energy_data.keys())
-            z = max(energy_data.values())
-            z = (z + (100 if z > 100 else 5))
-            ticks = np.arange(0, z, step=(x // 100 * 10 if z > 100 else 1))
+
+            _max = (max(energy_data.values()) + (100 if max(energy_data.values()) > 100 else 5))
+            ticks = np.arange(0, _max, step=(len(energy_data.keys()) // 100 * 10 if _max > 100 else 1))
+
             plt.yticks(ticks=ticks, ha="right", fontsize=20)
             plt.legend(loc="upper left", fontsize=20)
             plt.tight_layout()
@@ -549,6 +564,7 @@ def generate_market_data(data: dict, config_data_: dict) -> list[str]:
     :param config_data_:
     :return:
     """
+
     if not os.path.exists(consts.downloads_file_Path):
         os.mkdir(consts.downloads_file_Path)
 
@@ -586,12 +602,12 @@ def generate_market_data(data: dict, config_data_: dict) -> list[str]:
 
             plt.figure(figsize=(x, y))
             plt.grid()
-            plt.plot(time_data, price_data, label="price [ct]")
+            plt.step(time_data, price_data, label="price [ct]")
             plt.xticks(rotation=90, ha="right", fontsize=18)
-            x = len(price_data)
-            z = max(price_data)
-            z = (z + (100 if z > 100 else 5))
-            ticks = np.arange(0, z, step=(x // 100 * 10 if z > 100 else 1))
+
+            _max = (max(price_data) + (100 if max(price_data) > 100 else 5))
+            ticks = np.arange(0, _max, step=(len(price_data) // 100 * 10 if _max > 100 else 1))
+
             plt.yticks(ticks=ticks, ha="right", fontsize=20)
             plt.legend(loc="upper left", fontsize=20)
             plt.tight_layout()
@@ -649,6 +665,8 @@ def unpack_data(data: dict) -> (list[str], list[float], list[float], list[float]
 @lru_cache(maxsize=None)
 def data_analyzer(path: None | str = None) -> int | tuple[float, float, float, str, str, str, str, list, list, float,
 str, float]:
+    config_manager_config.reload_config()
+    config_data = config_manager_config.config_data
     config_pv: dict = config_data["pv"]
     if path is None:
         path = rf"../uploads/{os.listdir("../uploads")[0]}"
@@ -764,143 +782,6 @@ str, float]:
 
 
 def heating_power():
-    house_data: dict = config_data["house"]
-    weather_data = config_data["coordinates"]
-    shelly_data = config_data["shelly"]
-
-    hp: classes.RequiredHeatingPower = classes.RequiredHeatingPower()
-    weather: classes.Weather = classes.Weather(weather_data["latitude"], weather_data["longitude"])
-    trv: classes.ShellyTRVControl = classes.ShellyTRVControl(shelly_data["ip_address"])
-
-    room = hp.Room
-
-    floor = room.Floor
-    ceiling = room.Ceiling
-
-    wall1 = room.Wall1
-    wall2 = room.Wall2
-    wall3 = room.Wall3
-    wall4 = room.Wall4
-
-    window1 = wall1.Window1
-    window2 = wall2.Window1
-    window3 = wall3.Window1
-    window4 = wall4.Window1
-
-    door1 = wall1.Door
-    door2 = wall2.Door
-    door3 = wall3.Door
-    door4 = wall4.Door
-
-    floor.area = house_data.get("wall1_width", 0) * house_data.get("wall2_width", 0)
-
-    floor.u_wert = hp.u_value[house_data.get("floor", 0)][house_data.get("construction_floor", 0)][
-        house_data.get("house_year" if house_data["house_year"] < 1995 else 1995, 0)]
-
-    room.Ceiling.area = house_data.get("wall1_width", 0) * house_data.get("wall2_width", 0)
-
-    ceiling.u_wert = hp.u_value.get(house_data["ceiling"], 0).get(house_data["construction_ceiling"], 0).get(
-        house_data["house_year"] if house_data["house_year"] < 1995 else 1995, 0)
-
-    wall1.area = house_data.get("wall1_width", 0) * house_data.get("wall1_height", 0)
-
-    if house_data.get("wall1") == "ENEV Außenwand" or house_data.get("wall") == "ENEV Innenwand":
-        wall1.u_wert = hp.u_value.get(house_data["wall1"], 0).get(house_data["construction_wall1"], 0)
-
-    else:
-        wall1.u_wert = hp.u_value.get(house_data["wall1"], 0).get(house_data["construction_wall1"], 0).get(
-            house_data["house_year"] if house_data["house_year"] < 1995 else 1995, 0)
-
-    window1.area = house_data.get("window1_width", 0) * house_data.get("window1_height", 0)
-
-    if house_data.get("window1_frame") == "ENEV":
-        window1.u_wert = hp.u_value.get("Fenster", {}).get(house_data["window1_frame"], {}).get(
-            house_data["window1_glazing"], 0)
-    else:
-        window1.u_wert = hp.u_value.get("Fenster", {}).get(house_data["window1_frame"], {}).get(
-            house_data["window1_glazing"], {}).get(
-            house_data["window1_year"] if house_data["window1_year"] < 1995 else 1995, 0)
-
-    door1.area = house_data.get("door_wall1_width", 0) * house_data.get("door_wall1_height", 0)
-    door1.u_wert = hp.u_value.get("Türen", 0).get("alle", 0).get(
-        house_data["house_year"] if house_data["house_year"] < 1995 else 1995, 0)
-
-    wall2.area = house_data.get("wall2_width", 0) * house_data.get("wall1_height", 0)
-
-    wall2.u_wert = hp.u_value.get(house_data["wall2"], 0).get(house_data["construction_wall2"], 0).get(
-        house_data["house_year"] if house_data["house_year"] < 1995 else 1995, 0)
-    window2.area = house_data.get("window2_width", 0) * house_data.get("window2_height", 0)
-    window2.u_wert = hp.u_value.get("Fenster").get(house_data["window2_frame"], {}).get(
-        house_data["window2_glazing"], {}).get(
-        house_data["window2_year"] if house_data["window2_year"] < 1995 else 1995, 0)
-    door2.area = house_data.get("door_wall2_width", 0) * house_data.get("door_wall2_height", 0)
-    door2.u_wert = hp.u_value.get("Türen", 0).get("alle", 0).get(
-        house_data["house_year"] if house_data["house_year"] < 1995 else 1995, 0)
-
-    wall3.area = house_data.get("wall1_width", 0) * house_data.get("wall1_height", 0)
-
-    wall3.u_wert = hp.u_value.get(house_data["wall3"], 0).get(house_data["construction_wall3"], 0).get(
-        house_data["house_year"] if house_data["house_year"] < 1995 else 1995, 0)
-    window3.area = house_data.get("window3_width", 0) * house_data.get("window3_height", 0)
-    window3.u_wert = hp.u_value.get("Fenster", {}).get(house_data["window3_frame"], {}).get(
-        house_data["window3_glazing"], {}).get(
-        house_data["window3_year"] if house_data["window3_year"] < 1995 else 1995, 0)
-    door3.area = house_data.get("door_wall3_width", 0) * house_data.get("door_wall3_height", 0)
-    door3.u_wert = hp.u_value.get("Türen", 0).get("alle", 0).get(
-        house_data["house_year"] if house_data["house_year"] < 1995 else 1995, 0)
-
-    wall4.area = house_data.get("wall2_width", 0) * house_data.get("wall1_height", 0)
-
-    wall4.u_wert = hp.u_value.get(house_data["wall4"], 0).get(house_data["construction_wall4"]).get(
-        house_data["house_year"] if house_data["house_year"] < 1995 else 1995, 0)
-    window4.area = house_data["window4_width"] * house_data["window4_height"]
-    window4.u_wert = hp.u_value.get("Fenster", {}).get(house_data["window4_frame"], {}).get(
-        house_data["window4_glazing"], {}).get(
-        house_data["window4_year"] if house_data["window4_year"] < 1995 else 1995, 0)
-    door4.area = house_data.get("door_wall4_width", 0) * house_data.get("door_wall4_height", 0)
-    door4.u_wert = hp.u_value.get("Türen", 0).get("alle", 0).get(
-        house_data["house_year"] if house_data["house_year"] < 1995 else 1995, 0)
-
-    room.volume = house_data.get("wall1_width", 0) * house_data.get("wall1_height", 0) * house_data.get("wall2_width",
-                                                                                                        0)
-
-    trv_data: dict = trv.get_thermostat()
-    if trv_data is None:
-        trv_data: dict = trv.get_thermostat(timeout=10)
-
-    indoor_temp: float = (trv_data.get("tmp").get("value")) if trv_data is not None else 18
-
-    ret_dat: list = []
-    diff_data: list = []
-
-    today = weather.data[list(weather.data.keys())[0]]
-    i = 0
-
-    for t in today.keys():
-        print(t)
-        if t != "daily":
-            print(today[t])
-            outdoor_temp: float = today[t]["temp"]
-            diff_temp: float = (indoor_temp + i) - outdoor_temp
-
-            i += 1
-
-            room.Floor.temp_diff = diff_temp
-            room.Ceiling.temp_diff = diff_temp
-            room.Wall1.temp_diff = diff_temp
-            room.Wall2.temp_diff = diff_temp
-            room.Wall3.temp_diff = diff_temp
-            room.Wall4.temp_diff = diff_temp
-            d = hp.calc_heating_power(room)
-
-            diff_data.append(diff_temp)
-            ret_dat.append(d)
-
-    debug.printer(diff_data, ret_dat)
-    # print((room.volume * 1.225 * 1000 * diff_temp) / (3000 - ret_dat))
-
-
-def heating_power2():
     def _calc_area(data_house: dict, prefix: str, prefix2: str | None = None):
         try:
             if prefix2 is None:
@@ -971,6 +852,9 @@ def heating_power2():
             print(prefix)
             print(f"Attribute Missing: {err}")
             return 0
+
+    config_manager_config.reload_config()
+    config_data = config_manager_config.config_data
 
     data: dict = config_data["house"]
     weather_data = config_data["coordinates"]
@@ -1047,37 +931,42 @@ def heating_power2():
 def comp_mor_ev_data(error: float = 1):
     from data import evening_data, morning_data
 
+    debug.printer(evening_data, description="evening_data: ")
+    debug.printer(morning_data, description="morning_data: ")
+
     tme_ev = evening_data.get("write_time", {"time": "0", "format": "0"})
     time_evening = datetime.datetime.strptime(tme_ev.get("time"), tme_ev.get("format"))
 
     tme_mor = morning_data.get("write_time", {"time": "0", "format": "0"})
     time_morning = datetime.datetime.strptime(tme_mor.get("time"), tme_mor.get("format"))
 
-    if time_evening > time_morning:
-
-        energy_mor = evening_data.get("energy", {"energy": 0}).get("energy", 0)
-        energy_ev = evening_data.get("energy", {"energy": 0}).get("energy", 0)
-
-        error_count: int = 0
-
-        if abs(energy_ev - energy_mor) > error:
-            error_count += 1
-
-        count: int = 1
-
-        for t_mor in (morning_data.keys()):
-            if t_mor != "energy" and t_mor != "write_time":
-                mor: float = morning_data.get(t_mor, {"dni_radiation": 0}).get("dni_radiation")
-                ev: float = evening_data.get(t_mor, {"dni_radiation": 0}).get("dni_radiation")
-                count += 1
-                if abs(ev - mor) > error:
-                    error_count += 1
-
-        return error_count / count if count > 0 else 1
-
-    else:
+    if time_evening <= time_morning:
         print("No comparison available, no right time!")
         return -1
+
+    total_dni_difference = 0
+    count = 0
+
+    for time_point, evening_values in evening_data.items():
+        if time_point in ["energy", "write_time"]:
+            continue
+
+        morning_values = morning_data.get(time_point)
+        if morning_values:
+            total_dni_difference += abs(evening_values.get('dni_radiation', 0) - morning_values.get('dni_radiation', 0))
+            count += 1
+
+    energy_difference = abs(evening_data.get("energy", 0) - morning_data.get("energy", 0))
+
+    if count > 0:
+        average_dni_difference = total_dni_difference / count
+    else:
+        average_dni_difference = None
+
+    return {
+        "average_dni_difference": average_dni_difference,
+        "energy_difference": energy_difference
+    }
 
 
 if __name__ == "__main__":
@@ -1110,104 +999,7 @@ if __name__ == "__main_":
     ret = 0
 
     print("Test write_data_to_file")
-    weather_test_data: dict = {
-        'daily': {'temp_max': 8.5, 'temp_min': 1.8, 'sunrise': '08:10', 'sunset': '16:20'},
-        '00:00': {'temp': 5.6, 'cloudcover': 93, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '00:15': {'temp': 5.6, 'cloudcover': 93, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '00:30': {'temp': 5.6, 'cloudcover': 93, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '00:45': {'temp': 5.6, 'cloudcover': 93, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '01:00': {'temp': 5.6, 'cloudcover': 92, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '01:15': {'temp': 5.6, 'cloudcover': 92, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '01:30': {'temp': 5.6, 'cloudcover': 92, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '01:45': {'temp': 5.6, 'cloudcover': 92, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '02:00': {'temp': 5.1, 'cloudcover': 89, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '02:15': {'temp': 5.1, 'cloudcover': 89, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '02:30': {'temp': 5.1, 'cloudcover': 89, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '02:45': {'temp': 5.1, 'cloudcover': 89, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '03:00': {'temp': 4.8, 'cloudcover': 90, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '03:15': {'temp': 4.8, 'cloudcover': 90, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '03:30': {'temp': 4.8, 'cloudcover': 90, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '03:45': {'temp': 4.8, 'cloudcover': 90, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '04:00': {'temp': 4.4, 'cloudcover': 95, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '04:15': {'temp': 4.4, 'cloudcover': 95, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '04:30': {'temp': 4.4, 'cloudcover': 95, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '04:45': {'temp': 4.4, 'cloudcover': 95, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '05:00': {'temp': 4.4, 'cloudcover': 100, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '05:15': {'temp': 4.4, 'cloudcover': 100, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '05:30': {'temp': 4.4, 'cloudcover': 100, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '05:45': {'temp': 4.4, 'cloudcover': 100, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '06:00': {'temp': 4.6, 'cloudcover': 99, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '06:15': {'temp': 4.6, 'cloudcover': 99, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '06:30': {'temp': 4.6, 'cloudcover': 99, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '06:45': {'temp': 4.6, 'cloudcover': 99, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '07:00': {'temp': 4.4, 'cloudcover': 98, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '07:15': {'temp': 4.4, 'cloudcover': 98, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '07:30': {'temp': 4.4, 'cloudcover': 98, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '07:45': {'temp': 4.4, 'cloudcover': 98, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '08:00': {'temp': 4.5, 'cloudcover': 97, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '08:15': {'temp': 4.5, 'cloudcover': 97, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '08:30': {'temp': 4.5, 'cloudcover': 97, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '08:45': {'temp': 4.5, 'cloudcover': 97, 'direct_radiation': 1.0, 'dni_radiation': 15.0},
-        '09:00': {'temp': 4.5, 'cloudcover': 97, 'direct_radiation': 1.0, 'dni_radiation': 12.2},
-        '09:15': {'temp': 4.5, 'cloudcover': 97, 'direct_radiation': 1.0, 'dni_radiation': 9.5},
-        '09:30': {'temp': 4.5, 'cloudcover': 97, 'direct_radiation': 2.0, 'dni_radiation': 15.1},
-        '09:45': {'temp': 4.5, 'cloudcover': 97, 'direct_radiation': 5.0, 'dni_radiation': 31.5},
-        '10:00': {'temp': 5.6, 'cloudcover': 98, 'direct_radiation': 5.0, 'dni_radiation': 27.4},
-        '10:15': {'temp': 5.6, 'cloudcover': 98, 'direct_radiation': 7.0, 'dni_radiation': 34.3},
-        '10:30': {'temp': 5.6, 'cloudcover': 98, 'direct_radiation': 9.0, 'dni_radiation': 40.2},
-        '10:45': {'temp': 5.6, 'cloudcover': 98, 'direct_radiation': 10.0, 'dni_radiation': 41.5},
-        '11:00': {'temp': 6.9, 'cloudcover': 98, 'direct_radiation': 21.0, 'dni_radiation': 82.0},
-        '11:15': {'temp': 6.9, 'cloudcover': 98, 'direct_radiation': 20.0, 'dni_radiation': 74.4},
-        '11:30': {'temp': 6.9, 'cloudcover': 98, 'direct_radiation': 7.0, 'dni_radiation': 25.1},
-        '11:45': {'temp': 6.9, 'cloudcover': 98, 'direct_radiation': 7.0, 'dni_radiation': 24.4},
-        '12:00': {'temp': 7.6, 'cloudcover': 99, 'direct_radiation': 13.0, 'dni_radiation': 44.5},
-        '12:15': {'temp': 7.6, 'cloudcover': 99, 'direct_radiation': 20.0, 'dni_radiation': 67.9},
-        '12:30': {'temp': 7.6, 'cloudcover': 99, 'direct_radiation': 8.0, 'dni_radiation': 27.2},
-        '12:45': {'temp': 7.6, 'cloudcover': 99, 'direct_radiation': 31.0, 'dni_radiation': 106.1},
-        '13:00': {'temp': 8.1, 'cloudcover': 74, 'direct_radiation': 17.0, 'dni_radiation': 59.2},
-        '13:15': {'temp': 8.1, 'cloudcover': 74, 'direct_radiation': 28.0, 'dni_radiation': 100.1},
-        '13:30': {'temp': 8.1, 'cloudcover': 74, 'direct_radiation': 33.0, 'dni_radiation': 122.4},
-        '13:45': {'temp': 8.1, 'cloudcover': 74, 'direct_radiation': 96.0, 'dni_radiation': 373.1},
-        '14:00': {'temp': 8.5, 'cloudcover': 100, 'direct_radiation': 20.0, 'dni_radiation': 82.5},
-        '14:15': {'temp': 8.5, 'cloudcover': 100, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '14:30': {'temp': 8.5, 'cloudcover': 100, 'direct_radiation': 1.0, 'dni_radiation': 4.9},
-        '14:45': {'temp': 8.5, 'cloudcover': 100, 'direct_radiation': 1.0, 'dni_radiation': 5.4},
-        '15:00': {'temp': 8.0, 'cloudcover': 100, 'direct_radiation': 1.0, 'dni_radiation': 6.2},
-        '15:15': {'temp': 8.0, 'cloudcover': 100, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '15:30': {'temp': 8.0, 'cloudcover': 100, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '15:45': {'temp': 8.0, 'cloudcover': 100, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '16:00': {'temp': 7.0, 'cloudcover': 100, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '16:15': {'temp': 7.0, 'cloudcover': 100, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '16:30': {'temp': 7.0, 'cloudcover': 100, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '16:45': {'temp': 7.0, 'cloudcover': 100, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '17:00': {'temp': 6.2, 'cloudcover': 100, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '17:15': {'temp': 6.2, 'cloudcover': 100, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '17:30': {'temp': 6.2, 'cloudcover': 100, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '17:45': {'temp': 6.2, 'cloudcover': 100, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '18:00': {'temp': 5.5, 'cloudcover': 100, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '18:15': {'temp': 5.5, 'cloudcover': 100, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '18:30': {'temp': 5.5, 'cloudcover': 100, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '18:45': {'temp': 5.5, 'cloudcover': 100, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '19:00': {'temp': 4.6, 'cloudcover': 100, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '19:15': {'temp': 4.6, 'cloudcover': 100, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '19:30': {'temp': 4.6, 'cloudcover': 100, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '19:45': {'temp': 4.6, 'cloudcover': 100, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '20:00': {'temp': 3.7, 'cloudcover': 100, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '20:15': {'temp': 3.7, 'cloudcover': 100, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '20:30': {'temp': 3.7, 'cloudcover': 100, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '20:45': {'temp': 3.7, 'cloudcover': 100, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '21:00': {'temp': 2.8, 'cloudcover': 63, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '21:15': {'temp': 2.8, 'cloudcover': 63, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '21:30': {'temp': 2.8, 'cloudcover': 63, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '21:45': {'temp': 2.8, 'cloudcover': 63, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '22:00': {'temp': 2.2, 'cloudcover': 76, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '22:15': {'temp': 2.2, 'cloudcover': 76, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '22:30': {'temp': 2.2, 'cloudcover': 76, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '22:45': {'temp': 2.2, 'cloudcover': 76, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '23:00': {'temp': 1.8, 'cloudcover': 48, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '23:15': {'temp': 1.8, 'cloudcover': 48, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '23:30': {'temp': 1.8, 'cloudcover': 48, 'direct_radiation': 0.0, 'dni_radiation': 0.0},
-        '23:45': {'temp': 1.8, 'cloudcover': 48, 'direct_radiation': 0.0, 'dni_radiation': 0.0}}
+
     time_test_data: list = ['00:00', '00:15', '00:30', '00:45', '01:00', '01:15', '01:30', '01:45', '02:00', '02:15',
                             '02:30', '02:45', '03:00']
     power_test_data: list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
@@ -1216,17 +1008,8 @@ if __name__ == "__main_":
     radiation_test_data: list = [10_000, 10_100, 10_200, 10_300, 10_400, 10_500, 10_600, 10_700, 10_800, 10_900, 11_000,
                                  11_100, 11_200]
 
-    ret = write_data_to_data_file(weather_test_data, classes.CalcSunPos(49.5198371, 11.2948653),
-                                  classes.PVProfit(20, 10, 0, 30, -0.1, 25, 1), classes.MarketData(13),
-                                  path=r'../data/test_data_classes.toml')
-    if ret == 1:
-        print('✅', "PASS, classes")
-    elif ret == -1:
-        print('❌', "FAIL, classes")
-    ret = 0
-
-    ret = write_data_to_data_file(time=time_test_data, radiation=radiation_test_data, power=power_test_data,
-                                  market_price=market_price_test_data, path=r'../data/test_data_direct.toml')
+    '''    ret = write_data_to_data_file(time=time_test_data, radiation=radiation_test_data, power=power_test_data,
+                                  market_price=market_price_test_data, path=r'../data/test_data_direct.toml')'''
 
     if ret == 1:
         print('✅', "PASS, direct radiation")
@@ -1234,8 +1017,8 @@ if __name__ == "__main_":
         print('❌', "FAIL, direct radiation")
     ret = 0
 
-    ret = write_data_to_data_file(time=time_test_data, radiation_dni=radiation_dni_test_data, power=power_test_data,
-                                  market_price=market_price_test_data, path=r'../data/test_data_dni.toml')
+    '''    ret = write_data_to_data_file(time=time_test_data, radiation_dni=radiation_dni_test_data, power=power_test_data,
+                                  market_price=market_price_test_data, path=r'../data/test_data_dni.toml')'''
 
     if ret == 1:
         print('✅', "PASS, dni radiation")
@@ -1286,7 +1069,7 @@ if __name__ == "__main_":
 
     print("Test heating_power")
     # heating_power()
-    ret = heating_power2()
+    ret = heating_power()
 
     if ret == 1:
         print('✅', "PASS")

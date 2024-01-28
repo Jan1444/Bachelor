@@ -32,3 +32,26 @@ def write_evening_data(data: dict):
 def write_morning_data(data: dict):
     with path_mor.open(mode="wb") as f:
         tomli_w.dump(data, f)
+
+
+class EnergyManager:
+    def __init__(self, config_path):
+        self.energy_path = pathlib.Path(config_path)
+        self.energy_path = pathlib.Path(__file__).parent / config_path
+        self._energy_data = None
+
+    @property
+    def energy_data(self):
+        if self._energy_data is None:
+            self.reload_data()
+        return self._energy_data
+
+    def reload_data(self):
+        with self.energy_path.open(mode="rb") as f:
+            self._energy_data = tomli.load(f)
+
+    def write_energy_data(self, data):
+        with self.energy_path.open(mode="wb") as f:
+            tomli_w.dump(data, f)
+            self._energy_data = data  # Update the in-memory data
+

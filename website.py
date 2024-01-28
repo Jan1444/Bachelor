@@ -11,8 +11,8 @@ from werkzeug.utils import secure_filename
 
 from flask_apscheduler import APScheduler
 
-from config import config_data, write_config_data
-from data import energy_data, write_energy_data
+from config import ConfigManager
+from data import EnergyManager
 
 from module import consts, debug
 from module import functions as fc
@@ -29,19 +29,34 @@ scheduler.api_enabled = True
 scheduler.init_app(app)
 scheduler.start()
 
+config_manager_config = ConfigManager("config_test.toml")
+energy_manager_data = EnergyManager("data.toml")
+energy_manager_morning_data = EnergyManager("mor_data.toml")
+energy_manager_evening_data = EnergyManager("ev_data.toml")
+
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
+    config_manager_config.reload_config()
+    config_data = config_manager_config.config_data
     return render_template('index.html', config=config_data)
 
 
 @app.route('/dashboard')
 def dashboard():
+    config_manager_config.reload_config()
+    config_data = config_manager_config.config_data
     return render_template('dashboard.html', config=config_data)
 
 
 @app.route('/analytics')
 def analytics():
+    config_manager_config.reload_config()
+    config_data = config_manager_config.config_data
+
+    energy_manager_data.reload_data()
+    energy_data = energy_manager_data.energy_data
+
     analy = config_data['analytics']
     coordinates = config_data["coordinates"]
     pv_consts = config_data["pv"]
@@ -57,7 +72,7 @@ def analytics():
     time_write_data = datetime.datetime.strptime(energy_data.get("write_time", {"time": "0"}).get("time"),
                                                  energy_data.get("write_time", {"format": "0"}).get("format"))
     time_now = datetime.datetime.now()
-    debug.printer(time_now)
+    debug.printer(analy)
 
     if (time_now - time_write_data).seconds < (60 * 60) and (time_now - time_write_data).days <= 0:
         if not analy['reload']:
@@ -67,51 +82,54 @@ def analytics():
                                    energy_data=energy_data["energy"]["energy"])
 
         analy['reload'] = False
-        write_config_data(config_data)
+        config_manager_config.write_config_data(config_data)
 
     weather, market, sun, pv, hp, trv = fc.init_classes(coordinates["latitude"], coordinates["longitude"],
                                                         pv_consts["module_efficiency"], pv_consts["area"],
                                                         pv_consts["tilt_angle"], pv_consts["exposure_angle"],
                                                         pv_consts["mounting_type"], market_consts["consumer_price"],
-                                                        "192.168.178.000")
-    today = list(weather.data.keys())[0]
-    weather_date = weather.data[today]
+                                                        "")
+    weather = fc.get_weather_data(config_data)
+    today = list(weather.keys())[0]
+    weather_today = weather[today]
 
     radiation_data: list = []
     radiation_data_dni: list = []
 
-    for t in weather_date.keys():
+    for t in weather_today.keys():
         if t != "daily":
+
+            time_float: float = fc.string_time_to_float(t)
+
+            azimuth, elevation = fc.get_sun_data(config_data, time_float)
+            temp: float = weather_today[t]["temp"]
+
+            radiation = weather_today[t]["direct_radiation"]
+            radiation_dni = weather_today[t]["dni_radiation"]
+
+            power_dni: float = fc.get_pv_data(config_data, temp, radiation_dni, azimuth, elevation, dni=True)
+
             weather_time.append(t)
-            time_float = float(t[:2]) + float(t[3:]) / 100
-            azimuth: float = sun.calc_azimuth(time_float)
-            elevation: float = sun.calc_solar_elevation(time_float)
-            incidence = pv.calc_incidence_angle(elevation, azimuth)
-            radiation = weather_date[t]["direct_radiation"]
-            radiation_dni = weather_date[t]["dni_radiation"]
             radiation_data.append(radiation)
             radiation_data_dni.append(radiation_dni)
-            power_dni = pv.calc_power_with_dni(radiation_dni, incidence, weather_date[t]["temp"])
 
             if power_dni > converter_consts["max_power"]:
                 power_dni = converter_consts["max_power"]
 
             power_data.append(power_dni)
 
-    energy = round(fc.calc_energy(power_data, kwh=False), 2)
+    energy = fc.calc_energy(power_data, kwh=False, round_=2)
 
     for t in market.data:
         market_time.append(t["start_timestamp"])
         market_price.append(t["consumerprice"])
 
-    fc.write_data_to_data_file(None, None, None, None, time=weather_time, radiation_dni=radiation_data_dni,
-                               power=power_data, market_price=market_price, energy=energy)
+    fc.write_data_to_data_file(weather_time, power_data, market_price, energy, None, radiation_data_dni)
 
     plt.clf()
     plt.figure(figsize=(60, 25))
     plt.grid()
-    plt.plot(weather_time, power_data, label="Power [W]")
-    # plt.plot(weather_time, energy_data, label="Energy [Wh]")
+    plt.step(weather_time, power_data, label="Power [W]")
     plt.xticks(rotation=90, ha="right", fontsize=30)
     _size = converter_consts["max_power"]
     debug.printer(_size)
@@ -126,7 +144,7 @@ def analytics():
     plt.clf()
     plt.figure(figsize=(60, 25))
     plt.grid()
-    plt.plot(market_time, market_price, label="Preis [ct/kWh]")
+    plt.step(market_time, market_price, label="Preis [ct/kWh]")
     plt.xticks(rotation=90, ha="right", fontsize=30)
     plt.yticks(ticks=np.arange(0, max(market_price) + 5, step=1), ha="right", fontsize=30)
     plt.tight_layout()
@@ -139,6 +157,9 @@ def analytics():
 
 @app.route('/generate_download', methods=['POST'])
 def download():
+    config_manager_config.reload_config()
+    config_data = config_manager_config.config_data
+
     msg: str = ""
     msg_market: list[str] = []
     msg_weather: list[str] = []
@@ -197,12 +218,17 @@ def allowed_file(filename):
 
 @app.route('/settings')
 def settings():
+    config_manager_config.reload_config()
+    config_data = config_manager_config.config_data
     return render_template('set_vals.html', config=config_data, window_data=consts.window_data,
                            wall_data=consts.wall_data, door_data=consts.door_data, ceiling_data=consts.ceiling_data)
 
 
 @app.route('/save_settings', methods=['POST'])
 def safe_settings():
+    config_manager_config.reload_config()
+    config_data = config_manager_config.config_data
+
     if request.method == 'POST':
 
         data = request.form.to_dict()
@@ -305,14 +331,33 @@ def get_door(door):
 
 @scheduler.task("cron", id="morning_saver", hour="5")
 def save_morning():
-    print("save_data3")
+    print("save_data morning")
+
+    config_manager_config.reload_config()
+    config_data: dict = config_manager_config.config_data
+
+    write_dict: dict = fc.save_mor_ev_data(config_data)
+
+    energy_manager_morning_data.write_energy_data(write_dict)
 
 
-@scheduler.task("cron", id="evening_saver", hour="9")
+@scheduler.task("cron", id="evening_saver", hour="21")
 def save_evening():
-    print("save_data2")
+    print("save_data evening")
 
+    config_manager_config.reload_config()
+    config_data: dict = config_manager_config.config_data
+
+    write_dict: dict = fc.save_mor_ev_data(config_data)
+
+    energy_manager_evening_data.write_energy_data(write_dict)
+
+
+@scheduler.task("cron", id="evening_saver", hour="23")
+def compare_data():
+    err = fc.comp_mor_ev_data()
+    print(err)
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='localhost', port=8888)
+    app.run(debug=True, host='0.0.0.0', port=8888)
