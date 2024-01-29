@@ -374,7 +374,7 @@ def compare_data():
     err = fc.comp_mor_ev_data(energy_data_morning, energy_data_evening)
     print(err)
 
-    if err.get("average_dni_difference", 3) > 2 or err.get("energy_difference", 3) > (2 / 100):
+    if err.get("average_dni_difference", 21) > 20 or err.get("energy_difference", 1) > (200/1000):
         print("Big error")
 
 
