@@ -13,44 +13,11 @@ import tomli
 import tomli_w
 from frozendict import frozendict
 
-# from config import config_data, write_config_data
 from config import ConfigManager as ConfigManager_config
+from data import write_energy_data
 from module import classes, consts, debug
-from data import energy_data, write_energy_data
-from data import EnergyManager as ConfigManager_data
 
 config_manager_config = ConfigManager_config("config_test.toml")
-config_manager_data = ConfigManager_data("data.toml")
-
-
-def init_classes(latitude: float, longitude: float, module_efficiency: float, module_area: int, tilt_angle: float,
-                 exposure_angle: float, mounting_type: int, costs: float, ip_address: str) -> (classes.Weather,
-                                                                                               classes.MarketData,
-                                                                                               classes.CalcSunPos,
-                                                                                               classes.PVProfit,
-                                                                                               classes.RequiredHeatingPower):
-    """
-
-    :param ip_address:
-    :rtype: classes.Weather, classes.MarketData, classes.CalcSunPos, classes.PVProfit
-    :param mounting_type:
-    :param costs:
-    :param latitude:
-    :param longitude:
-    :param module_efficiency:
-    :param module_area:
-    :param tilt_angle:
-    :param exposure_angle:
-    :return:
-    """
-    weather: classes.Weather = classes.Weather(latitude, longitude)
-    market: classes.MarketData = classes.MarketData(costs)
-    sun: classes.CalcSunPos = classes.CalcSunPos(latitude, longitude)
-    pv: classes.PVProfit = classes.PVProfit(module_efficiency, module_area, tilt_angle, exposure_angle, -0.35, 25,
-                                            mounting_type)
-    hp: classes.RequiredHeatingPower = classes.RequiredHeatingPower()
-    s_trv: classes.ShellyTRVControl = classes.ShellyTRVControl(ip_address)
-    return weather, market, sun, pv, hp, s_trv
 
 
 def freeze_all(func):
@@ -69,198 +36,6 @@ def freeze_all(func):
         return func(*frozen_args, **frozen_kwargs)
 
     return wrapped
-
-
-def write_data_to_config(data: dict, path: str = None) -> int:
-    """
-
-    :param path:
-    :param data:
-    :return:
-    """
-    config_manager_config.reload_config()
-    config_data = config_manager_config.config_data
-
-    if path is None:
-        path = consts.config_file_Path
-
-    try:
-        debug.printer(data)
-
-        for data_key in data.keys():
-            data[data_key] = str(data[data_key]).replace(",", ".")
-
-        if data['latitude'] != "" or data['longitude'] != "":
-            config_data['coordinates']['latitude'] = float(data.get('latitude', 0))
-            config_data['coordinates']['longitude'] = float(data.get('longitude', 0))
-        else:
-            lat, lon = get_coord(str(data.get('Straße', "")), str(data.get('Nr', '')), str(data.get('Stadt', '')),
-                                 int(data.get('PLZ', 0)), str(data.get('Land', '')))
-            config_data['coordinates']['latitude'] = lat
-            config_data['coordinates']['longitude'] = lon
-
-        tme = config_data.get('write_time')
-        analytics = config_data.get('analytics')
-        pv = config_data.get('pv')
-        market = config_data.get('market')
-        converter = config_data.get('converter')
-        shelly = config_data.get('shelly')
-        air_conditioner = config_data.get('air_conditioner')
-
-        house = config_data.get('house')
-
-        time_format: str = "%d-%m-%Y %H:%M:%S"
-        tme['time'] = datetime.datetime.now().strftime(time_format)
-        tme['format'] = time_format
-
-        analytics['reload'] = True
-
-        pv['tilt_angle'] = float(data.get('tilt_angle', 0))
-        pv['area'] = float(data.get('area', 0))
-        pv['module_efficiency'] = float(data.get('module_efficiency', 0))
-        pv['exposure_angle'] = float(data.get('exposure_angle', 0))
-        pv['temperature_coefficient'] = float(data.get('temperature_coefficient', 0))
-        pv['nominal_temperature'] = float(data.get('nominal_temperature', 0))
-        pv['mounting_type'] = int(data.get('mounting_type', 0))
-
-        converter['max_power'] = float(data.get('converter_power', 0))
-
-        market['consumer_price'] = float(data.get('consumer_price', 0))
-
-        shelly['ip_address'] = str(data.get('ip_address', ''))
-
-        air_conditioner["air_conditioner"] = str(data.get('air_conditioner', ''))
-        air_conditioner["air_conditioner_steering"] = str(data.get('air_conditioner_steering', ''))
-        air_conditioner["ip_address_cloud"] = str(data.get('ip_address_cloud', ''))
-        air_conditioner["ir_remote"] = str(data.get('ir_remote', ''))
-
-        house['house_year'] = int(data.get('house_year', 0))
-
-        for i in range(1, 5):
-            house[f'window{i}_frame'] = str(data.get(f'window{i}_frame', ''))
-            house[f'window{i}_glazing'] = str(data.get(f'window{i}_glazing', ''))
-            house[f'window{i}_year'] = int(data.get(f'window{i}_year', 0))
-            house[f'window{i}_width'] = float(data.get(f'window{i}_width', 0))
-            house[f'window{i}_height'] = float(data.get(f'window{i}_height', 0))
-            house[f'window{i}_u_value'] = float(data.get(f'window{i}_u_value', 0))
-
-            house[f'wall{i}'] = str(data.get(f'wall{i}', ''))
-            house[f'wall{i}_width'] = float(data.get(f'wall{i}_width', 0))
-            house[f'wall{i}_height'] = float(data.get(f'wall{i}_height', 0))
-            house[f'construction_wall{i}'] = str(data.get(f'construction_wall{i}', ''))
-            house[f'wall{i}_type'] = int(data.get(f'wall{i}_type', 0))
-            house[f'wall{i}_u_value'] = float(data.get(f'wall{i}_u_value', 0))
-            house[f'wall{i}_diff_temp'] = float(data.get(f'wall{i}_diff_temp', 0))
-
-            house[f'door_wall{i}'] = int(data.get(f'door_wall{i}', 0))
-            house[f'door_wall{i}_enev'] = str(data.get(f'door_wall{i}_enev', 0))
-            house[f'door_wall{i}_width'] = float(data.get(f'door_wall{i}_width', 0))
-            house[f'door_wall{i}_height'] = float(data.get(f'door_wall{i}_height', 0))
-
-        house['ceiling'] = str(data.get('ceiling', ''))
-        house['construction_ceiling'] = str(data.get('construction_ceiling', ''))
-
-        house['floor'] = str(data.get('floor', ''))
-        house['construction_floor'] = str(data.get('construction_floor', ''))
-        config_manager_config.write_config_data(config_data)
-        # write_config_data(config_data)
-
-        return 1
-
-    except KeyError as error:
-        print("Missing key: ", error)
-        return -1
-
-
-def write_data_to_data_file(time, power: list[float], market_price: list[float], energy: float,
-                            radiation: None | list[float] = None, radiation_dni: None | list[float] = None,
-                            path: None | str = None) -> int:
-    if path is None:
-        data_file_path = consts.data_file_Path
-    else:
-        data_file_path = path
-
-    data: dict = {
-        "write_time": {
-            "time": datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S"),
-            "format": "%d-%m-%Y %H:%M:%S"
-        },
-        "energy": {
-            "energy": energy
-        }
-    }
-    # write radiation
-    try:
-        if radiation is not None:
-            h = -1
-            for i, k in enumerate(time):
-                if k != "daily":
-                    data.update({
-                        k: {
-                            "direct_radiation": radiation[i],
-                            "power": round(power[i], 3),
-                            "market_price": market_price[h]
-                        }
-                    })
-
-                if (i - 4) % 4 == 0:
-                    h += 1
-
-            if path is None:
-                write_energy_data(data)
-            else:
-                write_data_to_file(data, data_file_path)
-
-            return 1
-
-    except KeyError as error:
-        print(f"Key {error} is not a valid")
-        return -1
-
-    except IndexError as error:
-        print(f"List is to short or long, need same length as time\n"
-              f"len(time) -> {len(time)}\n"
-              f"len(radiation) -> {len(radiation)}, {'✅' if len(radiation) == len(time) else '❌'}\n"
-              f"len(power) -> {len(power)}, {'✅' if len(power) == len(time) else '❌'}\n"
-              f"len(market_price) -> {len(market_price)}, {'✅' if len(market_price) * 4 + 1 == len(time) else '❌'}\n"
-              f"{error}")
-        return -1
-
-    # write radiation_dni
-    try:
-        if radiation_dni:
-            h = -1
-            for i, k in enumerate(time):
-                if k != "daily":
-                    data.update({
-                        k: {"dni_radiation": radiation_dni[i],
-                            "power": round(power[i], 3),
-                            "market_price": market_price[h]
-                            }
-                    })
-
-                if (i - 4) % 4 == 0:
-                    h += 1
-
-            if path is None:
-                write_energy_data(data)
-            else:
-                write_data_to_file(data, data_file_path)
-
-            return 1
-
-    except KeyError as error:
-        print(f"Key {error} is not a valid")
-        return -1
-
-    except IndexError as error:
-        print(f"List is to short or long, need same length as time\n"
-              f"len(time) -> {len(time)}\n"
-              f"len(radiation_dni) -> {len(radiation_dni)}, {'✅' if len(radiation_dni) == len(time) else '❌'}\n"
-              f"len(power) -> {len(power)}, {'✅' if len(power) == len(time) else '❌'}\n"
-              f"len(market_price) -> {len(market_price)}, {'✅' if len(market_price) == len(time) else '❌'}\n"
-              f"{error}")
-        return -1
 
 
 def read_data_from_file(file_path: str) -> dict | None:
@@ -357,7 +132,6 @@ def calc_energy(energy: list, interval: float = 0.25, kwh: bool = True, round_: 
     if kwh:
         multiplier = 1000
     power_values = list(map(lambda x: x / multiplier, energy))
-    total_energy = sum((power_values[i] + power_values[i + 1]) / 2 * interval for i in range(len(power_values) - 1))
     total_energy = sum(power_values[i] * interval for i in range(len(power_values) - 1))
 
     if round_ is not None:
@@ -380,32 +154,47 @@ def date_time_download() -> dict:
     return data
 
 
-def get_weather_data(config_data_: dict):
-    coord = config_data_["coordinates"]
-    w = classes.Weather(coord["latitude"], coord["longitude"])
+def get_weather_data(config_data: dict, start: str | None = None, end: str | None = None):
+    coord = config_data["coordinates"]
+    w = classes.Weather(coord["latitude"], coord["longitude"], start, end)
     return w.data
 
 
-def get_sun_data(config_data_: dict, tme: float) -> (float, float):
-    coord = config_data_["coordinates"]
-    s = classes.CalcSunPos(coord["latitude"], coord["longitude"])
-    az = s.calc_azimuth(tme)
-    el = s.calc_solar_elevation(tme)
+def init_sun(config_data: dict, date: str | None = None) -> classes.CalcSunPos:
+    coord = config_data["coordinates"]
+    s = classes.CalcSunPos(coord["latitude"], coord["longitude"], date)
+    return s
+
+
+def get_sun_data(sun_class: classes.CalcSunPos, tme: float) -> (float, float):
+    az = sun_class.calc_azimuth(tme)
+    el = sun_class.calc_solar_elevation(tme)
     return az, el
 
 
-def get_pv_data(config_data_: dict, temp: float, rad: float, azimuth: float, elevation: float, dni: bool = False) -> (
-        float, float):
-    pv = config_data_["pv"]
+def init_pv(config_data: dict) -> classes.PVProfit:
+    pv = config_data["pv"]
     p = classes.PVProfit(pv["module_efficiency"], pv["area"], pv["tilt_angle"], pv["exposure_angle"],
                          pv["temperature_coefficient"], pv["nominal_temperature"], pv["mounting_type"])
-    incidence_angle = p.calc_incidence_angle(elevation, azimuth)
+    return p
+
+
+def get_pv_data(pv_class: classes.PVProfit, temp: float, rad: float, azimuth: float, elevation: float,
+                dni: bool = False) -> (
+        float, float):
+    incidence_angle = pv_class.calc_incidence_angle(elevation, azimuth)
     if dni:
-        power: float = p.calc_power_with_dni(rad, incidence_angle, temp)
+        power: float = pv_class.calc_power_with_dni(rad, incidence_angle, temp)
         return power
-    eff: float = p.calc_temp_dependency(temp, rad)
-    power: float = p.calc_power(rad, incidence_angle, elevation, eff)
+    eff: float = pv_class.calc_temp_dependency(temp, rad)
+    power: float = pv_class.calc_power(rad, incidence_angle, elevation, eff)
     return power
+
+
+def init_market(config_data: dict, start_time: int | None = None, end_time: int | None = None) -> classes.MarketData:
+    cc: float = config_data["market"]
+    m = classes.MarketData(cc, start_time, end_time)
+    return m
 
 
 def string_time_to_float(tme: str) -> float:
@@ -457,164 +246,6 @@ def save_mor_ev_data(config_data: dict) -> dict:
     )
 
     return write_dict
-
-
-@freeze_all
-@lru_cache(maxsize=None)
-def generate_weather_data(data: dict, config_data_: dict) -> list[str]:
-    """
-
-    :param data:
-    :param config_data_:
-    :return:
-    """
-    if not os.path.exists(consts.downloads_file_Path):
-        os.mkdir(consts.downloads_file_Path)
-
-    config_coordinates = config_data_["coordinates"]
-    config_pv = config_data_["pv"]
-
-    start_date = datetime.datetime.strptime(data['start_date_weather'], "%Y-%m-%d")
-    end_date = datetime.datetime.strptime(data['end_date_weather'], "%Y-%m-%d")
-
-    weather_date = classes.Weather(
-        config_coordinates['latitude'], config_coordinates['longitude'],
-        datetime.datetime.strftime(start_date, "%d-%m-%Y"),
-        datetime.datetime.strftime(end_date, "%d-%m-%Y")).data
-
-    pv = classes.PVProfit(config_pv["module_efficiency"], config_pv["area"],
-                          config_pv["tilt_angle"], config_pv["exposure_angle"],
-                          config_pv["temperature_coefficient"],
-                          config_pv["nominal_temperature"], config_pv["mounting_type"])
-
-    power_data: dict = {}
-    energy_data: dict = {}
-    msg: list[str] = []
-
-    for date in weather_date.keys():
-        sun = classes.CalcSunPos(config_coordinates['latitude'],
-                                 config_coordinates['longitude'],
-                                 date)
-
-        power_data[date]: dict = {}
-        energy_data_list: list[float] = []
-        for t in weather_date[date].keys():
-            if t != "daily":
-                time_float = string_time_to_float(t)
-                azimuth: float = sun.calc_azimuth(time_float)
-                elevation: float = sun.calc_solar_elevation(time_float)
-                incidence: float = pv.calc_incidence_angle(elevation, azimuth)
-                eff: float = pv.calc_temp_dependency(weather_date[date][t]["temp"],
-                                                     weather_date[date][t]["direct_radiation"])
-                power_data[date][t] = pv.calc_power(weather_date[date][t]["direct_radiation"], incidence, elevation,
-                                                    eff)
-                energy_data_list.append(power_data[date][t])
-        energy_data[date] = calc_energy(energy_data_list)
-
-    if "excel_weather" in data.keys():
-        if os.path.exists(rf"{consts.downloads_file_Path}weather_data.xlsx"):
-            os.remove(rf"{consts.downloads_file_Path}weather_data.xlsx")
-        if data["excel_weather"] == "on":
-            df = pd.DataFrame.from_dict(energy_data, orient='index', columns=['energy [kWh]'])
-            df.to_excel(f'{consts.downloads_file_Path}weather_data.xlsx')
-            msg.append("excel_weather")
-
-    if "plot_png_weather" in data.keys():
-        if data["plot_png_weather"] == "on":
-            if os.path.exists(rf"{consts.downloads_file_Path}weather_plot.png"):
-                os.remove(rf"{consts.downloads_file_Path}weather_plot.png")
-            if len(energy_data.keys()) > 50:
-                x = len(energy_data.keys()) * 0.25
-                y = x * 0.4
-            else:
-                x = 10
-                y = 5
-
-            plt.figure(figsize=(x, y))
-            plt.grid()
-            plt.step(list(energy_data.keys()), list(energy_data.values()), label="Energy[kWh]")
-            plt.xticks(rotation=90, ha="right", fontsize=18)
-
-            _max = (max(energy_data.values()) + (100 if max(energy_data.values()) > 100 else 5))
-            ticks = np.arange(0, _max, step=(len(energy_data.keys()) // 100 * 10 if _max > 100 else 1))
-
-            plt.yticks(ticks=ticks, ha="right", fontsize=20)
-            plt.legend(loc="upper left", fontsize=20)
-            plt.tight_layout()
-            plt.savefig(rf"{consts.downloads_file_Path}weather_plot.png")
-            msg.append("plot_weather")
-
-    if "excel_market" in data.keys():
-        if os.path.exists(rf"{consts.downloads_file_Path}market_data.xlsx"):
-            os.remove(rf"{consts.downloads_file_Path}market_data.xlsx")
-        if data["excel_market"] == "on":
-            df = pd.DataFrame.from_dict(energy_data, orient='index', columns=['price [ct]'])
-            df.to_excel(f'{consts.downloads_file_Path}market_data.xlsx')
-            msg.append("excel_market")
-
-    return msg
-
-
-@freeze_all
-@lru_cache(maxsize=None)
-def generate_market_data(data: dict, config_data_: dict) -> list[str]:
-    """
-
-    :param data:
-    :param config_data_:
-    :return:
-    """
-
-    if not os.path.exists(consts.downloads_file_Path):
-        os.mkdir(consts.downloads_file_Path)
-
-    market_datas = classes.MarketData(config_data_["market"]["consumer_price"], data['start_date_market'],
-                                      data['end_date_market']).data
-
-    msg: list[str] = []
-    price_data: list[float] = []
-    time_data: list[str] = []
-    data_dict: dict = {}
-
-    for i, market_data in enumerate(market_datas):
-        time_data.append(f"{market_data['date']} {market_data['start_timestamp']}")
-        price_data.append(market_data['consumerprice'])
-        data_dict.update({f"{market_data['date']} {market_data['start_timestamp']}": market_data['consumerprice']})
-
-    if "excel_market" in data.keys():
-        if os.path.exists(rf"{consts.downloads_file_Path}market_data.xlsx"):
-            os.remove(rf"{consts.downloads_file_Path}market_data.xlsx")
-        if data["excel_market"] == "on":
-            df = pd.DataFrame.from_dict(data_dict, orient='index', columns=['price [ct]'])
-            df.to_excel(f'{consts.downloads_file_Path}market_data.xlsx')
-            msg.append("excel_market")
-
-    if "plot_png_market" in data.keys():
-        if data["plot_png_market"] == "on":
-            if os.path.exists(rf"{consts.downloads_file_Path}plot_market.png"):
-                os.remove(rf"{consts.downloads_file_Path}plot_market.png")
-            if len(price_data) > 50:
-                x = len(price_data) * 0.25
-                y = x * 0.4
-            else:
-                x = 10
-                y = 5
-
-            plt.figure(figsize=(x, y))
-            plt.grid()
-            plt.step(time_data, price_data, label="price [ct]")
-            plt.xticks(rotation=90, ha="right", fontsize=18)
-
-            _max = (max(price_data) + (100 if max(price_data) > 100 else 5))
-            ticks = np.arange(0, _max, step=(len(price_data) // 100 * 10 if _max > 100 else 1))
-
-            plt.yticks(ticks=ticks, ha="right", fontsize=20)
-            plt.legend(loc="upper left", fontsize=20)
-            plt.tight_layout()
-            plt.savefig(rf"{consts.downloads_file_Path}market_plot.png")
-            msg.append("plot_market")
-
-    return msg
 
 
 @freeze_all
@@ -928,9 +559,7 @@ def heating_power():
     return 1
 
 
-def comp_mor_ev_data(error: float = 1):
-    from data import evening_data, morning_data
-
+def comp_mor_ev_data(morning_data, evening_data, error: float = 1):
     debug.printer(evening_data, description="evening_data: ")
     debug.printer(morning_data, description="morning_data: ")
 
@@ -967,112 +596,3 @@ def comp_mor_ev_data(error: float = 1):
         "average_dni_difference": average_dni_difference,
         "energy_difference": energy_difference
     }
-
-
-if __name__ == "__main__":
-    z = comp_mor_ev_data()
-    print(z)
-
-if __name__ == "__main_":
-    print("Run test, functions.py")
-    print("Test write_data_to_config")
-    test_data: dict = {
-        "latitude": 1,
-        "longitude": 2,
-        "tilt_angle": 3,
-        "area": 4,
-        "module_efficiency": 5,
-        "exposure_angle": 6,
-        "temperature_coefficient": 7,
-        "nominal_temperature": 8,
-        "mounting_type": 9,
-        "converter_power": 10,
-        "consumer_price": 11,
-        "ip_address": "IP"
-    }
-
-    ret = write_data_to_config(test_data, "../config/function_tes.toml")
-    if ret == 1:
-        print('✅', "PASS")
-    elif ret == -1:
-        print('❌', "FAIL")
-    ret = 0
-
-    print("Test write_data_to_file")
-
-    time_test_data: list = ['00:00', '00:15', '00:30', '00:45', '01:00', '01:15', '01:30', '01:45', '02:00', '02:15',
-                            '02:30', '02:45', '03:00']
-    power_test_data: list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
-    market_price_test_data: list = [0.1, 0.2, 0.3]
-    radiation_dni_test_data: list = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300]
-    radiation_test_data: list = [10_000, 10_100, 10_200, 10_300, 10_400, 10_500, 10_600, 10_700, 10_800, 10_900, 11_000,
-                                 11_100, 11_200]
-
-    '''    ret = write_data_to_data_file(time=time_test_data, radiation=radiation_test_data, power=power_test_data,
-                                  market_price=market_price_test_data, path=r'../data/test_data_direct.toml')'''
-
-    if ret == 1:
-        print('✅', "PASS, direct radiation")
-    elif ret == -1:
-        print('❌', "FAIL, direct radiation")
-    ret = 0
-
-    '''    ret = write_data_to_data_file(time=time_test_data, radiation_dni=radiation_dni_test_data, power=power_test_data,
-                                  market_price=market_price_test_data, path=r'../data/test_data_dni.toml')'''
-
-    if ret == 1:
-        print('✅', "PASS, dni radiation")
-    elif ret == -1:
-        print('❌', "FAIL, dni radiation")
-    ret = 0
-
-    print("Test read_data_from_file")
-    ret = read_data_from_file(r"../data/test_data_dni.toml")
-    if ret is not None:
-        print('✅', "PASS")
-    else:
-        print('❌', "FAIL")
-    ret = 0
-
-    print("Test get_coord")
-    ret = get_coord("Hirschenau", "2", "Rückersdorf", 90607, 'Deutschland')
-    print(ret)
-    if ret[0] == 49.4989187 and ret[1] == 11.249947:
-        print('✅', "PASS")
-    else:
-        print('❌', "FAIL")
-    ret = 0
-
-    print("Test calc_energy")
-    energy_test: list[float] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-    ret = calc_energy(energy_test, 1, False)
-    if ret == 50:
-        print('✅', "PASS")
-    else:
-        print('❌', "FAIL")
-    ret = 0
-
-    print("Test generate_weather_data")
-
-    print("Test data_analyzer")
-
-    data_analyzer()
-
-    print("Test unpack_data")
-    data_test: dict = tomli.load(open(r"../data/data.toml", "rb"))
-    ret = unpack_data(data_test)
-    if ret != (-1, -1, -1, -1):
-        print('✅', "PASS")
-    else:
-        print('❌', "FAIL")
-    ret = 0
-
-    print("Test heating_power")
-    # heating_power()
-    ret = heating_power()
-
-    if ret == 1:
-        print('✅', "PASS")
-    else:
-        print('❌', "FAIL")
-    ret = 0

@@ -135,21 +135,41 @@ h1 {
     .input-group label {
         width: 200px; /* Angepasste Breite für Tablets */
     }
+    .row {
+        flex-direction: column;
+    }
 }
 
 /* Media Query für Mobilgeräte */
 @media screen and (max-width: 480px) {
     .input-group label {
         width: 100%; /* Volle Breite auf Mobilgeräten */
+        font-size: calc(var(--font_height) / 1.5);
     }
 
     .input-group {
         flex-direction: column; /* Stapelt Label und Input vertikal */
     }
-}
+    .input-group input, .input-group select {
+        font-size: calc(var(--font_height) / 1.5);
+        margin-left: 2px;
+        margin-right: 2px;
+        padding-left: 2px;
+        padding-right: 2px;
+        flex-direction: column; /* Stapelt Label und Input vertikal */
+        width: 100%;
+        margin-bottom: 5px;
+    }
+    .Box1{
+        background-color: darkcyan;
+        height: calc(var(--font_height) / 1.5 + 5px);
+        padding-left: 5px;
+        margin-top: 1px;
+    }
 
-@media screen and (max-width: 768px) {
-    .row {
-        flex-direction: column;
+    .Box1 b{
+        font-family: var(--font_family);
+        font-size: calc(var(--font_height) / 1.5);
+        color: white;
     }
 }
