@@ -1,9 +1,9 @@
 [write_time]
-time = "29-01-2024 15:10:55"
+time = "29-01-2024 20:46:21"
 format = "%d-%m-%Y %H:%M:%S"
 
 [energy]
-energy = 2042.53
+energy = 2038.7
 
 ["00:00"]
 dni_radiation = 0.0
@@ -327,17 +327,17 @@ market_price = 27.501
 
 ["16:00"]
 dni_radiation = 58.9
-power = 36.636
+power = 36.284
 market_price = 27.501
 
 ["16:15"]
-dni_radiation = 24.9
-power = 14.018
+dni_radiation = 8.3
+power = 4.648
 market_price = 28.79
 
 ["16:30"]
-dni_radiation = 11.3
-power = 5.61
+dni_radiation = 0.0
+power = 0.0
 market_price = 28.79
 
 ["16:45"]

@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 
+import datetime
+
 from module import debug
 from module import functions
+from module import consts
 
 
-def write_data_to_config(config_data: dict, data: dict, path: str = None) -> int:
-    if path is None:
-        path = consts.config_file_Path
+def write_data_to_config(config_data: dict, data: dict) -> int:
 
     try:
         debug.printer(data)
@@ -38,7 +39,7 @@ def write_data_to_config(config_data: dict, data: dict, path: str = None) -> int
         tme['time'] = datetime.datetime.now().strftime(time_format)
         tme['format'] = time_format
 
-        analytics['reload'] = True
+        config_data['reload'] = True
 
         pv['tilt_angle'] = float(data.get('tilt_angle', 0))
         pv['area'] = float(data.get('area', 0))

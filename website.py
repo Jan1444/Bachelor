@@ -59,10 +59,6 @@ def analytics():
     energy_manager_data.reload_data()
     energy_data = energy_manager_data.energy_data
 
-    analyt = config_data['analytics']
-    coordinates = config_data["coordinates"]
-    pv_consts = config_data["pv"]
-    market_consts = config_data["market"]
     converter_consts = config_data["converter"]
 
     power_data: list = []
@@ -76,13 +72,13 @@ def analytics():
     time_now = datetime.datetime.now()
 
     if (time_now - time_write_data).seconds < (60 * 60) and (time_now - time_write_data).days <= 0:
-        if not analyt['reload']:
+        if not config_data['reload']:
             return render_template('analytics.html', name="new_plot",
                                    url_weather=f"{consts.plot_path}output_weather.png",
                                    url_market=f"{consts.plot_path}output_market.png",
                                    energy_data=energy_data.get("energy", {"energy": 0}).get("energy"))
 
-        analyt['reload'] = False
+        config_data['reload'] = False
         config_manager.write_config_data(config_data)
 
     sun_class: classes.CalcSunPos = fc.init_sun(config_data)
