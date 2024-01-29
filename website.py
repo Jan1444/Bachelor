@@ -16,7 +16,7 @@ from data import EnergyManager
 from module import consts, debug
 from module import functions as fc
 from module import set_vals
-from module import analytics
+from module import analytics as analytics_module
 from module import download as download_module
 
 UPLOAD_FOLDER = 'uploads'
@@ -59,7 +59,7 @@ def analytics():
     energy_manager_data.reload_data()
     energy_data = energy_manager_data.energy_data
 
-    analy = config_data['analytics']
+    analyt = config_data['analytics']
     coordinates = config_data["coordinates"]
     pv_consts = config_data["pv"]
     market_consts = config_data["market"]
@@ -76,20 +76,20 @@ def analytics():
     time_now = datetime.datetime.now()
 
     if (time_now - time_write_data).seconds < (60 * 60) and (time_now - time_write_data).days <= 0:
-        if not analy['reload']:
+        if not analyt['reload']:
             return render_template('analytics.html', name="new_plot",
                                    url_weather=f"{consts.plot_path}output_weather.png",
                                    url_market=f"{consts.plot_path}output_market.png",
                                    energy_data=energy_data.get("energy", {"energy": 0}).get("energy"))
 
-        analy['reload'] = False
+        analyt['reload'] = False
         config_manager.write_config_data(config_data)
 
     sun_class: classes.CalcSunPos = fc.init_sun(config_data)
     pv_class: classes.PVProfit = fc.init_pv(config_data)
     market_class: classes.MarketData = fc.init_market(config_data)
 
-    weather = fc.get_weather_data(s)
+    weather = fc.get_weather_data(config_data)
 
     today = list(weather.keys())[0]
     weather_today = weather[today]
@@ -97,14 +97,11 @@ def analytics():
 
     radiation_data_dni: list = []
 
-    for tme, daily in weather_today.items():
+    for tme, data in weather_today.items():
         time_float = fc.string_time_to_float(tme)
-
+        temp: float = data.get("temp", 0)
+        radiation_dni = data.get("dni_radiation", 0)
         azimuth, elevation = fc.get_sun_data(sun_class, time_float)
-        temp: float = daily.get("temp", 0)
-
-        radiation = daily.get("direct_radiation", 0)
-        radiation_dni = daily.get("dni_radiation", 0)
 
         power_dni: float = fc.get_pv_data(pv_class, temp, radiation_dni, azimuth, elevation, dni=True)
 
@@ -121,8 +118,8 @@ def analytics():
         market_time.append(t["start_timestamp"])
         market_price.append(t["consumerprice"])
 
-    write_data = analytics.prepare_data_to_write(weather_time, power_data, market_price, energy, None,
-                                                 radiation_data_dni)
+    write_data = analytics_module.prepare_data_to_write(weather_time, power_data, market_price, energy, None,
+                                                        radiation_data_dni)
     energy_manager_data.write_energy_data(write_data)
 
     plt.clf()

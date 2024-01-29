@@ -295,14 +295,12 @@ def unpack_data(data: dict) -> (list[str], list[float], list[float], list[float]
         print(f"In line: {error_key * 5 + 7}")
 
 
-@lru_cache(maxsize=None)
-def data_analyzer(path: None | str = None) -> int | tuple[float, float, float, str, str, str, str, list, list, float,
-str, float]:
+def data_analyzer(path: None | str = None):
     config_manager_config.reload_config()
     config_data = config_manager_config.config_data
     config_pv: dict = config_data["pv"]
     if path is None:
-        path = rf"../uploads/{os.listdir("../uploads")[0]}"
+        path = rf"./uploads/{os.listdir("./uploads")[0]}"
 
     data = json.load(open(path, "rb+"))
 
@@ -326,11 +324,7 @@ str, float]:
     power_data: list = []
     date_time_data: list = []
 
-    pv: classes.PVProfit = classes.PVProfit(config_pv["module_efficiency"], config_pv["area"],
-                                            config_pv["tilt_angle"], config_pv["exposure_angle"],
-                                            config_pv["temperature_coefficient"],
-                                            config_pv["nominal_temperature"],
-                                            config_pv["mounting_type"])
+    pv_class = init_pv(config_data)
 
     if "Gb(i)" not in datas[0]:
         print(datas[0])
@@ -339,15 +333,15 @@ str, float]:
     if slope == 0 and azimuth == 0:
         for data in datas:
             date: str = datetime.datetime.strptime(data["time"], "%Y%m%d:%H%M").strftime("%d-%m-%Y")
-            time: float = float(datetime.datetime.strptime(data["time"], "%Y%m%d:%H%M").strftime("%H.%M"))
+            tme: float = float(datetime.datetime.strptime(data["time"], "%Y%m%d:%H%M").strftime("%H.%M"))
 
-            sun: classes.CalcSunPos = classes.CalcSunPos(lat, lon, date)
-            azimuth: float = sun.calc_azimuth(time)
-            elevation: float = sun.calc_solar_elevation(time)
+            sun_class = init_sun(config_data, date)
+            azimuth, elevation = get_sun_data(sun_class, tme)
 
-            incidence: float = pv.calc_incidence_angle(elevation, azimuth)
-            eff: float = pv.calc_temp_dependency(20, data["Gb(i)"])
-            power: float = pv.calc_power(data["Gb(i)"], incidence, elevation, eff)
+            temp: float = 17
+            radiation: float = data.get("Gb(i)", 0)
+
+            power: float = get_pv_data(pv_class, temp, radiation, azimuth, elevation)
 
             date_time: str = datetime.datetime.strptime(data["time"], "%Y%m%d:%H%M").strftime("%d-%m-%Y - %H:%M")
 
@@ -357,19 +351,23 @@ str, float]:
     elif slope == config_pv["tilt_angle"] and azimuth == config_pv["exposure_angle"]:
         for data in datas:
             date: str = datetime.datetime.strptime(data["time"], "%Y%m%d:%H%M").strftime("%d-%m-%Y")
-            time: float = float(datetime.datetime.strptime(data["time"], "%Y%m%d:%H%M").strftime("%H.%M"))
+            tme: float = float(datetime.datetime.strptime(data["time"], "%Y%m%d:%H%M").strftime("%H.%M"))
 
-            sun: classes.CalcSunPos = classes.CalcSunPos(lat, lon, date)
+            sun_class = init_sun(config_data, date)
 
-            adj_data: float = sun.adjust_for_new_angle(data["Gb(i)"], slope, azimuth, config_pv["tilt_angle"],
-                                                       config_pv["exposure_angle"], time)
+            temp: float = 17
+            radiation: float = data.get("Gb(i)", 0)
 
-            azimuth: float = sun.calc_azimuth(time)
-            elevation: float = sun.calc_solar_elevation(time)
+            adj_data: float = sun_class.adjust_for_new_angle(radiation, slope, azimuth, config_pv["tilt_angle"],
+                                                             config_pv["exposure_angle"], tme)
 
-            incidence: float = pv.calc_incidence_angle(elevation, azimuth)
+            azimuth, elevation = get_sun_data(sun_class, tme)
+
+            power: float = get_pv_data(pv_class, temp, abs(adj_data), azimuth, elevation)
+
+            """incidence: float = pv.calc_incidence_angle(elevation, azimuth)
             eff: float = pv.calc_temp_dependency(20, abs(adj_data))
-            power: float = pv.calc_power(abs(adj_data), incidence, elevation, eff)
+            power: float = pv.calc_power(abs(adj_data), incidence, elevation, eff)"""
 
             date_time: str = datetime.datetime.strptime(data["time"], "%Y%m%d:%H%M").strftime("%d-%m-%Y - %H:%M")
 
@@ -379,18 +377,24 @@ str, float]:
     else:
         for data in datas:
             date: str = datetime.datetime.strptime(data["time"], "%Y%m%d:%H%M").strftime("%d-%m-%Y")
-            time: float = float(datetime.datetime.strptime(data["time"], "%Y%m%d:%H%M").strftime("%H.%M"))
+            tme: float = float(datetime.datetime.strptime(data["time"], "%Y%m%d:%H%M").strftime("%H.%M"))
 
-            sun: classes.CalcSunPos = classes.CalcSunPos(lat, lon, date)
-            adj_data: float = sun.adjust_for_new_angle(data["Gb(i)"], slope, azimuth, config_pv["tilt_angle"],
-                                                       config_pv["exposure_angle"], time)
-            azimuth: float = sun.calc_azimuth(time)
-            elevation: float = sun.calc_solar_elevation(time)
+            temp: float = 17
+            radiation: float = data.get("Gb(i)", 0)
 
-            incidence: float = pv.calc_incidence_angle(elevation, azimuth)
+            sun_class = init_sun(config_data, date)
+
+            adj_data: float = sun_class.adjust_for_new_angle(radiation, slope, azimuth, config_pv["tilt_angle"],
+                                                             config_pv["exposure_angle"], tme)
+
+            azimuth, elevation = get_sun_data(sun_class, tme)
+
+            """incidence: float = pv.calc_incidence_angle(elevation, azimuth)
             eff: float = pv.calc_temp_dependency(20, abs(adj_data))
 
-            power: float = pv.calc_power(abs(adj_data), incidence, elevation, eff)
+            power: float = pv.calc_power(abs(adj_data), incidence, elevation, eff)"""
+
+            power: float = get_pv_data(pv_class, temp, abs(adj_data), azimuth, elevation)
 
             date_time: str = datetime.datetime.strptime(data["time"], "%Y%m%d:%H%M").strftime("%d-%m-%Y - %H:%M")
 
@@ -404,11 +408,11 @@ str, float]:
     plt.clf()
     plt.figure(figsize=(20, 6))
     plt.grid(True)
-    plt.plot(date_time_data, power_data, '-', linewidth=0.5, alpha=0.5)
+    plt.step(date_time_data, power_data, '-', linewidth=0.5, alpha=0.5)
     plt.xticks(np.linspace(0, len(date_time_data), 100), rotation=90, ha='right', fontsize=8)
     plt.tight_layout()
     plt.margins(0.01)
-    plt.savefig(f".{consts.downloads_file_Path}plot_uploaded_data.png", dpi=300)
+    plt.savefig(f"{consts.downloads_file_Path}plot_uploaded_data.png", dpi=300)
 
     return (lat, lon, ele, rad_database, meteo_database, year_min, year_max, power_data, date_time_data,
             max_energy, time_max_energy, average_energy)

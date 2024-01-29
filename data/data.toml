@@ -1,9 +1,9 @@
 [write_time]
-time = "29-01-2024 00:23:04"
+time = "29-01-2024 15:10:55"
 format = "%d-%m-%Y %H:%M:%S"
 
 [energy]
-energy = 2485.26
+energy = 2042.53
 
 ["00:00"]
 dni_radiation = 0.0
@@ -172,172 +172,172 @@ market_price = 27.021
 
 ["08:15"]
 dni_radiation = 17.3
-power = 8.853
+power = 8.895
 market_price = 27.688
 
 ["08:30"]
 dni_radiation = 52.9
-power = 31.081
+power = 31.229
 market_price = 27.688
 
 ["08:45"]
-dni_radiation = 125.3
-power = 81.719
+dni_radiation = 114.9
+power = 75.484
 market_price = 27.688
 
 ["09:00"]
-dni_radiation = 178.1
-power = 125.996
+dni_radiation = 170.4
+power = 121.247
 market_price = 27.688
 
 ["09:15"]
-dni_radiation = 248.5
-power = 187.579
+dni_radiation = 217.4
+power = 166.262
 market_price = 26.405
 
 ["09:30"]
-dni_radiation = 308.7
-power = 245.535
+dni_radiation = 287.8
+power = 231.404
 market_price = 26.405
 
 ["09:45"]
-dni_radiation = 364.6
-power = 301.981
+dni_radiation = 246.1
+power = 213.502
 market_price = 26.405
 
 ["10:00"]
-dni_radiation = 406.8
-power = 339.544
+dni_radiation = 211.5
+power = 186.378
 market_price = 26.405
 
 ["10:15"]
-dni_radiation = 433.1
-power = 372.879
+dni_radiation = 385.0
+power = 330.317
 market_price = 25.276
 
 ["10:30"]
-dni_radiation = 458.5
-power = 404.236
+dni_radiation = 372.9
+power = 333.702
 market_price = 25.276
 
 ["10:45"]
-dni_radiation = 490.1
-power = 438.121
+dni_radiation = 458.1
+power = 405.515
 market_price = 25.276
 
 ["11:00"]
-dni_radiation = 503.5
-power = 435.285
+dni_radiation = 515.6
+power = 433.423
 market_price = 25.276
 
 ["11:15"]
-dni_radiation = 519.1
-power = 453.27
+dni_radiation = 536.5
+power = 453.792
 market_price = 24.368
 
 ["11:30"]
-dni_radiation = 528.7
-power = 465.821
+dni_radiation = 551.0
+power = 468.568
 market_price = 24.368
 
 ["11:45"]
-dni_radiation = 544.0
-power = 480.067
+dni_radiation = 563.1
+power = 480.237
 market_price = 24.368
 
 ["12:00"]
-dni_radiation = 546.4
-power = 463.66
+dni_radiation = 541.1
+power = 451.791
 market_price = 24.368
 
 ["12:15"]
-dni_radiation = 542.0
-power = 463.125
+dni_radiation = 531.4
+power = 448.364
 market_price = 24.245
 
 ["12:30"]
-dni_radiation = 517.8
-power = 449.916
+dni_radiation = 507.3
+power = 435.315
 market_price = 24.245
 
 ["12:45"]
-dni_radiation = 515.6
-power = 447.709
+dni_radiation = 497.3
+power = 428.615
 market_price = 24.245
 
 ["13:00"]
-dni_radiation = 522.3
-power = 438.27
+dni_radiation = 485.4
+power = 406.2
 market_price = 24.245
 
 ["13:15"]
-dni_radiation = 516.8
-power = 431.564
+dni_radiation = 433.8
+power = 371.849
 market_price = 24.81
 
 ["13:30"]
-dni_radiation = 476.4
-power = 403.077
+dni_radiation = 375.1
+power = 328.776
 market_price = 24.81
 
 ["13:45"]
-dni_radiation = 434.5
-power = 370.697
+dni_radiation = 321.6
+power = 285.408
 market_price = 24.81
 
 ["14:00"]
-dni_radiation = 425.1
-power = 350.495
+dni_radiation = 340.1
+power = 288.708
 market_price = 24.81
 
 ["14:15"]
-dni_radiation = 408.8
-power = 331.38
+dni_radiation = 307.4
+power = 258.239
 market_price = 25.71
 
 ["14:30"]
-dni_radiation = 335.3
-power = 273.344
+dni_radiation = 192.1
+power = 164.954
 market_price = 25.71
 
 ["14:45"]
-dni_radiation = 352.3
-power = 274.035
+dni_radiation = 132.6
+power = 112.032
 market_price = 25.71
 
 ["15:00"]
-dni_radiation = 322.0
-power = 242.639
+dni_radiation = 72.0
+power = 59.762
 market_price = 25.71
 
 ["15:15"]
-dni_radiation = 271.9
-power = 198.181
+dni_radiation = 71.1
+power = 55.588
 market_price = 27.501
 
 ["15:30"]
-dni_radiation = 230.9
-power = 160.296
+dni_radiation = 56.5
+power = 41.422
 market_price = 27.501
 
 ["15:45"]
-dni_radiation = 218.1
-power = 141.025
+dni_radiation = 54.5
+power = 36.894
 market_price = 27.501
 
 ["16:00"]
-dni_radiation = 130.9
-power = 80.866
+dni_radiation = 58.9
+power = 36.636
 market_price = 27.501
 
 ["16:15"]
-dni_radiation = 66.3
-power = 37.442
+dni_radiation = 24.9
+power = 14.018
 market_price = 28.79
 
 ["16:30"]
-dni_radiation = 22.6
-power = 11.344
+dni_radiation = 11.3
+power = 5.61
 market_price = 28.79
 
 ["16:45"]

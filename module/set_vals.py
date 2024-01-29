@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from module import debug
+from module import functions
 
 
 def write_data_to_config(config_data: dict, data: dict, path: str = None) -> int:
@@ -17,8 +18,9 @@ def write_data_to_config(config_data: dict, data: dict, path: str = None) -> int
             config_data['coordinates']['latitude'] = float(data.get('latitude', 0))
             config_data['coordinates']['longitude'] = float(data.get('longitude', 0))
         else:
-            lat, lon = get_coord(str(data.get('Straße', "")), str(data.get('Nr', '')), str(data.get('Stadt', '')),
-                                 int(data.get('PLZ', 0)), str(data.get('Land', '')))
+            lat, lon = functions.get_coord(str(data.get('Straße', "")), str(data.get('Nr', '')),
+                                           str(data.get('Stadt', '')),
+                                           int(data.get('PLZ', 0)), str(data.get('Land', '')))
             config_data['coordinates']['latitude'] = lat
             config_data['coordinates']['longitude'] = lon
 
