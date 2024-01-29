@@ -216,13 +216,15 @@ def save_mor_ev_data(config_data: dict) -> dict:
     weather_data_today = weather_data[today_data]
     weather_data_today.pop("daily")
 
-    for tme in weather_data_today:
-        data: dict = weather_data_today[tme]
+    sun_class = init_sun(config_data)
+    pv_class = init_pv(config_data)
+
+    for tme, data in weather_data_today.items():
         tme_float: float = string_time_to_float(tme)
-        azimuth, elevation = get_sun_data(config_data, tme_float)
+        azimuth, elevation = get_sun_data(sun_class, tme_float)
         temp: float = float(data.get("temp", 0))
         radiation: float = float(data.get("dni_radiation", 0))
-        power: float = get_pv_data(config_data, temp, radiation, azimuth, elevation, True)
+        power: float = get_pv_data(pv_class, temp, radiation, azimuth, elevation, True)
 
         write_dict.update(
             {

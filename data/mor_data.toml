@@ -1,581 +1,581 @@
-energy = 2.872
+energy = 2.055
 
 [write_time]
-time = "28-01-2024 15:10:46"
+time = "29-01-2024 10:46:20"
 format = "%d-%m-%Y %H:%M:%S"
 
 ["00:00"]
 dni_radiation = 0.0
-cloudcover = 100
-temp = -4.1
+cloudcover = 0
+temp = 0.0
 power = 0
 
 ["00:15"]
 dni_radiation = 0.0
-cloudcover = 100
-temp = -4.1
+cloudcover = 0
+temp = 0.0
 power = 0
 
 ["00:30"]
 dni_radiation = 0.0
-cloudcover = 100
-temp = -4.1
+cloudcover = 0
+temp = 0.0
 power = 0
 
 ["00:45"]
 dni_radiation = 0.0
-cloudcover = 100
-temp = -4.1
+cloudcover = 0
+temp = 0.0
 power = 0
 
 ["01:00"]
 dni_radiation = 0.0
-cloudcover = 100
-temp = -3.3
+cloudcover = 0
+temp = -0.2
 power = 0
 
 ["01:15"]
 dni_radiation = 0.0
-cloudcover = 100
-temp = -3.3
+cloudcover = 0
+temp = -0.2
 power = 0
 
 ["01:30"]
 dni_radiation = 0.0
-cloudcover = 100
-temp = -3.3
+cloudcover = 0
+temp = -0.2
 power = 0
 
 ["01:45"]
 dni_radiation = 0.0
-cloudcover = 100
-temp = -3.3
+cloudcover = 0
+temp = -0.2
 power = 0
 
 ["02:00"]
 dni_radiation = 0.0
-cloudcover = 100
-temp = -3.1
+cloudcover = 0
+temp = -0.4
 power = 0
 
 ["02:15"]
 dni_radiation = 0.0
-cloudcover = 100
-temp = -3.1
+cloudcover = 0
+temp = -0.4
 power = 0
 
 ["02:30"]
 dni_radiation = 0.0
-cloudcover = 100
-temp = -3.1
+cloudcover = 0
+temp = -0.4
 power = 0
 
 ["02:45"]
 dni_radiation = 0.0
-cloudcover = 100
-temp = -3.1
+cloudcover = 0
+temp = -0.4
 power = 0
 
 ["03:00"]
 dni_radiation = 0.0
-cloudcover = 96
-temp = -3.2
+cloudcover = 0
+temp = -1.3
 power = 0
 
 ["03:15"]
 dni_radiation = 0.0
-cloudcover = 96
-temp = -3.2
+cloudcover = 0
+temp = -1.3
 power = 0
 
 ["03:30"]
 dni_radiation = 0.0
-cloudcover = 96
-temp = -3.2
+cloudcover = 0
+temp = -1.3
 power = 0
 
 ["03:45"]
 dni_radiation = 0.0
-cloudcover = 96
-temp = -3.2
+cloudcover = 0
+temp = -1.3
 power = 0
 
 ["04:00"]
 dni_radiation = 0.0
-cloudcover = 44
-temp = -3.4
+cloudcover = 9
+temp = -1.4
 power = 0
 
 ["04:15"]
 dni_radiation = 0.0
-cloudcover = 44
-temp = -3.4
+cloudcover = 9
+temp = -1.4
 power = 0
 
 ["04:30"]
 dni_radiation = 0.0
-cloudcover = 44
-temp = -3.4
+cloudcover = 9
+temp = -1.4
 power = 0
 
 ["04:45"]
 dni_radiation = 0.0
-cloudcover = 44
-temp = -3.4
+cloudcover = 9
+temp = -1.4
 power = 0
 
 ["05:00"]
 dni_radiation = 0.0
-cloudcover = 8
-temp = -3.4
+cloudcover = 0
+temp = -1.6
 power = 0
 
 ["05:15"]
 dni_radiation = 0.0
-cloudcover = 8
-temp = -3.4
+cloudcover = 0
+temp = -1.6
 power = 0
 
 ["05:30"]
 dni_radiation = 0.0
-cloudcover = 8
-temp = -3.4
+cloudcover = 0
+temp = -1.6
 power = 0
 
 ["05:45"]
 dni_radiation = 0.0
-cloudcover = 8
-temp = -3.4
+cloudcover = 0
+temp = -1.6
 power = 0
 
 ["06:00"]
 dni_radiation = 0.0
-cloudcover = 0
-temp = -3.2
+cloudcover = 1
+temp = -2.0
 power = 0
 
 ["06:15"]
 dni_radiation = 0.0
-cloudcover = 0
-temp = -3.2
+cloudcover = 1
+temp = -2.0
 power = 0
 
 ["06:30"]
 dni_radiation = 0.0
-cloudcover = 0
-temp = -3.2
+cloudcover = 1
+temp = -2.0
 power = 0
 
 ["06:45"]
 dni_radiation = 0.0
-cloudcover = 0
-temp = -3.2
+cloudcover = 1
+temp = -2.0
 power = 0
 
 ["07:00"]
 dni_radiation = 0.0
-cloudcover = 99
-temp = -3.4
+cloudcover = 9
+temp = -2.3
 power = 0
 
 ["07:15"]
 dni_radiation = 0.0
-cloudcover = 99
-temp = -3.4
+cloudcover = 9
+temp = -2.3
 power = 0
 
 ["07:30"]
 dni_radiation = 0.0
-cloudcover = 99
-temp = -3.4
+cloudcover = 9
+temp = -2.3
 power = 0
 
 ["07:45"]
 dni_radiation = 0.0
-cloudcover = 99
-temp = -3.4
+cloudcover = 9
+temp = -2.3
 power = 0
 
 ["08:00"]
 dni_radiation = 0.0
-cloudcover = 0
-temp = -3.1
-power = 0
+cloudcover = 26
+temp = -2.9
+power = 0.0
 
 ["08:15"]
-dni_radiation = 17.8
-cloudcover = 0
-temp = -3.1
-power = 9.149180385046794
+dni_radiation = 17.3
+cloudcover = 26
+temp = -2.9
+power = 8.89530357871095
 
 ["08:30"]
-dni_radiation = 54.1
-cloudcover = 0
-temp = -3.1
-power = 31.92497458086326
+dni_radiation = 52.9
+cloudcover = 26
+temp = -2.9
+power = 31.228978325266088
 
 ["08:45"]
-dni_radiation = 140.8
-cloudcover = 0
-temp = -3.1
-power = 91.94070814905221
+dni_radiation = 114.9
+cloudcover = 26
+temp = -2.9
+power = 75.48368682794181
 
 ["09:00"]
-dni_radiation = 183.0
-cloudcover = 9
-temp = -2.1
-power = 129.15059353150986
+dni_radiation = 170.4
+cloudcover = 64
+temp = -2.3
+power = 121.24706233832025
 
 ["09:15"]
-dni_radiation = 260.4
-cloudcover = 9
-temp = -2.1
-power = 195.66719158978572
+dni_radiation = 217.4
+cloudcover = 64
+temp = -2.3
+power = 166.2623465654489
 
 ["09:30"]
-dni_radiation = 261.3
-cloudcover = 9
-temp = -2.1
-power = 210.91088932283304
+dni_radiation = 287.8
+cloudcover = 64
+temp = -2.3
+power = 231.40376208817202
 
 ["09:45"]
-dni_radiation = 222.4
-cloudcover = 9
-temp = -2.1
-power = 193.6037397249808
+dni_radiation = 246.1
+cloudcover = 64
+temp = -2.3
+power = 213.50246833523516
 
 ["10:00"]
-dni_radiation = 334.6
-cloudcover = 0
-temp = 0.6
-power = 284.1453356665104
+dni_radiation = 211.5
+cloudcover = 89
+temp = -0.3
+power = 191.13493629445765
 
 ["10:15"]
-dni_radiation = 461.8
-cloudcover = 0
-temp = 0.6
-power = 387.77886032933804
+dni_radiation = 270.2
+cloudcover = 89
+temp = -0.3
+power = 249.95304043345809
 
 ["10:30"]
-dni_radiation = 475.0
-cloudcover = 0
-temp = 0.6
-power = 410.4115972251643
+dni_radiation = 260.0
+cloudcover = 89
+temp = -0.3
+power = 251.23406683226202
 
 ["10:45"]
-dni_radiation = 496.3
-cloudcover = 0
-temp = 0.6
-power = 436.7554784903453
+dni_radiation = 304.3
+cloudcover = 89
+temp = -0.3
+power = 298.049121799632
 
 ["11:00"]
-dni_radiation = 537.2
-cloudcover = 0
-temp = 2.4
-power = 460.2313791262579
+dni_radiation = 382.1
+cloudcover = 84
+temp = 3.3
+power = 351.2997707983216
 
 ["11:15"]
-dni_radiation = 563.3
-cloudcover = 0
-temp = 2.4
-power = 484.1937261020556
+dni_radiation = 429.2
+cloudcover = 84
+temp = 3.3
+power = 392.8571653316194
 
 ["11:30"]
-dni_radiation = 582.8
-cloudcover = 0
-temp = 2.4
-power = 502.12455732478406
+dni_radiation = 469.9
+cloudcover = 84
+temp = 3.3
+power = 427.06388764392295
 
 ["11:45"]
-dni_radiation = 594.2
-cloudcover = 0
-temp = 2.4
-power = 513.5908231953669
+dni_radiation = 486.9
+cloudcover = 84
+temp = 3.3
+power = 443.2153012498394
 
 ["12:00"]
-dni_radiation = 593.0
-cloudcover = 3
-temp = 4.0
-power = 502.2737568735666
+dni_radiation = 506.4
+cloudcover = 90
+temp = 5.3
+power = 443.92593566466417
 
 ["12:15"]
-dni_radiation = 598.6
-cloudcover = 3
-temp = 4.0
-power = 507.10370125807543
+dni_radiation = 497.2
+cloudcover = 90
+temp = 5.3
+power = 440.2848888638628
 
 ["12:30"]
-dni_radiation = 563.3
-cloudcover = 3
-temp = 4.0
-power = 488.7080384728577
+dni_radiation = 489.0
+cloudcover = 90
+temp = 5.3
+power = 435.74100339358705
 
 ["12:45"]
-dni_radiation = 500.3
-cloudcover = 3
-temp = 4.0
-power = 450.60148392156077
+dni_radiation = 515.6
+cloudcover = 90
+temp = 5.3
+power = 450.82572888505644
 
 ["13:00"]
-dni_radiation = 621.8
-cloudcover = 0
-temp = 5.5
-power = 501.8957050139903
+dni_radiation = 469.6
+cloudcover = 100
+temp = 7.4
+power = 405.4914959953225
 
 ["13:15"]
-dni_radiation = 620.4
-cloudcover = 0
-temp = 5.5
-power = 497.51904387935184
+dni_radiation = 447.2
+cloudcover = 100
+temp = 7.4
+power = 388.0798660128956
 
 ["13:30"]
-dni_radiation = 615.2
-cloudcover = 0
-temp = 5.5
-power = 489.8369510067476
+dni_radiation = 418.9
+cloudcover = 100
+temp = 7.4
+power = 365.0191809075431
 
 ["13:45"]
-dni_radiation = 602.8
-cloudcover = 0
-temp = 5.5
-power = 476.99531356750015
+dni_radiation = 355.5
+cloudcover = 100
+temp = 7.4
+power = 315.6208472273078
 
 ["14:00"]
-dni_radiation = 591.0
-cloudcover = 0
-temp = 6.1
-power = 457.7221095215454
+dni_radiation = 304.9
+cloudcover = 100
+temp = 7.9
+power = 269.73106814065204
 
 ["14:15"]
-dni_radiation = 573.3
-cloudcover = 0
-temp = 6.1
-power = 438.6666265175937
+dni_radiation = 307.4
+cloudcover = 100
+temp = 7.9
+power = 263.99297559349844
 
 ["14:30"]
-dni_radiation = 548.3
-cloudcover = 0
-temp = 6.1
-power = 413.68882380090054
+dni_radiation = 244.2
+cloudcover = 100
+temp = 7.9
+power = 208.96686040936805
 
 ["14:45"]
-dni_radiation = 520.7
-cloudcover = 0
-temp = 6.1
-power = 385.15245637460663
+dni_radiation = 205.8
+cloudcover = 100
+temp = 7.9
+power = 171.88971421659042
 
 ["15:00"]
-dni_radiation = 489.3
-cloudcover = 0
-temp = 5.9
-power = 353.68077369132095
+dni_radiation = 208.4
+cloudcover = 100
+temp = 7.7
+power = 166.0422375321308
 
 ["15:15"]
-dni_radiation = 451.6
-cloudcover = 0
-temp = 5.9
-power = 315.75992954867667
+dni_radiation = 167.3
+cloudcover = 100
+temp = 7.7
+power = 127.94546633091949
 
 ["15:30"]
-dni_radiation = 404.1
-cloudcover = 0
-temp = 5.9
-power = 271.2418242310476
+dni_radiation = 113.1
+cloudcover = 100
+temp = 7.7
+power = 82.45382823915054
 
 ["15:45"]
-dni_radiation = 346.2
-cloudcover = 0
-temp = 5.9
-power = 220.8247635096872
+dni_radiation = 141.8
+cloudcover = 100
+temp = 7.7
+power = 94.67085003369826
 
 ["16:00"]
-dni_radiation = 282.8
-cloudcover = 0
-temp = 4.8
-power = 171.52460387971337
+dni_radiation = 130.9
+cloudcover = 100
+temp = 6.7
+power = 81.20098192849873
 
 ["16:15"]
-dni_radiation = 215.0
-cloudcover = 0
-temp = 4.8
-power = 119.7952287590819
+dni_radiation = 66.3
+cloudcover = 100
+temp = 6.7
+power = 37.594237853369464
 
 ["16:30"]
-dni_radiation = 127.5
-cloudcover = 0
-temp = 4.8
-power = 63.99120964257164
+dni_radiation = 22.6
+cloudcover = 100
+temp = 6.7
+power = 11.389979311635738
 
 ["16:45"]
-dni_radiation = 43.5
-cloudcover = 0
-temp = 4.8
-power = 19.04712792412355
+dni_radiation = 14.1
+cloudcover = 100
+temp = 6.7
+power = 6.101013034078901
 
 ["17:00"]
-dni_radiation = 19.5
-cloudcover = 0
-temp = 3.1
+dni_radiation = 0.0
+cloudcover = 100
+temp = 4.4
 power = 0
 
 ["17:15"]
 dni_radiation = 0.0
-cloudcover = 0
-temp = 3.1
+cloudcover = 100
+temp = 4.4
 power = 0
 
 ["17:30"]
 dni_radiation = 0.0
-cloudcover = 0
-temp = 3.1
+cloudcover = 100
+temp = 4.4
 power = 0
 
 ["17:45"]
 dni_radiation = 0.0
-cloudcover = 0
-temp = 3.1
+cloudcover = 100
+temp = 4.4
 power = 0
 
 ["18:00"]
 dni_radiation = 0.0
-cloudcover = 0
-temp = 2.0
+cloudcover = 100
+temp = 1.9
 power = 0
 
 ["18:15"]
 dni_radiation = 0.0
-cloudcover = 0
-temp = 2.0
+cloudcover = 100
+temp = 1.9
 power = 0
 
 ["18:30"]
 dni_radiation = 0.0
-cloudcover = 0
-temp = 2.0
+cloudcover = 100
+temp = 1.9
 power = 0
 
 ["18:45"]
 dni_radiation = 0.0
-cloudcover = 0
-temp = 2.0
+cloudcover = 100
+temp = 1.9
 power = 0
 
 ["19:00"]
 dni_radiation = 0.0
-cloudcover = 0
-temp = 1.2
+cloudcover = 98
+temp = 0.5
 power = 0
 
 ["19:15"]
 dni_radiation = 0.0
-cloudcover = 0
-temp = 1.2
+cloudcover = 98
+temp = 0.5
 power = 0
 
 ["19:30"]
 dni_radiation = 0.0
-cloudcover = 0
-temp = 1.2
+cloudcover = 98
+temp = 0.5
 power = 0
 
 ["19:45"]
 dni_radiation = 0.0
-cloudcover = 0
-temp = 1.2
+cloudcover = 98
+temp = 0.5
 power = 0
 
 ["20:00"]
 dni_radiation = 0.0
-cloudcover = 0
-temp = 0.5
+cloudcover = 69
+temp = -0.6
 power = 0
 
 ["20:15"]
 dni_radiation = 0.0
-cloudcover = 0
-temp = 0.5
+cloudcover = 69
+temp = -0.6
 power = 0
 
 ["20:30"]
 dni_radiation = 0.0
-cloudcover = 0
-temp = 0.5
+cloudcover = 69
+temp = -0.6
 power = 0
 
 ["20:45"]
 dni_radiation = 0.0
-cloudcover = 0
-temp = 0.5
+cloudcover = 69
+temp = -0.6
 power = 0
 
 ["21:00"]
 dni_radiation = 0.0
-cloudcover = 0
-temp = 0.3
+cloudcover = 68
+temp = -0.8
 power = 0
 
 ["21:15"]
 dni_radiation = 0.0
-cloudcover = 0
-temp = 0.3
+cloudcover = 68
+temp = -0.8
 power = 0
 
 ["21:30"]
 dni_radiation = 0.0
-cloudcover = 0
-temp = 0.3
+cloudcover = 68
+temp = -0.8
 power = 0
 
 ["21:45"]
 dni_radiation = 0.0
-cloudcover = 0
-temp = 0.3
+cloudcover = 68
+temp = -0.8
 power = 0
 
 ["22:00"]
 dni_radiation = 0.0
-cloudcover = 0
-temp = -0.0
+cloudcover = 27
+temp = -1.4
 power = 0
 
 ["22:15"]
 dni_radiation = 0.0
-cloudcover = 0
-temp = -0.0
+cloudcover = 27
+temp = -1.4
 power = 0
 
 ["22:30"]
 dni_radiation = 0.0
-cloudcover = 0
-temp = -0.0
+cloudcover = 27
+temp = -1.4
 power = 0
 
 ["22:45"]
 dni_radiation = 0.0
-cloudcover = 0
-temp = -0.0
+cloudcover = 27
+temp = -1.4
 power = 0
 
 ["23:00"]
 dni_radiation = 0.0
-cloudcover = 0
-temp = -0.2
+cloudcover = 65
+temp = -1.7
 power = 0
 
 ["23:15"]
 dni_radiation = 0.0
-cloudcover = 0
-temp = -0.2
+cloudcover = 65
+temp = -1.7
 power = 0
 
 ["23:30"]
 dni_radiation = 0.0
-cloudcover = 0
-temp = -0.2
+cloudcover = 65
+temp = -1.7
 power = 0
 
 ["23:45"]
 dni_radiation = 0.0
-cloudcover = 0
-temp = -0.2
+cloudcover = 65
+temp = -1.7
 power = 0
