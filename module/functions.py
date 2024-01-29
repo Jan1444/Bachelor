@@ -192,7 +192,7 @@ def get_pv_data(pv_class: classes.PVProfit, temp: float, rad: float, azimuth: fl
 
 
 def init_market(config_data: dict, start_time: int | None = None, end_time: int | None = None) -> classes.MarketData:
-    cc: float = config_data["market"]
+    cc: float = config_data["market"].get("consumer_price", 0)
     m = classes.MarketData(cc, start_time, end_time)
     return m
 

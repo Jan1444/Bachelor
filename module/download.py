@@ -112,50 +112,59 @@ def generate_market_data(request_data: dict, config_data: dict) -> list[str]:
     if not os.path.exists(consts.downloads_file_Path):
         os.mkdir(consts.downloads_file_Path)
 
-    market_datas = classes.MarketData(config_data["market"]["consumer_price"], request_data['start_date_market'],
-                                      request_data['end_date_market']).data
+    market_class: classes.MarketData = functions.init_market(config_data, request_data.get('start_date_market'),
+                                                             request_data.get('end_date_market'))
+    market_datas: list[dict] = market_class.data
+
+    debug.printer(market_datas)
 
     msg: list[str] = []
     price_data: list[float] = []
     time_data: list[str] = []
     data_dict: dict = {}
 
-    for i, market_data in enumerate(market_datas):
-        time_data.append(f"{market_data['date']} {market_data['start_timestamp']}")
-        price_data.append(market_data['consumerprice'])
-        data_dict.update({f"{market_data['date']} {market_data['start_timestamp']}": market_data['consumerprice']})
+    for market_data in market_datas:
+        time_data.append(
+            f"{market_data.get('date', "")} {market_data.get('start_timestamp', ":")}"
+        )
+        price_data.append(market_data.get('consumerprice', 0))
+        data_dict.update(
+            {
+                f"{market_data.get('date', "")} {market_data.get('start_timestamp', ":")}": market_data.get(
+                    'consumerprice', "0")
+            }
+        )
 
-    if "excel_market" in request_data.keys():
-        if os.path.exists(rf"{consts.downloads_file_Path}market_data.xlsx"):
-            os.remove(rf"{consts.downloads_file_Path}market_data.xlsx")
-        if request_data["excel_market"] == "on":
-            df = pd.DataFrame.from_dict(data_dict, orient='index', columns=['price [ct]'])
-            df.to_excel(f'{consts.downloads_file_Path}market_data.xlsx')
-            msg.append("excel_market")
+    if os.path.exists(rf"{consts.downloads_file_Path}market_data.xlsx"):
+        os.remove(rf"{consts.downloads_file_Path}market_data.xlsx")
+    if os.path.exists(rf"{consts.downloads_file_Path}plot_market.png"):
+        os.remove(rf"{consts.downloads_file_Path}plot_market.png")
 
-    if "plot_png_market" in request_data.keys():
-        if request_data["plot_png_market"] == "on":
-            if os.path.exists(rf"{consts.downloads_file_Path}plot_market.png"):
-                os.remove(rf"{consts.downloads_file_Path}plot_market.png")
-            if len(price_data) > 50:
-                x = len(price_data) * 0.25
-                y = x * 0.4
-            else:
-                x = 10
-                y = 5
+    if request_data.get("excel_market", "") == "on":
+        df = pd.DataFrame.from_dict(data_dict, orient='index', columns=['price [ct]'])
+        df.to_excel(f'{consts.downloads_file_Path}market_data.xlsx')
+        msg.append("excel_market")
 
-            plt.figure(figsize=(x, y))
-            plt.grid()
-            plt.step(time_data, price_data, label="price [ct]")
-            plt.xticks(rotation=90, ha="right", fontsize=18)
+    if request_data.get("plot_png_market", "") == "on":
+        if len(price_data) > 50:
+            x = len(price_data) * 0.25
+            y = x * 0.4
+        else:
+            x = 10
+            y = 5
 
-            _max = (max(price_data) + (100 if max(price_data) > 100 else 5))
-            ticks = np.arange(0, _max, step=(len(price_data) // 100 * 10 if _max > 100 else 1))
+        plt.figure(figsize=(x, y))
+        plt.grid()
+        plt.step(time_data, price_data, label="price [ct]")
+        plt.xticks(rotation=90, ha="right", fontsize=18)
 
-            plt.yticks(ticks=ticks, ha="right", fontsize=20)
-            plt.legend(loc="upper left", fontsize=20)
-            plt.tight_layout()
-            plt.savefig(rf"{consts.downloads_file_Path}market_plot.png")
-            msg.append("plot_market")
+        _max = (max(price_data) + (100 if max(price_data) > 100 else 5))
+        ticks = np.arange(0, _max, step=(len(price_data) // 100 * 10 if _max > 100 else 1))
+
+        plt.yticks(ticks=ticks, ha="right", fontsize=20)
+        plt.legend(loc="upper left", fontsize=20)
+        plt.tight_layout()
+        plt.savefig(rf"{consts.downloads_file_Path}market_plot.png")
+        msg.append("plot_market")
 
     return msg
