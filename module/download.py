@@ -2,9 +2,14 @@
 
 from functools import lru_cache, wraps
 from frozendict import frozendict
+import os
+import datetime
 
 import matplotlib.pyplot as plt
+import pandas as pd
+import numpy as np
 
+from module import consts
 from module import debug
 from module import functions
 
@@ -33,8 +38,6 @@ def generate_weather_data(request_data: dict, config_data: dict) -> list[str]:
     if not os.path.exists(consts.downloads_file_Path):
         os.mkdir(consts.downloads_file_Path)
 
-    config_coordinates = config_data["coordinates"]
-
     start_date = datetime.datetime.strptime(request_data['start_date_weather'], "%Y-%m-%d").strftime("%d-%m-%Y")
     end_date = datetime.datetime.strptime(request_data['end_date_weather'], "%Y-%m-%d").strftime("%d-%m-%Y")
 
@@ -54,8 +57,8 @@ def generate_weather_data(request_data: dict, config_data: dict) -> list[str]:
         power_data[date]: dict = {}
         energy_data_list: list[float] = []
 
-        for tme, data in day.itmes():
-            time_float = string_time_to_float(tme)
+        for tme, data in day.items():
+            time_float = functions.string_time_to_float(tme)
             temp = data.get("temp", 0)
             radiation = data.get("dni_radiation", 0)
             azimuth, elevation = functions.get_sun_data(sun_class, time_float)
@@ -64,7 +67,7 @@ def generate_weather_data(request_data: dict, config_data: dict) -> list[str]:
 
             energy_data_list.append(power_data[date][tme])
 
-        energy_data[date] = calc_energy(energy_data_list)
+        energy_data[date] = functions.calc_energy(energy_data_list)
 
     if os.path.exists(rf"{consts.downloads_file_Path}weather_data.xlsx"):
         os.remove(rf"{consts.downloads_file_Path}weather_data.xlsx")

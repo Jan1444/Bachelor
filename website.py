@@ -17,7 +17,7 @@ from module import consts, debug
 from module import functions as fc
 from module import set_vals
 from module import analytics
-from module import download
+from module import download as download_module
 
 UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS: set[str] = {'json'}
@@ -192,10 +192,10 @@ def download():
                                    error_weather=err_msg_weather, error_market=err_msg_market)
 
         if "excel_weather" in data.keys() or "plot_png_weather" in data.keys():
-            msg_weather = download.generate_weather_data(data, config_data)
+            msg_weather = download_module.generate_weather_data(data, config_data)
 
         if "excel_market" in data.keys() or "plot_png_market" in data.keys():
-            msg_market = download.generate_market_data(data, config_data)
+            msg_market = download_module.generate_market_data(data, config_data)
 
     return render_template('file_download.html', config=date_now, ret_weather=msg_weather,
                            ret_market=msg_market, error_weather=err_msg_weather, error_market=err_msg_market)
