@@ -1,13 +1,13 @@
 #  -*- coding: utf-8 -*-
 
-from functools import lru_cache, wraps
-from frozendict import frozendict
-import os
 import datetime
+import os
+from functools import lru_cache, wraps
 
 import matplotlib.pyplot as plt
-import pandas as pd
 import numpy as np
+import pandas as pd
+from frozendict import frozendict
 
 from module import consts
 from module import debug
@@ -112,8 +112,8 @@ def generate_market_data(request_data: dict, config_data: dict) -> list[str]:
     if not os.path.exists(consts.downloads_file_Path):
         os.mkdir(consts.downloads_file_Path)
 
-    market_class: classes.MarketData = functions.init_market(config_data, request_data.get('start_date_market'),
-                                                             request_data.get('end_date_market'))
+    market_class = functions.init_market(config_data, request_data.get('start_date_market'),
+                                         request_data.get('end_date_market'))
     market_datas: list[dict] = market_class.data
 
     debug.printer(market_datas)

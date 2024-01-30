@@ -1,7 +1,7 @@
 reload = true
 
 [write_time]
-time = "30-01-2024 19:08:22"
+time = "30-01-2024 20:42:07"
 format = "%d-%m-%Y %H:%M:%S"
 
 [coordinates]
@@ -27,6 +27,7 @@ consumer_price = 13.35
 ip_address = "IP"
 
 [air_conditioner]
+air_conditioner_cop = 3.0
 air_conditioner = ""
 air_conditioner_steering = ""
 ip_address_cloud = ""
@@ -61,8 +62,8 @@ window2_glazing = ""
 window2_year = 0
 window2_width = 0.0
 window2_height = 0.0
-wall4 = ""
-construction_wall4 = ""
+wall4 = "ENEV Innenwand"
+construction_wall4 = "2016"
 wall2 = "ENEV Auﬂenwand"
 construction_wall2 = "2016"
 wall2_width = 2.4
@@ -105,5 +106,5 @@ wall4_width = 2.4
 wall4_height = 2.6
 wall4_type = 0
 wall4_u_value = 0.0
-wall4_diff_temp = 0.0
+wall4_diff_temp = 22.0
 door_wall4_enev = "2016"
