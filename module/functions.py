@@ -490,6 +490,19 @@ def heating_power():
             print(f"Attribute Missing: {err}")
             return 0
 
+    def _interior_wall(data_house: dict, prefix: str):
+        try:
+            if data_house.get(f"{prefix}", "") == "ENEV Innenwand":
+                temp = data_house.get(f"{prefix}_diff_temp", "")
+                return temp
+            else:
+                return 0
+
+        except AttributeError as err:
+            print(prefix)
+            print(f"Attribute Missing: {err}")
+            return 0
+
     config_manager_config.reload_config()
     config_data = config_manager_config.config_data
 
@@ -521,6 +534,8 @@ def heating_power():
         door = getattr(wall, "Door")
 
         wall.area = _calc_area(data, f"wall{wall_number}")
+        wall.interior_wall_temp = _interior_wall(data, f"wall{wall_number}")
+
         window.area = _calc_area(data, f"window{window_number}")
         door.area = _calc_area(data, f"door_wall{wall_number}")
 
@@ -542,7 +557,6 @@ def heating_power():
     tme_data: list = []
 
     today = weather.data[list(weather.data.keys())[0]]
-    # today.pop("daily")
 
     old_temp: int = 16
     for tme, data in today.items():
@@ -553,10 +567,23 @@ def heating_power():
 
             room.Floor.temp_diff = diff_temp
             room.Ceiling.temp_diff = diff_temp
+
             room.Wall1.temp_diff = diff_temp
+            if room.Wall1.interior_wall_temp:
+                room.Wall1.temp_diff = abs(room.Wall1.interior_wall_temp - indoor_temp)
+
             room.Wall2.temp_diff = diff_temp
+            if room.Wall2.interior_wall_temp:
+                room.Wall2.temp_diff = abs(room.Wall2.interior_wall_temp - indoor_temp)
+
             room.Wall3.temp_diff = diff_temp
+            if room.Wall3.interior_wall_temp:
+                room.Wall3.temp_diff = abs(room.Wall3.interior_wall_temp - indoor_temp)
+
             room.Wall4.temp_diff = diff_temp
+            if room.Wall4.interior_wall_temp:
+                room.Wall4.temp_diff = abs(room.Wall4.interior_wall_temp - indoor_temp)
+
             d = hp.calc_heating_power(room)
 
             diff_data.append(diff_temp)
