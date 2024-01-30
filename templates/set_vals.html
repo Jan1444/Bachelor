@@ -408,7 +408,7 @@
                         </div>
 
                         <div id="{{ wall_name }}_type_id"
-                                {% if config['house'][wall_name + '_type'] %}
+                                {% if config['house'][wall_name + '_type'] or config['house'][wall_name] == "ENEV Innenwand" %}
                              class="visible"
                                 {% else %}
                              class="invisible"
@@ -794,7 +794,7 @@
                         </div>
 
                         <div id="{{ wall_name }}_type_id"
-                                {% if config['house'][wall_name + '_type'] %}
+                                {% if config['house'][wall_name + '_type'] or config['house'][wall_name] == "ENEV Innenwand" %}
                              class="visible"
                                 {% else %}
                              class="invisible"
@@ -892,7 +892,7 @@
                         </div>
 
                         <div id="{{ wall_name }}_type_id"
-                                {% if config['house'][wall_name + '_type'] %}
+                                {% if config['house'][wall_name + '_type'] or config['house'][wall_name] == "ENEV Innenwand" %}
                              class="visible"
                                 {% else %}
                              class="invisible"
@@ -1265,7 +1265,7 @@
                         </div>
 
                         <div id="{{ wall_name }}_type_id"
-                                {% if config['house'][wall_name + '_type'] %}
+                                {% if config['house'][wall_name + '_type'] or config['house'][wall_name] == "ENEV Innenwand" %}
                              class="visible"
                                 {% else %}
                              class="invisible"
