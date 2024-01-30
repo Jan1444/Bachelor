@@ -42,6 +42,24 @@ function updateConstructionDropdown(first,second) {
         });
 }
 
+function updateWallHeight(first,second, third, fourth) {
+    const typed = document.getElementById(first).value;
+    const set1 = document.getElementById(second);
+    const set2 = document.getElementById(third);
+    const set3 = document.getElementById(fourth);
+    set1.value = typed;
+    set2.value = typed;
+    set3.value = typed;
+
+}
+
+function updateWallWidth(first,second, third, fourth) {
+    const typed = document.getElementById(first).value;
+    const set1 = document.getElementById(second);
+    set1.value = typed;
+}
+
+
 function updateCeilingDropdown(first,second) {
     const ceiling = document.getElementById(first).value;
     const construction = document.getElementById(second);
@@ -181,3 +199,5 @@ function toggleFieldset3(selectId, FieldSetId1, FieldSetId2,FieldSetId3,FieldSet
         fieldSet4.style.display = "none";
     }
 }
+
+
