@@ -153,7 +153,7 @@
         </nav>
         <section>
             <div class="input-group">
-                <label for="consumer_price">Strompreis [ct]:</label>
+                <label for="consumer_price">Netzentgeld [ct]:</label>
                 <input id="consumer_price" minlength="1" name="consumer_price"
                        type="text" value="{{ config['market']['consumer_price'] }}">
             </div>
@@ -171,6 +171,13 @@
         <nav class="Box1">
             <b>Split-Klimagerät:</b>
         </nav>
+        <section>
+            <div class="input-group">
+                <label for="air_conditioner_cop">COP:</label>
+                <input id="air_conditioner_cop" minlength="13" name="air_conditioner_cop"
+                       type="number" step="0.1" min="0" value="{{ config['air_conditioner']['air_conditioner_cop'] }}">
+            </div>
+        </section>
         <section>
             <div class="input-group">
                 <label for="air_conditioner">Hersteller:</label>
@@ -423,7 +430,7 @@
                         <input id="{{ wall_name }}_height" minlength="1" name="{{ wall_name }}_height" step="0.1"
                                min="0" type="number"
                                value="{{ config['house'][wall_name + '_height'] }}"
-                        onchange='updateWallHeight("{{ wall_name }}_height", "wall4_height", "wall2_height", "wall3_height")'>
+                               onchange='updateWallHeight("{{ wall_name }}_height", "wall4_height", "wall2_height", "wall3_height")'>
 
                     </div>
                     <div class="cell">

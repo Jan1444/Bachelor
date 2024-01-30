@@ -53,6 +53,7 @@ def write_data_to_config(config_data: dict, data: dict) -> dict | int:
         shelly['ip_address'] = str(data.get('ip_address', ''))
 
         air_conditioner["air_conditioner"] = str(data.get('air_conditioner', ''))
+        air_conditioner["air_conditioner_cop"] = float(data.get('air_conditioner_cop', ''))
         air_conditioner["air_conditioner_steering"] = str(data.get('air_conditioner_steering', ''))
         air_conditioner["ip_address_cloud"] = str(data.get('ip_address_cloud', ''))
         air_conditioner["ir_remote"] = str(data.get('ir_remote', ''))
