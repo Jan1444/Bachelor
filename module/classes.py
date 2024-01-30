@@ -547,7 +547,7 @@ class PVProfit:
 
         diffuse_energy: float = diffuse_radiation * (
                 0.5 * (
-                1 + np.cos(np.deg2rad(self.tilt_angle))) * (1 - f_1) + a / b * f_1 + f_2 *
+                    1 + np.cos(np.deg2rad(self.tilt_angle))) * (1 - f_1) + a / b * f_1 + f_2 *
                 np.sin(np.deg2rad(self.tilt_angle))
         )
 
@@ -1159,7 +1159,7 @@ class RequiredHeatingPower:
 
         @lru_cache(maxsize=None)
         def _calc(wall_obj: room.Wall1 | room.Wall2 | room.Wall3 | room.Wall4) -> tuple[float, float, float, float,
-        float, float]:
+                                                                                        float, float]:
             """
 
             :param wall_obj:

@@ -5,10 +5,9 @@ numpy
 pandas
 Requests
 requests_cache
-tomli
-tomli_w
 openpyxl
-
+Flask-APScheduler
 Werkzeug
 pymelcloud
 daikinapi
+toml

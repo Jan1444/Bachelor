@@ -81,9 +81,9 @@ def analytics():
         config_data['reload'] = False
         config_manager.write_config_data(config_data)
 
-    sun_class: classes.CalcSunPos = fc.init_sun(config_data)
-    pv_class: classes.PVProfit = fc.init_pv(config_data)
-    market_class: classes.MarketData = fc.init_market(config_data)
+    sun_class = fc.init_sun(config_data)
+    pv_class = fc.init_pv(config_data)
+    market_class = fc.init_market(config_data)
 
     weather = fc.get_weather_data(config_data)
 

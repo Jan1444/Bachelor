@@ -4,11 +4,9 @@ import datetime
 
 from module import debug
 from module import functions
-from module import consts
 
 
-def write_data_to_config(config_data: dict, data: dict) -> int:
-
+def write_data_to_config(config_data: dict, data: dict) -> dict | int:
     try:
         debug.printer(data)
 
@@ -26,7 +24,6 @@ def write_data_to_config(config_data: dict, data: dict) -> int:
             config_data['coordinates']['longitude'] = lon
 
         tme = config_data.get('write_time')
-        analytics = config_data.get('analytics')
         pv = config_data.get('pv')
         market = config_data.get('market')
         converter = config_data.get('converter')

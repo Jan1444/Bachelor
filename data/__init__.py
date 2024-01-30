@@ -1,37 +1,36 @@
 # -*- coding: utf-8 -*-
 
 import pathlib
-import tomli
-import tomli_w
+import toml
 
 path_data: pathlib.Path = pathlib.Path(__file__).parent / "data.toml"
 
 path_ev: pathlib.Path = pathlib.Path(__file__).parent / "ev_data.toml"
 path_mor: pathlib.Path = pathlib.Path(__file__).parent / "mor_data.toml"
 
-with path_data.open(mode="rb") as fp:
-    energy_data: dict = tomli.load(fp)
+with path_data.open(mode="r") as fp:
+    energy_data: dict = toml.load(fp)
 
-with path_ev.open(mode="rb") as fp:
-    evening_data: dict = tomli.load(fp)
+with path_ev.open(mode="r") as fp:
+    evening_data: dict = toml.load(fp)
 
-with path_mor.open(mode="rb") as fp:
-    morning_data: dict = tomli.load(fp)
+with path_mor.open(mode="r") as fp:
+    morning_data: dict = toml.load(fp)
 
 
 def write_energy_data(data: dict):
-    with path_data.open(mode="wb") as f:
-        tomli_w.dump(data, f)
+    with path_data.open(mode="w") as f:
+        toml.dump(data, f)
 
 
 def write_evening_data(data: dict):
-    with path_ev.open(mode="wb") as f:
-        tomli_w.dump(data, f)
+    with path_ev.open(mode="w") as f:
+        toml.dump(data, f)
 
 
 def write_morning_data(data: dict):
-    with path_mor.open(mode="wb") as f:
-        tomli_w.dump(data, f)
+    with path_mor.open(mode="w") as f:
+        toml.dump(data, f)
 
 
 class EnergyManager:
@@ -47,11 +46,11 @@ class EnergyManager:
         return self._energy_data
 
     def reload_data(self):
-        with self.energy_path.open(mode="rb") as f:
-            self._energy_data = tomli.load(f)
+        with self.energy_path.open(mode="r") as f:
+            self._energy_data = toml.load(f)
 
     def write_energy_data(self, data):
-        with self.energy_path.open(mode="wb") as f:
-            tomli_w.dump(data, f)
+        with self.energy_path.open(mode="w") as f:
+            toml.dump(data, f)
             self._energy_data = data  # Update the in-memory data
 

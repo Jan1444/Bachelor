@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import pathlib
-import tomli
-import tomli_w
+import toml
 
 
 class ConfigManager:
@@ -17,10 +16,10 @@ class ConfigManager:
         return self._config_data
 
     def reload_config(self):
-        with self.config_path.open(mode="rb") as fp:
-            self._config_data = tomli.load(fp)
+        with self.config_path.open(mode="r") as fp:
+            self._config_data = toml.load(fp)
 
     def write_config_data(self, data):
-        with self.config_path.open(mode="wb") as f:
-            tomli_w.dump(data, f)
-            self._config_data = data  # Update the in-memory data
+        with self.config_path.open(mode="w") as f:
+            toml.dump(data, f)
+            self._config_data = data

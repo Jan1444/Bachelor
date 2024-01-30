@@ -7,14 +7,13 @@ from functools import lru_cache, wraps
 
 import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
+
 import requests
-import tomli
-import tomli_w
+import toml
 from frozendict import frozendict
 
 from config import ConfigManager as ConfigManager_config
-from data import write_energy_data
+
 from module import classes, consts, debug
 
 config_manager_config = ConfigManager_config("config_test.toml")
@@ -45,8 +44,8 @@ def read_data_from_file(file_path: str) -> dict | None:
     :return:
     """
     try:
-        with open(file_path, 'rb') as f:
-            data = tomli.load(f)
+        with open(file_path, 'r') as f:
+            data = toml.load(f)
         return data
     except FileNotFoundError:
         print("No File at " + file_path)
@@ -54,14 +53,14 @@ def read_data_from_file(file_path: str) -> dict | None:
         file_path = file_path[1:]
         print("Try again with: " + file_path)
         try:
-            with open(file_path, 'rb') as f:
-                data = tomli.load(f)
+            with open(file_path, 'r') as f:
+                data = toml.load(f)
             return data
         except FileNotFoundError:
             return None
 
 
-def write_data_to_file(data: dict, file_path: str) -> None:
+def write_data_to_file(data: dict, file_path: str) -> dict:
     """
 
     :param data:
@@ -69,8 +68,8 @@ def write_data_to_file(data: dict, file_path: str) -> None:
     :return:
     """
     try:
-        with open(file_path, 'wb') as f:
-            tomli_w.dump(data, f)
+        with open(file_path, 'w') as f:
+            toml.dump(data, f)
         return data
     except FileNotFoundError:
         print("No File at " + file_path)
@@ -78,8 +77,8 @@ def write_data_to_file(data: dict, file_path: str) -> None:
         file_path = file_path[1:]
         print("Try again with: " + file_path)
         try:
-            with open(file_path, 'wb') as f:
-                tomli_w.dump(data, f)
+            with open(file_path, 'w') as f:
+                toml.dump(data, f)
         except FileNotFoundError:
             print("No File at " + file_path)
 
@@ -316,10 +315,10 @@ def data_analyzer(path: None | str = None):
     slope: float = pv_alignment["slope"]["value"]
     azimuth: float = pv_alignment["azimuth"]["value"]
 
-    rad_database: str = meteo_data["radiation_db"]
-    meteo_database: str = meteo_data["meteo_db"]
-    year_min: str = meteo_data["year_min"]
-    year_max: str = meteo_data["year_max"]
+    rad_database: str = meteo_data.get("radiation_db", "0")
+    meteo_database: str = meteo_data.get("meteo_db", "0")
+    year_min: str = meteo_data.get("year_min", "0")
+    year_max: str = meteo_data.get("year_max", "0")
 
     power_data: list = []
     date_time_data: list = []
@@ -403,7 +402,7 @@ def data_analyzer(path: None | str = None):
 
     max_energy: float = max(power_data)
     time_max_energy: str = date_time_data[power_data.index(max_energy)]
-    average_energy: float = round(calc_energy(power_data, 1, True) / (year_max + 1 - year_min), 2)
+    average_energy: float = round(calc_energy(power_data, 1, True) / (float(year_max) + 1 - float(year_min)), 2)
 
     plt.clf()
     plt.figure(figsize=(20, 6))
@@ -479,7 +478,8 @@ def heating_power():
                 ceiling_: str = data_house.get(f"ceiling", "")
                 ceiling_type: str = data_house.get(f"construction_ceiling", "")
                 year: int = data_house.get(f"house_year", 0) if data_house.get(f"house_year") < 1995 else 1995
-                if ceiling_ == "ENEV unbeheiztes Geschoss" or ceiling_ == "ENEV beheiztes Geschoss" or ceiling_ == "ENEV Dach":
+                if (ceiling_ == "ENEV unbeheiztes Geschoss" or ceiling_ == "ENEV beheiztes Geschoss" or
+                        ceiling_ == "ENEV Dach"):
                     return u_value.get("Decke").get(ceiling_).get(int(ceiling_type))
                 elif ceiling_ == "u_value":
                     return data_house.get(f"{prefix}_u_value", 0)
@@ -501,7 +501,7 @@ def heating_power():
     weather: classes.Weather = classes.Weather(weather_data["latitude"], weather_data["longitude"])
     trv: classes.ShellyTRVControl = classes.ShellyTRVControl(shelly_data["ip_address"])
 
-    room: classes.RequiredHeatingPower.Room = hp.Room
+    room = hp.Room
 
     floor = room.Floor
     ceiling = room.Ceiling
@@ -565,7 +565,7 @@ def heating_power():
     return 1
 
 
-def comp_mor_ev_data(morning_data, evening_data, error: float = 1):
+def comp_mor_ev_data(morning_data, evening_data):
     debug.printer(evening_data, description="evening_data: ")
     debug.printer(morning_data, description="morning_data: ")
 

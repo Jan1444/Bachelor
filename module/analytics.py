@@ -2,11 +2,9 @@
 
 import datetime
 
-from module import debug
-
 
 def prepare_data_to_write(time, power: list[float], market_price: list[float], energy: float,
-                          radiation: None | list[float] = None, radiation_dni: None | list[float] = None) -> dict:
+                          radiation: None | list[float] = None, radiation_dni: None | list[float] = None) -> dict | int:
     data: dict = {
         "write_time": {
             "time": datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S"),
