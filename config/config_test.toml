@@ -1,7 +1,7 @@
 reload = true
 
 [write_time]
-time = "30-01-2024 20:42:07"
+time = "30-01-2024 22:33:33"
 format = "%d-%m-%Y %H:%M:%S"
 
 [coordinates]
@@ -41,7 +41,7 @@ window1_year = 0
 window1_width = 0.8
 window1_height = 1.0
 window1_u_value = 0.0
-wall1 = "ENEV Auﬂenwand"
+wall1 = "ENEV Au√üenwand"
 construction_wall1 = "2016"
 wall1_type = 0
 wall1_width = 2.0
@@ -64,7 +64,7 @@ window2_width = 0.0
 window2_height = 0.0
 wall4 = "ENEV Innenwand"
 construction_wall4 = "2016"
-wall2 = "ENEV Auﬂenwand"
+wall2 = "ENEV Au√üenwand"
 construction_wall2 = "2016"
 wall2_width = 2.4
 door_wall4 = 2
@@ -80,7 +80,7 @@ window3_glazing = ""
 window3_year = 0
 window3_width = 0.0
 window3_height = 0.0
-wall3 = "ENEV Auﬂenwand"
+wall3 = "ENEV Au√üenwand"
 construction_wall3 = "2016"
 door_wall3 = 0
 door_wall3_width = 0.0
