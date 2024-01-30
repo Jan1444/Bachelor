@@ -76,6 +76,7 @@ def analytics():
             return render_template('analytics.html', name="new_plot",
                                    url_weather=f"{consts.plot_path}output_weather.png",
                                    url_market=f"{consts.plot_path}output_market.png",
+                                   url_heating=f"{consts.plot_path}output_heating.png",
                                    energy_data=energy_data.get("energy", {"energy": 0}).get("energy"))
 
         config_data['reload'] = False
@@ -114,6 +115,8 @@ def analytics():
         market_time.append(t["start_timestamp"])
         market_price.append(t["consumerprice"])
 
+    hp = fc.heating_power()
+
     write_data = analytics_module.prepare_data_to_write(weather_time, power_data, market_price, energy, None,
                                                         radiation_data_dni)
     energy_manager_data.write_energy_data(write_data)
@@ -135,15 +138,29 @@ def analytics():
     plt.clf()
     plt.figure(figsize=(60, 25))
     plt.grid()
-    plt.plot(market_time, market_price, drawstyle="steps", label="Preis [ct/kWh]", color="r")
+    plt.plot(market_time, market_price, drawstyle="steps", label="Preis [ct/kWh]", color="g")
     plt.xticks(rotation=90, ha="right", fontsize=30)
     plt.yticks(ticks=np.arange(0, max(market_price) + 5, step=1), ha="right", fontsize=30)
     plt.tight_layout()
     plt.legend(loc="center left", fontsize=30)
     plt.savefig(f'{consts.plot_path}output_market.png')
 
+    plt.clf()
+    plt.figure(figsize=(90, 25))
+    plt.grid()
+
+    plt.fill_between(hp[0], hp[1], step="pre", alpha=0.2, color="r")
+    plt.plot(hp[0], hp[1], drawstyle="steps", label="Heizlast [Wh]", linewidth=3, color="r")
+
+    plt.xticks(rotation=90, ha="right", fontsize=30)
+    plt.yticks(ha="right", fontsize=30)
+    plt.tight_layout()
+    plt.legend(loc="center left", fontsize=30)
+    plt.savefig(f'{consts.plot_path}output_heating.png')
+
     return render_template('analytics.html', name="new_plot", url_weather=f"{consts.plot_path}output_weather.png",
-                           url_market=f"{consts.plot_path}output_market.png", energy_data=energy)
+                           url_market=f"{consts.plot_path}output_market.png",
+                           url_heating=f"{consts.plot_path}output_heating.png", energy_data=energy)
 
 
 @app.route('/generate_download', methods=['POST'])

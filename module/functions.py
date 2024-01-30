@@ -422,7 +422,7 @@ def heating_power():
         try:
             if prefix2 is None:
                 prefix2 = prefix
-            area = data_house.get(f"{prefix}_width", 0) * data_house.get(f"{prefix2}_width", 0)
+            area = data_house.get(f"{prefix}_width", 0) * data_house.get(f"{prefix2}_height", 0)
             return area
 
         except AttributeError as err:
@@ -439,7 +439,7 @@ def heating_power():
                 year: int = data_house.get(f"house_year", 0) if data_house.get(f"house_year") < 1995 else 1995
 
                 if wall_ == "ENEV Außenwand" or wall_ == "ENEV Innenwand":
-                    return u_value.get("Wand").get(wall).get(int(wall_type))
+                    return u_value.get("Wand").get(wall_).get(int(wall_type))
                 elif wall_ == "u_value":
                     return data_house.get(f"{prefix}_u_value", 0)
                 else:
@@ -537,54 +537,50 @@ def heating_power():
     """
     indoor_temp: float = 22
 
-    ret_dat: list = []
+    hp_data: list = []
     diff_data: list = []
     tme_data: list = []
 
-    today = weather.data
+    today = weather.data[list(weather.data.keys())[0]]
     # today.pop("daily")
 
-    print(today)
-
     old_temp: int = 16
-    for date in weather.data:
-        print(date)
+    for tme, data in today.items():
+        if tme != "daily":
+            outdoor_temp: float = data.get("temp", old_temp)
+            old_temp = outdoor_temp
+            diff_temp: float = indoor_temp - outdoor_temp
 
-        for tme, data in today[date].items():
-            if tme != "daily":
-                outdoor_temp: float = data.get("temp", old_temp)
-                diff_temp: float = indoor_temp - outdoor_temp
+            room.Floor.temp_diff = diff_temp
+            room.Ceiling.temp_diff = diff_temp
+            room.Wall1.temp_diff = diff_temp
+            room.Wall2.temp_diff = diff_temp
+            room.Wall3.temp_diff = diff_temp
+            room.Wall4.temp_diff = diff_temp
+            d = hp.calc_heating_power(room)
 
-                room.Floor.temp_diff = diff_temp
-                room.Ceiling.temp_diff = diff_temp
-                room.Wall1.temp_diff = diff_temp
-                room.Wall2.temp_diff = diff_temp
-                room.Wall3.temp_diff = diff_temp
-                room.Wall4.temp_diff = diff_temp
-                d = hp.calc_heating_power(room)
+            diff_data.append(diff_temp)
+            hp_data.append(d)
+            tme_data.append(f"{tme}")
 
-                diff_data.append(diff_temp)
-                ret_dat.append(d)
-                tme_data.append(f"{date} {tme}")
+    debug.printer(diff_data, hp_data)
 
-    debug.printer(diff_data, ret_dat)
-
-    plt.clf()
+    """    plt.clf()
     plt.figure(figsize=(90, 25))
     plt.grid()
 
     plt.plot(tme_data, diff_data, drawstyle="steps", label="Difference Temperature [K]", linewidth=3, color="b")
 
-    plt.fill_between(tme_data, ret_dat, step="pre", alpha=0.2, color="r")
-    plt.plot(tme_data, ret_dat, drawstyle="steps", label="Required Heating Power [Wh]", linewidth=3, color="r")
+    plt.fill_between(tme_data, hp_data, step="pre", alpha=0.2, color="r")
+    plt.plot(tme_data, hp_data, drawstyle="steps", label="Required Heating Power [Wh]", linewidth=3, color="r")
 
     plt.xticks(rotation=90, ha="right", fontsize=30)
     plt.yticks(ha="right", fontsize=30)
     plt.tight_layout()
     plt.legend(loc="center left", fontsize=30)
-    plt.show()
+    plt.show()"""
 
-    return 1
+    return tme_data, hp_data
 
 
 if __name__ == "__main__":
