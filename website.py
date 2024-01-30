@@ -121,7 +121,8 @@ def analytics():
     plt.clf()
     plt.figure(figsize=(60, 25))
     plt.grid()
-    plt.step(weather_time, power_data, label="Power [W]")
+    plt.fill_between(weather_time, power_data, step="pre", alpha=0.2, color="b")
+    plt.plot(weather_time, power_data, drawstyle="steps", label="Power [W]", color="b")
     plt.xticks(rotation=90, ha="right", fontsize=30)
     _size = converter_consts["max_power"]
     _step = 25 if _size <= 1000 else (_size / 50) if (_size / 50) % 5 == 0 else _size / 50 - (_size / 50) % 5
@@ -134,7 +135,7 @@ def analytics():
     plt.clf()
     plt.figure(figsize=(60, 25))
     plt.grid()
-    plt.step(market_time, market_price, label="Preis [ct/kWh]")
+    plt.plot(market_time, market_price, drawstyle="steps", label="Preis [ct/kWh]", color="r")
     plt.xticks(rotation=90, ha="right", fontsize=30)
     plt.yticks(ticks=np.arange(0, max(market_price) + 5, step=1), ha="right", fontsize=30)
     plt.tight_layout()

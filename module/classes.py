@@ -580,10 +580,6 @@ class PVProfit:
 
 class RequiredHeatingPower:
     # https://www.bosch-homecomfort.com/de/de/wohngebaeude/wissen/heizungsratgeber/heizleistung-berechnen/
-    """
-
-    """
-
     @dataclasses.dataclass
     class Room:
         """

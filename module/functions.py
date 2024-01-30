@@ -528,41 +528,67 @@ def heating_power():
         window.u_wert = _get_u_value(data, hp.u_value, f"window{window_number}")
         door.u_wert = _get_u_value(data, hp.u_value, f"door")
 
+    """
     trv_data: dict = trv.get_thermostat()
     if trv_data is None:
         trv_data: dict = trv.get_thermostat(timeout=10)
 
-    indoor_temp: float = (trv_data.get("tmp").get("value")) if trv_data is not None else 18
+    indoor_temp: float = (trv_data.get("tmp").get("value")) if trv_data is not None else 22
+    """
+    indoor_temp: float = 22
 
     ret_dat: list = []
     diff_data: list = []
+    tme_data: list = []
 
-    today = weather.data[list(weather.data.keys())[0]]
-    i = 0
+    today = weather.data
+    # today.pop("daily")
 
-    for t in today.keys():
-        print(t)
-        if t != "daily":
-            print(today[t])
-            outdoor_temp: float = today[t]["temp"]
-            diff_temp: float = (indoor_temp + i) - outdoor_temp
+    print(today)
 
-            i += 1
+    old_temp: int = 16
+    for date in weather.data:
+        print(date)
 
-            room.Floor.temp_diff = diff_temp
-            room.Ceiling.temp_diff = diff_temp
-            room.Wall1.temp_diff = diff_temp
-            room.Wall2.temp_diff = diff_temp
-            room.Wall3.temp_diff = diff_temp
-            room.Wall4.temp_diff = diff_temp
-            d = hp.calc_heating_power(room)
+        for tme, data in today[date].items():
+            if tme != "daily":
+                outdoor_temp: float = data.get("temp", old_temp)
+                diff_temp: float = indoor_temp - outdoor_temp
 
-            diff_data.append(diff_temp)
-            ret_dat.append(d)
+                room.Floor.temp_diff = diff_temp
+                room.Ceiling.temp_diff = diff_temp
+                room.Wall1.temp_diff = diff_temp
+                room.Wall2.temp_diff = diff_temp
+                room.Wall3.temp_diff = diff_temp
+                room.Wall4.temp_diff = diff_temp
+                d = hp.calc_heating_power(room)
+
+                diff_data.append(diff_temp)
+                ret_dat.append(d)
+                tme_data.append(f"{date} {tme}")
 
     debug.printer(diff_data, ret_dat)
 
+    plt.clf()
+    plt.figure(figsize=(90, 25))
+    plt.grid()
+
+    plt.plot(tme_data, diff_data, drawstyle="steps", label="Difference Temperature [K]", linewidth=3, color="b")
+
+    plt.fill_between(tme_data, ret_dat, step="pre", alpha=0.2, color="r")
+    plt.plot(tme_data, ret_dat, drawstyle="steps", label="Required Heating Power [Wh]", linewidth=3, color="r")
+
+    plt.xticks(rotation=90, ha="right", fontsize=30)
+    plt.yticks(ha="right", fontsize=30)
+    plt.tight_layout()
+    plt.legend(loc="center left", fontsize=30)
+    plt.show()
+
     return 1
+
+
+if __name__ == "__main__":
+    heating_power()
 
 
 def comp_mor_ev_data(morning_data, evening_data):

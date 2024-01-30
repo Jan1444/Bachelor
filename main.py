@@ -5,8 +5,9 @@ import requests
 from functools import lru_cache
 
 from module import classes
-from config import config_data
+from config import ConfigManager
 
+config_manager = ConfigManager("config_test.toml")
 
 def init_classes(latitude: float, longitude: float, module_efficiency: float, module_area: int, tilt_angle: float,
                  exposure_angle: float, mounting_type: int, costs: float) -> (
@@ -62,7 +63,7 @@ def get_coord(street: str, nr: str, city: str, postalcode: int, country: str) ->
 @lru_cache(maxsize=None)
 def calc_energy(energy: list, interval: float = 0.25) -> float:
     power_values = list(map(lambda x: x / 1000, energy))
-    total_energy = sum((power_values[i] + power_values[i + 1]) / 2 * interval for i in range(len(power_values) - 1))
+    total_energy = sum(power_values[i] * interval for i in range(len(power_values) - 1))
     return total_energy
 
 
@@ -126,16 +127,17 @@ def test_day_data(weather_data: dict, sun: classes.CalcSunPos, pv: classes.PVPro
 
     x = t_list
 
-    plt.plot(x, energy_list, label="Energie direct")
-    plt.plot(x, energy_list_dni, label="Energie DNI")
-    plt.plot(x, market_list, label="Strompreis")
-    plt.plot(x, data_mean_list, label="Durchschnittsleistung")
-    plt.plot(x, pv_eff, label="PV Effizienz")
+    plt.step(x, energy_list, label="Energie direct")
+    plt.step(x, energy_list_dni, label="Energie DNI")
+    plt.step(x, market_list, label="Strompreis")
+    plt.step(x, data_mean_list, label="Durchschnittsleistung")
+    plt.step(x, pv_eff, label="PV Effizienz")
 
 
 def main():
     plt.figure(figsize=(60, 15))
     plt.grid()
+    config_data = config_manager.config_data
     coordinates = config_data["coordinates"]
     pv_consts = config_data["pv"]
     market_consts = config_data["market"]
