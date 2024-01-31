@@ -9,6 +9,7 @@ from config import ConfigManager
 
 config_manager = ConfigManager("config_test.toml")
 
+
 def init_classes(latitude: float, longitude: float, module_efficiency: float, module_area: int, tilt_angle: float,
                  exposure_angle: float, mounting_type: int, costs: float) -> (
         classes.Weather, classes.MarketData, classes.CalcSunPos, classes.PVProfit):

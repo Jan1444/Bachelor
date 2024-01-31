@@ -29,6 +29,15 @@
     width: 100%;
 }
 
+button {
+    font-size: var(--font_size);
+    font-family: var(--standard_font);
+    margin: 10px 10px 10px 100px;
+    width: 70px;
+    height: 20px;
+    align-items: center;
+}
+
 @media screen and (max-width: 768px) {
     .Box1 b{
         font-family: var(--font_family);

@@ -146,7 +146,7 @@ def analytics():
     plt.savefig(f'{consts.plot_path}output_market.png')
 
     plt.clf()
-    plt.figure(figsize=(90, 25))
+    plt.figure(figsize=(60, 25))
     plt.grid()
 
     plt.fill_between(hp[0], hp[1], step="pre", alpha=0.2, color="r")
@@ -161,6 +161,17 @@ def analytics():
     return render_template('analytics.html', name="new_plot", url_weather=f"{consts.plot_path}output_weather.png",
                            url_market=f"{consts.plot_path}output_market.png",
                            url_heating=f"{consts.plot_path}output_heating.png", energy_data=energy)
+
+
+@app.route('/reload_analytics', methods=['POST'])
+def reload_analytics():
+    config_manager.reload_config()
+    config_data = config_manager.config_data
+
+    config_data['reload'] = True
+    config_manager.write_config_data(config_data)
+
+    return analytics()
 
 
 @app.route('/generate_download', methods=['POST'])
@@ -392,7 +403,7 @@ def compare_data():
     err = fc.comp_mor_ev_data(energy_data_morning, energy_data_evening)
     print(err)
 
-    if err.get("average_dni_difference", 21) > 20 or err.get("energy_difference", 1) > (200/1000):
+    if err.get("average_dni_difference", 21) > 20 or err.get("energy_difference", 1) > (200 / 1000):
         print("Big error")
 
 
