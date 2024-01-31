@@ -11,11 +11,12 @@ class ConfigManager:
 
     @property
     def config_data(self):
+        self._reload_config()
         if self._config_data is None:
-            self.reload_config()
+            self._reload_config()
         return self._config_data
 
-    def reload_config(self):
+    def _reload_config(self):
         with self.config_path.open(mode="r") as fp:
             self._config_data = toml.load(fp)
 

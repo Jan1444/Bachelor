@@ -1,4 +1,4 @@
-// update_dropdown.js
+// update.js
 
 function updateGlazingDropdown(first_id, second_id) {
     const frame = document.getElementById(first_id).value;

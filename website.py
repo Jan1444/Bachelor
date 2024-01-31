@@ -39,21 +39,18 @@ energy_manager_evening_data = EnergyManager("ev_data.toml")
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    config_manager.reload_config()
     config_data = config_manager.config_data
     return render_template('index.html', config=config_data)
 
 
 @app.route('/dashboard')
 def dashboard():
-    config_manager.reload_config()
     config_data = config_manager.config_data
     return render_template('dashboard.html', config=config_data)
 
 
 @app.route('/analytics')
 def analytics():
-    config_manager.reload_config()
     config_data = config_manager.config_data
 
     energy_manager_data.reload_data()
@@ -165,7 +162,6 @@ def analytics():
 
 @app.route('/reload_analytics', methods=['POST'])
 def reload_analytics():
-    config_manager.reload_config()
     config_data = config_manager.config_data
 
     config_data['reload'] = True
@@ -176,7 +172,6 @@ def reload_analytics():
 
 @app.route('/generate_download', methods=['POST'])
 def download():
-    config_manager.reload_config()
     config_data = config_manager.config_data
 
     msg: str = ""
@@ -234,7 +229,6 @@ def allowed_file(filename):
 
 @app.route('/settings')
 def settings():
-    config_manager.reload_config()
     config_data = config_manager.config_data
     return render_template('set_vals.html', config=config_data, window_data=consts.window_data,
                            wall_data=consts.wall_data, door_data=consts.door_data, ceiling_data=consts.ceiling_data)
@@ -242,7 +236,6 @@ def settings():
 
 @app.route('/save_settings', methods=['POST'])
 def safe_settings():
-    config_manager.reload_config()
     config_data = config_manager.config_data
 
     if request.method == 'POST':
@@ -368,7 +361,6 @@ def save_morning():
     print("save_data morning")
     print(datetime.datetime.now())
 
-    config_manager.reload_config()
     config_data: dict = config_manager.config_data
 
     write_dict: dict = fc.save_mor_ev_data(config_data)
@@ -381,7 +373,6 @@ def save_evening():
     print("save_data evening")
     print(datetime.datetime.now())
 
-    config_manager.reload_config()
     config_data: dict = config_manager.config_data
 
     write_dict: dict = fc.save_mor_ev_data(config_data)

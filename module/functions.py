@@ -118,10 +118,10 @@ def get_coord(street: str, nr: str, city: str, postalcode: int, country: str) ->
 
 @freeze_all
 @lru_cache(maxsize=None)
-def calc_energy(energy: list, interval: float = 0.25, kwh: bool = True, round_: None | int = None) -> float:
+def calc_energy(power: list, interval: float = 0.25, kwh: bool = True, round_: None | int = None) -> float:
     """
 
-    :param energy:
+    :param power:
     :param interval:
     :param kwh:
     :param round_:
@@ -130,13 +130,14 @@ def calc_energy(energy: list, interval: float = 0.25, kwh: bool = True, round_: 
     multiplier = 1
     if kwh:
         multiplier = 1000
-    power_values = list(map(lambda x: x / multiplier, energy))
+    power_values = list(map(lambda x: x / multiplier, power))
     total_energy = sum(power_values[i] * interval for i in range(len(power_values) - 1))
 
     if round_ is not None:
         total_energy = round(total_energy, round_)
     debug.printer(total_energy)
-    return total_energy
+
+    return float(total_energy)
 
 
 def date_time_download() -> dict:
@@ -239,7 +240,6 @@ def save_mor_ev_data(config_data: dict) -> dict:
         power_list.append(power)
 
     energy: float = calc_energy(power_list, round_=3)
-
     write_dict.update(
         {
             "energy": energy
@@ -295,7 +295,6 @@ def unpack_data(data: dict) -> (list[str], list[float], list[float], list[float]
 
 
 def data_analyzer(path: None | str = None):
-    config_manager_config.reload_config()
     config_data = config_manager_config.config_data
     config_pv: dict = config_data["pv"]
     if path is None:
@@ -503,7 +502,6 @@ def heating_power():
             print(f"Attribute Missing: {err}")
             return 0
 
-    config_manager_config.reload_config()
     config_data = config_manager_config.config_data
 
     data: dict = config_data["house"]
@@ -608,10 +606,6 @@ def heating_power():
     plt.show()"""
 
     return tme_data, hp_data
-
-
-if __name__ == "__main__":
-    heating_power()
 
 
 def comp_mor_ev_data(morning_data, evening_data):
