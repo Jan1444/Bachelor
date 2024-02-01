@@ -13,21 +13,24 @@
     width: 100%;
 }
 
-.Box1{
+.Box1 {
     background-color: darkcyan;
-    height: calc(var(--font_height) + 5px);
     padding-left: 5px;
-    margin-top: 5px;
+    margin-top: 1px;
+    padding-bottom: 3px;
+    padding-top: 3px;
 }
-.Box1 b{
+
+.Box1 b {
     font-family: var(--font_family);
     font-size: var(--font_height);
     color: white;
 }
 
-.chart img{
+.chart img {
     width: 100%;
 }
+
 
 button {
     font-size: var(--font_size);
@@ -38,13 +41,15 @@ button {
     align-items: center;
 }
 
+
 @media screen and (max-width: 768px) {
-    .Box1 b{
+    .Box1 b {
         font-family: var(--font_family);
         font-size: calc(var(--font_height) / 2);
         color: white;
     }
-    .Box1{
+
+    .Box1 {
         background-color: darkcyan;
         height: calc(var(--font_height) / 2 + 5px);
         padding-left: 5px;
