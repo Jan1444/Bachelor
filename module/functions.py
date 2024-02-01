@@ -649,8 +649,6 @@ def calc_diff_hp_energy(hp: list, power: list) -> list:
 
 
 def load_load_profile(path: str) -> (list, list, list):
-    config_data = config_manager.config_data
-
     data_extension = path[path.rfind('.'):]
 
     if '.json' in data_extension:
@@ -677,9 +675,14 @@ def load_load_profile(path: str) -> (list, list, list):
 
             except:
                 continue
+        data_dict = {}
+        for z, date in enumerate(date_data):
+            data_dict[f'{z}: {date}'] = {tme_data[z]: load_data[z]}
+
+        print(data_dict)
 
         return date_data, tme_data, load_data
 
 
 if __name__ == "__main__":
-    print(load_load_profile("../config/Lastgang_Schulzentrum_Sudwest_Bestand_2014.xls"))
+    (load_load_profile("../config/Lastgang_Schulzentrum_Sudwest_Bestand_2014.xls"))

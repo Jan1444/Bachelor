@@ -56,6 +56,7 @@ def analytics():
     energy_data = energy_manager_data.energy_data
 
     converter_consts = config_data["converter"]
+    load_profile = config_data["load_profile"]
 
     power_data: list = []
     weather_time: list = []
@@ -118,7 +119,9 @@ def analytics():
                                                         radiation_data_dni)
     energy_manager_data.write_energy_data(write_data)
 
-    fc.load_load_profile('')
+    date_data, tme_data, load_data = fc.load_load_profile(f'config/{load_profile.get("name")}')
+
+    time_now.date()
 
     diff_power = fc.calc_diff_hp_energy(hp[1], power_data)
 

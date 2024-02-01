@@ -1,7 +1,7 @@
 reload = false
 
 [write_time]
-time = "30-01-2024 22:33:33"
+time = "01-02-2024 20:50:45"
 format = "%d-%m-%Y %H:%M:%S"
 
 [coordinates]
@@ -35,7 +35,6 @@ ir_remote = ""
 
 [load_profile]
 name = "Lastgang_Schulzentrum_Sudwest_Bestand_2014.xls"
-
 
 [house]
 house_year = 0
