@@ -20,7 +20,6 @@ from module import analytics as analytics_module
 from module import download as download_module
 
 UPLOAD_FOLDER = 'uploads'
-ALLOWED_EXTENSIONS: set[str] = {'json'}
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -128,7 +127,7 @@ def analytics():
     plt.clf()
     plt.figure(figsize=plot_sitze)
     plt.grid()
-    plt.plot(weather_time, power_data, drawstyle="steps", label="Leistung [W]",linewidth=pot_linewidth, color="b")
+    plt.plot(weather_time, power_data, drawstyle="steps", label="Leistung [W]", linewidth=pot_linewidth, color="b")
     plt.xticks(rotation=90, ha="right", fontsize=plot_fontsize)
     _size = converter_consts["max_power"]
     _step = 25 if _size <= 1000 else (_size / 50) if (_size / 50) % 5 == 0 else _size / 50 - (_size / 50) % 5
@@ -141,7 +140,7 @@ def analytics():
     plt.clf()
     plt.figure(figsize=plot_sitze)
     plt.grid()
-    plt.plot(market_time, market_price, drawstyle="steps", label="Preis [ct/kWh]",linewidth=pot_linewidth, color="g")
+    plt.plot(market_time, market_price, drawstyle="steps", label="Preis [ct/kWh]", linewidth=pot_linewidth, color="g")
     plt.xticks(rotation=90, ha="right", fontsize=plot_fontsize)
     plt.yticks(ticks=np.arange(0, max(market_price) + 5, step=1), ha="right", fontsize=plot_fontsize)
     plt.tight_layout()
@@ -242,8 +241,8 @@ def download_file(name):
     return send_from_directory("downloads", name)
 
 
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+def allowed_file(filename, extensions):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in extensions
 
 
 @app.route('/settings')
@@ -298,34 +297,53 @@ def file_upload():
     return render_template('file_upload.html')
 
 
-@app.route('/upload_file', methods=['GET', 'POST'])
-def upload_file():
+@app.route('/upload_file_solar_data', methods=['GET', 'POST'])
+def upload_file_solar_data():
+    ex: set = {'json'}
+    err, filename, data = upload_file(ex, 'config', False)
+
+    return render_template('file_upload.html', err_ending_solar=err, name_solar=filename, data=data)
+
+
+@app.route('/upload_load_profile', methods=['GET', 'POST'])
+def upload_load_profile():
+    ex: set = {'json', 'xls', 'xlsx'}
+    err, filename, data = upload_file(ex, 'config', False)
+
+    return render_template('file_upload.html', err_ending_load=err, name_load=filename, data=data)
+
+
+def upload_file(extensions: set, folder: str, delete_file=True):
     if request.method == 'POST':
+        err = ''
+        filename = ''
+
         if 'upload_file_json' not in request.files:
             flash('No file part')
-            return redirect(request.url)
+            return err, filename, None
 
         file = request.files['upload_file_json']
 
         if file.filename == '':
             flash('No selected file')
-            return redirect(request.url)
+            return err, filename, None
 
-        if file and allowed_file(file.filename):
-            for filename in os.listdir("uploads"):
-                os.remove(f"uploads/{filename}")
+        if file and allowed_file(file.filename, extensions):
+            if not os.path.exists(folder):
+                os.mkdir(folder)
+            if delete_file:
+                for filename in os.listdir(folder):
+                    os.remove(f"{folder}/{filename}")
 
             filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            return render_template('file_upload.html', name=filename)
+            file.save(os.path.join(folder, filename))
+            return err, filename, None
 
-        elif not allowed_file(file.filename):
+        elif not allowed_file(file.filename, extensions):
             filename = secure_filename(file.filename)
             ending = filename.rsplit('.', 1)[1].lower()
-            err = f".{ending} ist nicht erlaubt. Nur {ALLOWED_EXTENSIONS} ist zulässig"
-            return render_template('file_upload.html', err_ending=err)
-
-    return render_template('file_upload.html', data=None)
+            err = f".{ending} ist nicht erlaubt. Nur {extensions} ist zulässig"
+            return err, filename, None
 
 
 @app.route('/analyze_file', methods=['GET', 'POST'])
