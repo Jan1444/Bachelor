@@ -16,7 +16,7 @@ from config import ConfigManager as ConfigManager_config
 
 from module import classes, consts, debug
 
-config_manager_config = ConfigManager_config("config_test.toml")
+config_manager = ConfigManager_config("config_test.toml")
 
 
 def freeze_all(func):
@@ -295,7 +295,7 @@ def unpack_data(data: dict) -> (list[str], list[float], list[float], list[float]
 
 
 def data_analyzer(path: None | str = None):
-    config_data = config_manager_config.config_data
+    config_data = config_manager.config_data
     config_pv: dict = config_data["pv"]
     if path is None:
         path = rf"./uploads/{os.listdir("./uploads")[0]}"
@@ -502,7 +502,7 @@ def heating_power():
             print(f"Attribute Missing: {err}")
             return 0
 
-    config_data = config_manager_config.config_data
+    config_data = config_manager.config_data
 
     data: dict = config_data["house"]
     weather_data = config_data["coordinates"]
@@ -645,3 +645,17 @@ def comp_mor_ev_data(morning_data, evening_data):
         "average_dni_difference": average_dni_difference,
         "energy_difference": energy_difference
     }
+
+
+def calc_diff_hp_energy(hp: list, power: list) -> list:
+    config_data: dict = config_manager.config_data
+
+    cop: float = config_data.get("air_conditioner", {"air_conditioner_cop": 0}).get("air_conditioner_cop")
+
+    heating_energy: list = list(map(lambda x: x * cop, power))
+    diff: list = []
+
+    for i, h_energy in enumerate(heating_energy):
+        diff.append(h_energy - hp[i])
+
+    return diff
