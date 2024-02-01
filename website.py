@@ -74,6 +74,7 @@ def analytics():
                                    url_weather=f"{consts.plot_path}output_weather.png",
                                    url_market=f"{consts.plot_path}output_market.png",
                                    url_heating=f"{consts.plot_path}output_heating.png",
+                                   url_diff_heating=f"{consts.plot_path}output_diff_heating.png",
                                    energy_data=energy_data.get("energy", {"energy": 0}).get("energy"))
 
         config_data['reload'] = False
@@ -118,46 +119,64 @@ def analytics():
                                                         radiation_data_dni)
     energy_manager_data.write_energy_data(write_data)
 
+    diff_power = fc.calc_diff_hp_energy(hp[1], power_data)
+
+    plot_sitze: tuple = (60, 25)
+    plot_fontsize: int = 30
+    pot_linewidth: int = 3
+
     plt.clf()
-    plt.figure(figsize=(60, 25))
+    plt.figure(figsize=plot_sitze)
     plt.grid()
-    plt.fill_between(weather_time, power_data, step="pre", alpha=0.2, color="b")
-    plt.plot(weather_time, power_data, drawstyle="steps", label="Power [W]", color="b")
-    plt.xticks(rotation=90, ha="right", fontsize=30)
+    plt.plot(weather_time, power_data, drawstyle="steps", label="Leistung [W]",linewidth=pot_linewidth, color="b")
+    plt.xticks(rotation=90, ha="right", fontsize=plot_fontsize)
     _size = converter_consts["max_power"]
     _step = 25 if _size <= 1000 else (_size / 50) if (_size / 50) % 5 == 0 else _size / 50 - (_size / 50) % 5
     _ticks = np.arange(0, _size + _step, step=_step)
-    plt.yticks(ticks=_ticks, ha="right", fontsize=30)
+    plt.yticks(ticks=_ticks, ha="right", fontsize=plot_fontsize)
     plt.tight_layout()
-    plt.legend(loc="center left", fontsize=30)
+    plt.legend(loc="center left", fontsize=plot_fontsize)
     plt.savefig(f'{consts.plot_path}output_weather.png')
 
     plt.clf()
-    plt.figure(figsize=(60, 25))
+    plt.figure(figsize=plot_sitze)
     plt.grid()
-    plt.plot(market_time, market_price, drawstyle="steps", label="Preis [ct/kWh]", color="g")
-    plt.xticks(rotation=90, ha="right", fontsize=30)
-    plt.yticks(ticks=np.arange(0, max(market_price) + 5, step=1), ha="right", fontsize=30)
+    plt.plot(market_time, market_price, drawstyle="steps", label="Preis [ct/kWh]",linewidth=pot_linewidth, color="g")
+    plt.xticks(rotation=90, ha="right", fontsize=plot_fontsize)
+    plt.yticks(ticks=np.arange(0, max(market_price) + 5, step=1), ha="right", fontsize=plot_fontsize)
     plt.tight_layout()
-    plt.legend(loc="center left", fontsize=30)
+    plt.legend(loc="center left", fontsize=plot_fontsize)
     plt.savefig(f'{consts.plot_path}output_market.png')
 
     plt.clf()
-    plt.figure(figsize=(60, 25))
+    plt.figure(figsize=plot_sitze)
     plt.grid()
-
     plt.fill_between(hp[0], hp[1], step="pre", alpha=0.2, color="r")
-    plt.plot(hp[0], hp[1], drawstyle="steps", label="Heizlast [Wh]", linewidth=3, color="r")
-
-    plt.xticks(rotation=90, ha="right", fontsize=30)
-    plt.yticks(ha="right", fontsize=30)
+    plt.plot(hp[0], hp[1], drawstyle="steps", label="Heizlast [Wh]", linewidth=pot_linewidth, color="r")
+    plt.xticks(rotation=90, ha="right", fontsize=plot_fontsize)
+    plt.yticks(ha="right", fontsize=plot_fontsize)
     plt.tight_layout()
-    plt.legend(loc="center left", fontsize=30)
+    plt.legend(loc="center left", fontsize=plot_fontsize)
     plt.savefig(f'{consts.plot_path}output_heating.png')
 
-    return render_template('analytics.html', name="new_plot", url_weather=f"{consts.plot_path}output_weather.png",
+    plt.clf()
+    plt.figure(figsize=plot_sitze)
+    plt.grid()
+    plt.fill_between(hp[0], diff_power, step="pre", alpha=0.2, color="y")
+    plt.plot(hp[0], diff_power, drawstyle="steps", label="Differenz Heizenergie Solarleistung [Wh]",
+             linewidth=pot_linewidth, color="y")
+    plt.xticks(rotation=90, ha="right", fontsize=plot_fontsize)
+    plt.yticks(ha="right", fontsize=plot_fontsize)
+    plt.tight_layout()
+    plt.legend(loc="center left", fontsize=plot_fontsize)
+    plt.savefig(f'{consts.plot_path}output_diff_heating.png')
+
+    return render_template('analytics.html', name="new_plot",
+                           url_weather=f"{consts.plot_path}output_weather.png",
                            url_market=f"{consts.plot_path}output_market.png",
-                           url_heating=f"{consts.plot_path}output_heating.png", energy_data=energy)
+                           url_heating=f"{consts.plot_path}output_heating.png",
+                           url_diff_heating=f"{consts.plot_path}output_diff_heating.png",
+                           energy_data=energy)
 
 
 @app.route('/reload_analytics', methods=['POST'])
