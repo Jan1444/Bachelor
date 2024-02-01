@@ -26,6 +26,7 @@ def write_data_to_config(config_data: dict, data: dict) -> dict | int:
         tme = config_data.get('write_time')
         pv = config_data.get('pv')
         market = config_data.get('market')
+        load_profile = config_data.get('load_profile')
         converter = config_data.get('converter')
         shelly = config_data.get('shelly')
         air_conditioner = config_data.get('air_conditioner')
@@ -49,6 +50,8 @@ def write_data_to_config(config_data: dict, data: dict) -> dict | int:
         converter['max_power'] = float(data.get('converter_power', 0))
 
         market['consumer_price'] = float(data.get('consumer_price', 0))
+
+        load_profile['name'] = str(data.get('load_profile_name'))
 
         shelly['ip_address'] = str(data.get('ip_address', ''))
 
