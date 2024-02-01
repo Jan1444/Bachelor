@@ -7,6 +7,8 @@ from functools import lru_cache, wraps
 
 import matplotlib.pyplot as plt
 import numpy as np
+import openpyxl
+import pandas as pd
 
 import requests
 import toml
@@ -590,21 +592,6 @@ def heating_power():
 
     debug.printer(diff_data, hp_data)
 
-    """    plt.clf()
-    plt.figure(figsize=(90, 25))
-    plt.grid()
-
-    plt.plot(tme_data, diff_data, drawstyle="steps", label="Difference Temperature [K]", linewidth=3, color="b")
-
-    plt.fill_between(tme_data, hp_data, step="pre", alpha=0.2, color="r")
-    plt.plot(tme_data, hp_data, drawstyle="steps", label="Required Heating Power [Wh]", linewidth=3, color="r")
-
-    plt.xticks(rotation=90, ha="right", fontsize=30)
-    plt.yticks(ha="right", fontsize=30)
-    plt.tight_layout()
-    plt.legend(loc="center left", fontsize=30)
-    plt.show()"""
-
     return tme_data, hp_data
 
 
@@ -659,3 +646,40 @@ def calc_diff_hp_energy(hp: list, power: list) -> list:
         diff.append(h_energy - hp[i])
 
     return diff
+
+
+def load_load_profile(path: str) -> (list, list, list):
+    config_data = config_manager.config_data
+
+    data_extension = path[path.rfind('.'):]
+
+    if '.json' in data_extension:
+        sheet = json.load(open(path, "rb+"))
+
+    elif '.xlsx' in data_extension or '.xls' in data_extension:
+
+        xl = pd.ExcelFile(path)
+        df = xl.parse(xl.sheet_names[0])
+        tme_data: list = []
+        date_data: list = []
+        load_data: list = []
+
+        for i in range(len(df.values)):
+            date_ = df.values[i][0]
+            load = df.values[i][1]
+            try:
+                date_time = datetime.datetime.strptime(date_, "%d.%m.%Y %H:%M")
+                date = date_time.date().strftime("%d-%m")
+                tme: str = date_time.time().strftime("%H:%M")
+                date_data.append(date)
+                tme_data.append(tme)
+                load_data.append(load * 1000)
+
+            except:
+                continue
+
+        return date_data, tme_data, load_data
+
+
+if __name__ == "__main__":
+    print(load_load_profile("../config/Lastgang_Schulzentrum_Sudwest_Bestand_2014.xls"))
