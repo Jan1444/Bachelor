@@ -39,87 +39,84 @@
             </li>
         </ul>
     </div>
-
-    <table class="BoxHeader">
-        <tr>
-            <td>
-                <img class="HeaderImage" alt="" src="../static/favicon/android-chrome-512x512.png">
-                <h1 class="Headerh1">Datei Upload</h1>
-            </td>
-        </tr>
-    </table>
-
-    <form action="/upload_file" class="BoxContent" method="post" enctype=multipart/form-data>
-        <!--Wetter Daten-->
-        <table>
-            {% if error_weather or error_market %}
-            <p style="color: red;">{{ error_weather }}</p>
-            <p style="color: red;">{{ error_market }}</p>
-            {% endif %}
-            <tr>
-                <td class="Box1" colspan="4">
-                    <b>
-                        Sonnen Daten
-                    </b>
-                    <a href="https://re.jrc.ec.europa.eu/pvg_tools/de/#api_5.2" target="_blank">download-site</a>
-                </td>
-            </tr>
-            <tr>
-                <td><label for="upload_file_json">Upload Datei</label></td>
-                <td><input id="upload_file_json" name="upload_file_json" type="file"></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td>{% if name %}
-                    <text>Datei erfolgreich hochgeladen</text>
+    <header class="BoxHeader">
+        <img class="HeaderImage" src="../static/favicon/android-chrome-512x512.png" alt="">
+        <h1 class="Headerh1">Datei Upload</h1>
+    </header>
+    <div class="BoxContent">
+        <form action="/upload_file_solar_data"  method="post" enctype=multipart/form-data >
+            <nav class="Box1">
+                <b>
+                    Sonnen Daten
+                </b>
+            </nav>
+            <nav class="Box1">
+                <a href="https://re.jrc.ec.europa.eu/pvg_tools/de/#api_5.2" target="_blank">
+                    download-site
+                </a>
+            </nav>
+            <section>
+                <div class="input-group">
+                    <label for="upload_file_json">Upload Datei</label>
+                    <input id="upload_file_json" name="upload_file_json" type="file">
+                </div>
+                <div>
+                    {% if name_solar %}
+                        <a>Datei erfolgreich hochgeladen</a>
                     {% endif %}
-                    {% if err_ending %}
-                    <text>{{ err_ending }}</text>
-                    {% endif %}</td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td>
+                    {% if err_ending_solar %}
+                        <a>{{ err_ending_solar }}</a>
+                    {% endif %}
+                </div>
+                <div class="input-group">
                     {% if not name %}
-                    <button type="submit">Upload</button>
+                        <button type="submit">Upload</button>
                     {% endif %}
-                </td>
-
-                <td></td>
-                <td></td>
-            </tr>
-        </table>
-    </form>
-    <form action="/analyze_file" method="post" class="BoxContent2">
-        <table>
-            <tr>
-                <td></td>
-                <td>
-                    {% if name %}
+                </div>
+            </section>
+        </form>
+        <form action="/analyze_file" method="post" >
+            <section>
+                <div class="input-group">
+                    {% if name_solar %}
                         <button type="submit">Analyze</button>
                     {% endif %}
-                </td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td></td>
-                <td>
-                    {% if error %}
-                        <br><text>{{ error }}</text>
+                </div>
+                <div class="input-group">
+                    {% if err_ending_solar %}
+                            <br><a>{{ err_ending_solar }}</a>
                     {% endif %}
-                </td>
+                </div>
+            </section>
+        </form>
 
-                <td></td>
-            </tr>
-        </table>
-    </form>
-
+        <form action="/upload_load_profile"  method="post" enctype=multipart/form-data>
+            <nav class="Box1">
+                <b>
+                    Last Profil
+                </b>
+            </nav>
+            <section>
+                <div class="input-group">
+                    <label for="upload_profile_file_json">Upload Datei</label>
+                    <input id="upload_profile_file_json" name="upload_file_json" type="file">
+                </div>
+                <div>
+                    {% if name_load %}
+                        <a>Datei erfolgreich hochgeladen</a>
+                    {% endif %}
+                    {% if err_ending_load %}
+                        <a>{{ err_ending_load }}</a>
+                    {% endif %}
+                </div>
+                <div class="input-group">
+                    {% if not name_load %}
+                        <button type="submit">Upload</button>
+                    {% endif %}
+                </div>
+            </section>
+        </form>
+    </div>
     <table class="BoxData">
             {% if data %}
             <tr>
