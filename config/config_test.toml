@@ -33,6 +33,10 @@ air_conditioner_steering = ""
 ip_address_cloud = ""
 ir_remote = ""
 
+[load_profile]
+name = "Lastgang_Schulzentrum_Sudwest_Bestand_2014.xls"
+
+
 [house]
 house_year = 0
 window1_frame = "ENEV"
