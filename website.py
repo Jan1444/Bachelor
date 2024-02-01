@@ -118,6 +118,8 @@ def analytics():
                                                         radiation_data_dni)
     energy_manager_data.write_energy_data(write_data)
 
+    fc.load_load_profile('')
+
     diff_power = fc.calc_diff_hp_energy(hp[1], power_data)
 
     plot_sitze: tuple = (60, 25)
@@ -247,9 +249,16 @@ def allowed_file(filename, extensions):
 
 @app.route('/settings')
 def settings():
+    config_files: list = os.listdir('config')
+    valid_files: list = []
+    for file in config_files:
+        if allowed_file(file, {'json', 'xlsx', 'xls'}):
+            valid_files.append(file)
+
     config_data = config_manager.config_data
     return render_template('set_vals.html', config=config_data, window_data=consts.window_data,
-                           wall_data=consts.wall_data, door_data=consts.door_data, ceiling_data=consts.ceiling_data)
+                           wall_data=consts.wall_data, door_data=consts.door_data, ceiling_data=consts.ceiling_data,
+                           load_files=valid_files)
 
 
 @app.route('/save_settings', methods=['POST'])

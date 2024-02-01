@@ -153,9 +153,26 @@
         </nav>
         <section>
             <div class="input-group">
-                <label for="consumer_price">Netzentgeld [ct]:</label>
+                <label for="consumer_price">Netzentgelt [ct]:</label>
                 <input id="consumer_price" minlength="1" name="consumer_price"
                        type="text" value="{{ config['market']['consumer_price'] }}">
+            </div>
+        </section>
+        <nav class="Box1">
+            <b>Lastprofil Auswahl</b>
+        </nav>
+        <section>
+            <div class="input-group">
+                <label for="load_profile_name">Lastprofil:</label>
+                <select name="load_profile_name" id="load_profile_name">
+                    {% for file in load_files %}
+                        <option value="{{ file }}"
+                                {% if file ==  config['load_profile']['name'] %}
+                                    selected="selected"
+                                {% endif %}>
+                            {{ file }}</option>
+                    {% endfor %}
+                </select>
             </div>
         </section>
         <nav class="Box1">
@@ -358,8 +375,8 @@
                                 {% endif %}
                                     value="{{ wall }}">{{ wall }}</option>
                             {% endfor %}
-                        </select>
 
+                        </select>
                         <div id="{{ wall_name }}_data"
                                 {% if config['house'][wall_name] == 'u_value' %}
                              class="invisible"
