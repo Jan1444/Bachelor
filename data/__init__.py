@@ -46,11 +46,11 @@ class EnergyManager:
         return self._energy_data
 
     def reload_data(self):
-        with self.energy_path.open(mode="r") as f:
+        with self.energy_path.open(mode="r", encoding='UTF-8') as f:
             self._energy_data = toml.load(f)
 
     def write_energy_data(self, data):
-        with self.energy_path.open(mode="w") as f:
+        with self.energy_path.open(mode="w", encoding='UTF-8') as f:
             toml.dump(data, f)
             self._energy_data = data  # Update the in-memory data
 

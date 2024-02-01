@@ -17,10 +17,10 @@ class ConfigManager:
         return self._config_data
 
     def _reload_config(self):
-        with self.config_path.open(mode="r") as fp:
+        with self.config_path.open(mode="r", encoding='UTF-8') as fp:
             self._config_data = toml.load(fp)
 
     def write_config_data(self, data):
-        with self.config_path.open(mode="w") as f:
+        with self.config_path.open(mode="w", encoding='UTF-8') as f:
             toml.dump(data, f)
             self._config_data = data
