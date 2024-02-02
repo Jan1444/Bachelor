@@ -11,3 +11,4 @@ Werkzeug
 pymelcloud
 daikinapi
 toml
+xlrd

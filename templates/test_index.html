@@ -54,32 +54,34 @@
         </nav>
         <section class="chart">
             <div id="chart_div1" class="chart-div"></div>
-            <div id="chart_div2" class="chart-div"></div>
         </section>
-        <button onclick="addDay()">Weiteren Tag hinzufügen</button>
+        <section class="input-group">
+            <button onclick="addDay1()">Weiteren Tag hinzufügen</button>
+        </section>
         <nav class="Box1">
             <b>Strom Preis</b>
         </nav>
         <section class="chart">
-            <img alt="Market Chart" src={{ url_market }}>
+            <div id="chart_div2" class="chart-div"></div>
         </section>
         <nav class="Box1">
             <b>Heizlast</b>
         </nav>
         <section class="chart">
-            <img alt="HeatingPower Chart" src={{ url_heating }}>
+            <div id="chart_div3" class="chart-div"></div>
+        </section>
+        <section class="input-group">
+            <button onclick="addDay3()">Weiteren Tag hinzufügen</button>
         </section>
         <nav class="Box1">
             <b>Differenz Heizlast &#8644; Strom</b>
         </nav>
         <section class="chart">
-            <img alt="Difference HeatingPower Chart" src={{ url_diff_heating }}>
+            <div id="chart_div4" class="chart-div"></div>
         </section>
-        <form action="/reload_analytics" method="post">
-            <section>
-                <button type="submit">Reload</button>
-            </section>
-        </form>
+                <section class="input-group">
+            <button onclick="addDay4()">Weiteren Tag hinzufügen</button>
+        </section>
     </div>
     <script type="text/javascript">
         google.charts.load('current', {'packages':['corechart']});
@@ -88,7 +90,16 @@
             drawChart1(chartData1);
         });
         google.charts.setOnLoadCallback(function() {
-            drawChart2({{ pv_power_data | tojson | safe }});
+            const chartData2 = {{ market_data | tojson | safe }};
+            drawChart2(chartData2);
+        });
+        google.charts.setOnLoadCallback(function() {
+            const chartData3 = {{ heating_power_data | tojson | safe }};
+            drawChart3(chartData3);
+        });
+        google.charts.setOnLoadCallback(function() {
+            const chartData4 = {{ differnce_power | tojson | safe }};
+            drawChart4(chartData4);
         });
     </script>
 </div>
