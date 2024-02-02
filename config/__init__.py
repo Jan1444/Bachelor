@@ -21,6 +21,6 @@ class ConfigManager:
             self._config_data = toml.load(fp)
 
     def write_config_data(self, data):
-        with self.config_path.open(mode="w", encoding='UTF-8') as f:
+        with self.config_path.open(mode="w") as f:
             toml.dump(data, f)
             self._config_data = data
