@@ -1,12 +1,13 @@
 from typing import Final
 
-config_file_Path: Final[str] = r'../config/config_test.toml'
-data_file_Path: Final[str] = r'./data/data.toml'
-downloads_file_Path: Final[str] = r'./downloads/'
-uploads_file_Path: Final[str] = r'uploads/'
-plot_path: Final[str] = r'./static/plots/'
+CONFIG_FILE_PATH: Final[str] = r'../config/config_test.toml'
+DATA_FILE_PATH: Final[str] = r'./data/data.toml'
+DOWNLOADS_FILE_PATH: Final[str] = r'./downloads/'
+UPLOADS_FILE_PATH: Final[str] = r'uploads/'
+PLOT_PATH: Final[str] = r'./static/plots/'
+LOAD_PROFILE_FOLDER: Final[str] = r'./static/load_datas'
 
-window_data: Final[dict] = {
+WINDOW_DATA: Final[dict] = {
     'Holzrahmen': ['Einfachverglasung', 'Doppelverglasung', 'Isolierverglasung'],
     'Kunststoffrahmen': ['Isolierverglasung'],
     'Metallrahmen': ['Isolierverglasung'],
@@ -14,7 +15,7 @@ window_data: Final[dict] = {
     'u_value': ['']
 }
 
-wall_data: Final[dict] = {
+WALL_DATA: Final[dict] = {
     'Außenwand': ['Massivbauweise', 'Holzkonstruktion'],
     'Innenwand': ['Massivbauweise', 'Holzkonstruktion'],
     'gegen Erdreich': ['Massivbauweise', 'Holzkonstruktion'],
@@ -23,12 +24,12 @@ wall_data: Final[dict] = {
     'u_value': ['']
 }
 
-door_data: Final[dict] = {
+DOOR_DATA: Final[dict] = {
     'ENEV': ['2009', '2014', '2016'],
     'u_value': ['']
 }
 
-ceiling_data: Final[dict] = {
+CEILING_DATA: Final[dict] = {
     'Decke über Außenbereich': ['Massiv', 'Holzbalkendecke'],
     'unbeheiztes Geschoss': ['Massiv', 'Holzbalkendecke'],
     'ENEV unbeheiztes Geschoss': ['2009', '2014', '2016'],
@@ -37,7 +38,7 @@ ceiling_data: Final[dict] = {
     'u_value': ['']
 }
 
-floor_data: Final[dict] = {
+FLOOR_DATA: Final[dict] = {
     'gegen Erdreich': ['Massivbauweise', 'Holzkonstruktion'],
     'unbeheiztes Geschoss': ['Massivbauweise', 'Holzkonstruktion'],
     'beheiztes Geschoss': ['Massivbauweise', 'Holzkonstruktion'],
@@ -46,7 +47,7 @@ floor_data: Final[dict] = {
     'u_value': ['']
 }
 
-config_data: Final[dict] = {
+CONFIG_DATA: Final[dict] = {
     "write_time": {
         "time": "",
         "format": "%d-%m-%Y %H:%M:%S"
