@@ -87,7 +87,6 @@ class MarketData:
         """
         if start and not end:
             url = rf"https://api.awattar.de/v1/marketdata?start={int(start)}"
-            print(url)
         elif end and not start:
             url = rf"https://api.awattar.de/v1/marketdata?end={int(end)}"
         elif start and end:

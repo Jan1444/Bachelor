@@ -68,44 +68,35 @@ def analytics():
                                                  energy_data.get("write_time", {"format": "0"}).get("format"))
     time_now = datetime.datetime.now()
 
-    if (time_now - time_write_data).seconds < (60 * 60) and (time_now - time_write_data).days <= 0:
-        if not config_data['reload']:
-            return render_template('analytics.html', name="new_plot",
-                                   url_weather=f"{consts.plot_path}output_weather.png",
-                                   url_market=f"{consts.plot_path}output_market.png",
-                                   url_heating=f"{consts.plot_path}output_heating.png",
-                                   url_diff_heating=f"{consts.plot_path}output_diff_heating.png",
-                                   energy_data=energy_data.get("energy", {"energy": 0}).get("energy"))
-
-        config_data['reload'] = False
-        config_manager.write_config_data(config_data)
-
     sun_class = fc.init_sun(config_data)
     pv_class = fc.init_pv(config_data)
+
+    start_date = time_now.date().strftime('%d-%m-%Y')
+    end_date = (time_now + datetime.timedelta(days=14)).date().strftime('%d-%m-%Y')
+
+    weather = fc.get_weather_data(config_data, start_date, end_date)
+
     market_class = fc.init_market(config_data)
-
-    weather = fc.get_weather_data(config_data)
-
-    today = list(weather.keys())[0]
-    weather_today = weather[today]
-    weather_today.pop("daily")
 
     radiation_data_dni: list = []
 
-    for tme, data in weather_today.items():
-        time_float = fc.string_time_to_float(tme)
-        temp: float = data.get("temp", 0)
-        radiation_dni = data.get("dni_radiation", 0)
-        azimuth, elevation = fc.get_sun_data(sun_class, time_float)
+    for date, weather_today in weather.items():
+        for tme, data in weather_today.items():
+            if tme == 'daily':
+                continue
+            time_float = fc.string_time_to_float(tme)
+            temp: float = data.get("temp", 0)
+            radiation_dni = data.get("dni_radiation", 0)
+            azimuth, elevation = fc.get_sun_data(sun_class, time_float)
 
-        power_dni: float = fc.get_pv_data(pv_class, temp, radiation_dni, azimuth, elevation, dni=True)
+            power_dni: float = fc.get_pv_data(pv_class, temp, radiation_dni, azimuth, elevation, dni=True)
 
-        if power_dni > converter_consts.get("max_power", 0):
-            power_dni = converter_consts.get("max_power", 0)
+            if power_dni > converter_consts.get("max_power", 0):
+                power_dni = converter_consts.get("max_power", 0)
 
-        power_data.append(power_dni)
-        weather_time.append(tme)
-        radiation_data_dni.append(radiation_dni)
+            power_data.append(power_dni)
+            weather_time.append(f'{date}: {tme}')
+            radiation_data_dni.append(radiation_dni)
 
     energy = fc.calc_energy(power_data, kwh=False, round_=2)
 
@@ -113,74 +104,33 @@ def analytics():
         market_time.append(t["start_timestamp"])
         market_price.append(t["consumerprice"])
 
-    hp = fc.heating_power()
+    hp = fc.heating_power(weather)
 
     write_data = analytics_module.prepare_data_to_write(weather_time, power_data, market_price, energy, None,
                                                         radiation_data_dni)
-    energy_manager_data.write_energy_data(write_data)
+    # energy_manager_data.write_energy_data(write_data)
 
-    date_data, tme_data, load_data = fc.load_load_profile(f'config/{load_profile.get("name")}')
+    data: dict = fc.load_load_profile(f'config/{load_profile.get("name")}')
 
-    time_now.date()
+    power_load: list = []
+    for day in range(0, 15):
+        date: str = (time_now.date() + datetime.timedelta(days=day)).strftime("%d-%m")
+        today_load: dict = data.get(date, "")
+        for i, (tme, load) in enumerate(today_load.items()):
+            power_load.append(power_data[i] - load)
 
-    diff_power = fc.calc_diff_hp_energy(hp[1], power_data)
+    diff_power = fc.calc_diff_hp_energy(hp[1], power_load)
 
-    plot_sitze: tuple = (60, 25)
-    plot_fontsize: int = 30
-    pot_linewidth: int = 3
+    pv_power_data = [[time, value] for time, value in zip(weather_time, power_data)]
 
-    plt.clf()
-    plt.figure(figsize=plot_sitze)
-    plt.grid()
-    plt.plot(weather_time, power_data, drawstyle="steps", label="Leistung [W]", linewidth=pot_linewidth, color="b")
-    plt.xticks(rotation=90, ha="right", fontsize=plot_fontsize)
-    _size = converter_consts["max_power"]
-    _step = 25 if _size <= 1000 else (_size / 50) if (_size / 50) % 5 == 0 else _size / 50 - (_size / 50) % 5
-    _ticks = np.arange(0, _size + _step, step=_step)
-    plt.yticks(ticks=_ticks, ha="right", fontsize=plot_fontsize)
-    plt.tight_layout()
-    plt.legend(loc="center left", fontsize=plot_fontsize)
-    plt.savefig(f'{consts.plot_path}output_weather.png')
+    market_data = [[time, value] for time, value in zip(market_time, market_price)]
 
-    plt.clf()
-    plt.figure(figsize=plot_sitze)
-    plt.grid()
-    plt.plot(market_time, market_price, drawstyle="steps", label="Preis [ct/kWh]", linewidth=pot_linewidth, color="g")
-    plt.xticks(rotation=90, ha="right", fontsize=plot_fontsize)
-    plt.yticks(ticks=np.arange(0, max(market_price) + 5, step=1), ha="right", fontsize=plot_fontsize)
-    plt.tight_layout()
-    plt.legend(loc="center left", fontsize=plot_fontsize)
-    plt.savefig(f'{consts.plot_path}output_market.png')
+    heating_power_data = [[time, value] for time, value in zip(hp[0], hp[1])]
 
-    plt.clf()
-    plt.figure(figsize=plot_sitze)
-    plt.grid()
-    plt.fill_between(hp[0], hp[1], step="pre", alpha=0.2, color="r")
-    plt.plot(hp[0], hp[1], drawstyle="steps", label="Heizlast [Wh]", linewidth=pot_linewidth, color="r")
-    plt.xticks(rotation=90, ha="right", fontsize=plot_fontsize)
-    plt.yticks(ha="right", fontsize=plot_fontsize)
-    plt.tight_layout()
-    plt.legend(loc="center left", fontsize=plot_fontsize)
-    plt.savefig(f'{consts.plot_path}output_heating.png')
+    differnce_power = [[time, value] for time, value in zip(hp[0], diff_power)]
 
-    plt.clf()
-    plt.figure(figsize=plot_sitze)
-    plt.grid()
-    plt.fill_between(hp[0], diff_power, step="pre", alpha=0.2, color="y")
-    plt.plot(hp[0], diff_power, drawstyle="steps", label="Differenz Heizenergie Solarleistung [Wh]",
-             linewidth=pot_linewidth, color="y")
-    plt.xticks(rotation=90, ha="right", fontsize=plot_fontsize)
-    plt.yticks(ha="right", fontsize=plot_fontsize)
-    plt.tight_layout()
-    plt.legend(loc="center left", fontsize=plot_fontsize)
-    plt.savefig(f'{consts.plot_path}output_diff_heating.png')
-
-    return render_template('analytics.html', name="new_plot",
-                           url_weather=f"{consts.plot_path}output_weather.png",
-                           url_market=f"{consts.plot_path}output_market.png",
-                           url_heating=f"{consts.plot_path}output_heating.png",
-                           url_diff_heating=f"{consts.plot_path}output_diff_heating.png",
-                           energy_data=energy)
+    return render_template('analytics.html', pv_power_data=pv_power_data, market_data=market_data,
+                           heating_power_data=heating_power_data, differnce_power=differnce_power)
 
 
 @app.route('/reload_analytics', methods=['POST'])

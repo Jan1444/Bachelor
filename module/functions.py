@@ -418,7 +418,7 @@ def data_analyzer(path: None | str = None):
             max_energy, time_max_energy, average_energy)
 
 
-def heating_power():
+def heating_power(weather: dict):
     def _calc_area(data_house: dict, prefix: str, prefix2: str | None = None):
         try:
             if prefix2 is None:
@@ -511,8 +511,8 @@ def heating_power():
     shelly_data = config_data["shelly"]
 
     hp: classes.RequiredHeatingPower = classes.RequiredHeatingPower()
-    weather: classes.Weather = classes.Weather(weather_data["latitude"], weather_data["longitude"])
-    trv: classes.ShellyTRVControl = classes.ShellyTRVControl(shelly_data["ip_address"])
+    # weather: classes.Weather = classes.Weather(weather_data["latitude"], weather_data["longitude"])
+    # trv: classes.ShellyTRVControl = classes.ShellyTRVControl(shelly_data["ip_address"])
 
     room = hp.Room
 
@@ -556,11 +556,16 @@ def heating_power():
     diff_data: list = []
     tme_data: list = []
 
-    today = weather.data[list(weather.data.keys())[0]]
+    # today = weather.data[list(weather.data.keys())[0]]
 
     old_temp: int = 16
-    for tme, data in today.items():
-        if tme != "daily":
+    print(weather)
+    for date, weather_today in weather.items():
+        print(weather_today)
+        for tme, data in weather_today.items():
+            if tme == 'daily':
+                continue
+
             outdoor_temp: float = data.get("temp", old_temp)
             old_temp = outdoor_temp
             diff_temp: float = indoor_temp - outdoor_temp
@@ -588,7 +593,7 @@ def heating_power():
 
             diff_data.append(diff_temp)
             hp_data.append(d)
-            tme_data.append(f"{tme}")
+            tme_data.append(f"{date}: {tme}")
 
     debug.printer(diff_data, hp_data)
 
@@ -648,41 +653,29 @@ def calc_diff_hp_energy(hp: list, power: list) -> list:
     return diff
 
 
-def load_load_profile(path: str) -> (list, list, list):
+def load_load_profile(path: str) -> dict:
     data_extension = path[path.rfind('.'):]
 
     if '.json' in data_extension:
         sheet = json.load(open(path, "rb+"))
 
     elif '.xlsx' in data_extension or '.xls' in data_extension:
-
         xl = pd.ExcelFile(path)
         df = xl.parse(xl.sheet_names[0])
-        tme_data: list = []
-        date_data: list = []
-        load_data: list = []
-
-        for i in range(len(df.values)):
-            date_ = df.values[i][0]
-            load = df.values[i][1]
-            try:
-                date_time = datetime.datetime.strptime(date_, "%d.%m.%Y %H:%M")
-                date = date_time.date().strftime("%d-%m")
-                tme: str = date_time.time().strftime("%H:%M")
-                date_data.append(date)
-                tme_data.append(tme)
-                load_data.append(load * 1000)
-
-            except:
-                continue
         data_dict = {}
-        for z, date in enumerate(date_data):
-            data_dict[f'{z}: {date}'] = {tme_data[z]: load_data[z]}
 
-        print(data_dict)
+        for row in df.values:
+            date_str, load = row[0], row[1]
+            try:
+                date_time = datetime.datetime.strptime(date_str, "%d.%m.%Y %H:%M")
+                date = date_time.date().strftime("%d-%m")
+                time = date_time.time().strftime("%H:%M")
 
-        return date_data, tme_data, load_data
+                if date not in data_dict:
+                    data_dict[date] = {}
+                data_dict[date][time] = load  # * 1000
 
+            except ValueError as e:
+                debug.printer(f"Error parsing date/time '{date_str}': {e}")
 
-if __name__ == "__main__":
-    (load_load_profile("../config/Lastgang_Schulzentrum_Sudwest_Bestand_2014.xls"))
+        return data_dict
