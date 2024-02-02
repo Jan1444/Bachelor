@@ -1,4 +1,6 @@
-var currentDayIndex1 = 0
+//https://developers.google.com/chart?hl=de
+
+var currentDayIndex1 = 1
 var currentDayIndex2 = 0
 var currentDayIndex3 = 0
 var currentDayIndex4 = 0
@@ -18,12 +20,13 @@ function drawChart1(chartData) {
     const data = new google.visualization.DataTable();
     data.addColumn('string', 'Zeit');
     data.addColumn('number', 'Leistung [Wh]');
-    data.addRows(chartData.slice(0, (1 + currentDayIndex1) * 96));
+    data.addRows(chartData.slice(0, (currentDayIndex1) * 96));
+    console.log(currentDayIndex1)
     chartData1 = chartData
 
     const options = {
         width: '100%',  // Setzen der Breite des Diagramms auf 800 Pixel
-        height: 550,
+        height: 575,
         legend: 'none',
         backgroundColor: 'transparent',
         hAxis: {
@@ -70,7 +73,7 @@ function drawChart1(chartData) {
 
 function addDay1() {
     drawChart1(chartData1);
-    currentDayIndex1++;
+    currentDayIndex1 ++;
 }
 
 
@@ -86,7 +89,7 @@ function drawChart2(chartData) {
 
     const options = {
         width: '100%',  // Setzen der Breite des Diagramms auf 800 Pixel
-        height: 550,
+        height: 575,
         legend: 'none',
         backgroundColor: 'transparent',
         hAxis: {
@@ -140,7 +143,7 @@ function drawChart3(chartData) {
 
     const options = {
         width: '100%',  // Setzen der Breite des Diagramms auf 800 Pixel
-        height: 550,
+        height: 575,
         legend: 'none',
         backgroundColor: 'transparent',
         hAxis: {
@@ -200,7 +203,7 @@ function drawChart4(chartData) {
 
     const options = {
         width: '100%',  // Setzen der Breite des Diagramms auf 800 Pixel
-        height: 550,
+        height: 575,
         legend: 'none',
         backgroundColor: 'transparent',
         hAxis: {

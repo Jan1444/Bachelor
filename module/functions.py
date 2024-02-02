@@ -412,7 +412,7 @@ def data_analyzer(path: None | str = None):
     plt.xticks(np.linspace(0, len(date_time_data), 100), rotation=90, ha='right', fontsize=8)
     plt.tight_layout()
     plt.margins(0.01)
-    plt.savefig(f"{consts.downloads_file_Path}plot_uploaded_data.png", dpi=300)
+    plt.savefig(f"{consts.DOWNLOADS_FILE_PATH}plot_uploaded_data.png", dpi=300)
 
     return (lat, lon, ele, rad_database, meteo_database, year_min, year_max, power_data, date_time_data,
             max_energy, time_max_energy, average_energy)

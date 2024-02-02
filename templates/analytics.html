@@ -44,6 +44,7 @@
             </li>
         </ul>
     </div>
+
     <header class="BoxHeader">
         <img class="HeaderImage" src="../static/favicon/android-chrome-512x512.png" alt="">
         <h1 class="Headerh1">Analytics</h1>
@@ -53,7 +54,9 @@
             <b>Wetter Daten Heutige produzierte Energie: {{ energy_data }} Wh</b>
         </nav>
         <section class="chart">
-            <div id="chart_div1" class="chart-div"></div>
+            <div class="input-group">
+                <div id="chart_div1" class="chart-div"></div>
+            </div>
         </section>
         <section class="input-group">
             <button onclick="addDay1()">Weiteren Tag hinzufügen</button>

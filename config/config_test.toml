@@ -1,7 +1,7 @@
-reload = false
+reload = true
 
 [write_time]
-time = "01-02-2024 22:13:41"
+time = "02-02-2024 14:12:02"
 format = "%d-%m-%Y %H:%M:%S"
 
 [coordinates]

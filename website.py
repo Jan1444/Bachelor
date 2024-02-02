@@ -98,7 +98,7 @@ def analytics():
             weather_time.append(f'{date}: {tme}')
             radiation_data_dni.append(radiation_dni)
 
-    energy = fc.calc_energy(power_data, kwh=False, round_=2)
+    energy = fc.calc_energy(power_data[:95], kwh=False, round_=2)
 
     for t in market_class.data:
         market_time.append(t["start_timestamp"])
@@ -106,11 +106,13 @@ def analytics():
 
     hp = fc.heating_power(weather)
 
-    write_data = analytics_module.prepare_data_to_write(weather_time, power_data, market_price, energy, None,
-                                                        radiation_data_dni)
+    # write_data = analytics_module.prepare_data_to_write(weather_time, power_data, market_price, energy, None,
+                                                        #radiation_data_dni)
     # energy_manager_data.write_energy_data(write_data)
+    if not os.path.exists(consts.LOAD_PROFILE_FOLDER):
+        os.makedirs(consts.LOAD_PROFILE_FOLDER)
 
-    data: dict = fc.load_load_profile(f'config/{load_profile.get("name")}')
+    data: dict = fc.load_load_profile(f'{consts.LOAD_PROFILE_FOLDER}/{load_profile.get("name")}')
 
     power_load: list = []
     for day in range(0, 15):
@@ -129,18 +131,9 @@ def analytics():
 
     differnce_power = [[time, value] for time, value in zip(hp[0], diff_power)]
 
-    return render_template('analytics.html', pv_power_data=pv_power_data, market_data=market_data,
+    return render_template('analytics.html',energy_data=energy,
+                           pv_power_data=pv_power_data, market_data=market_data,
                            heating_power_data=heating_power_data, differnce_power=differnce_power)
-
-
-@app.route('/reload_analytics', methods=['POST'])
-def reload_analytics():
-    config_data = config_manager.config_data
-
-    config_data['reload'] = True
-    config_manager.write_config_data(config_data)
-
-    return analytics()
 
 
 @app.route('/generate_download', methods=['POST'])
@@ -202,15 +195,15 @@ def allowed_file(filename, extensions):
 
 @app.route('/settings')
 def settings():
-    config_files: list = os.listdir('config')
+    config_files: list = os.listdir(consts.LOAD_PROFILE_FOLDER)
     valid_files: list = []
     for file in config_files:
         if allowed_file(file, {'json', 'xlsx', 'xls'}):
             valid_files.append(file)
 
     config_data = config_manager.config_data
-    return render_template('set_vals.html', config=config_data, window_data=consts.window_data,
-                           wall_data=consts.wall_data, door_data=consts.door_data, ceiling_data=consts.ceiling_data,
+    return render_template('set_vals.html', config=config_data, window_data=consts.WINDOW_DATA,
+                           wall_data=consts.WALL_DATA, door_data=consts.DOOR_DATA, ceiling_data=consts.CEILING_DATA,
                            load_files=valid_files)
 
 
@@ -227,9 +220,9 @@ def safe_settings():
         if data["mounting_type"] == "-1":
             return render_template('set_vals.html',
                                    error_mounting_type='Bitte wählen Sie einen Montagetypen aus',
-                                   config=config_data, window_data=consts.window_data,
-                                   wall_data=consts.wall_data, door_data=consts.door_data,
-                                   ceiling_data=consts.ceiling_data)
+                                   config=config_data, window_data=consts.WINDOW_DATA,
+                                   wall_data=consts.WALL_DATA, door_data=consts.DOOR_DATA,
+                                   ceiling_data=consts.CEILING_DATA)
 
         if ((data.get('latitude', "") != "" and data.get('longitude', "") != "") or (
                 data.get('Straße', "") != "" and data.get('Nr', "") != "" and
@@ -243,9 +236,9 @@ def safe_settings():
         else:
             return render_template('set_vals.html',
                                    error='Bitte füllen Sie mindestens Latitude, Longitude aus oder die Adresse',
-                                   config=config_data, window_data=consts.window_data,
-                                   wall_data=consts.wall_data, door_data=consts.door_data,
-                                   ceiling_data=consts.ceiling_data)
+                                   config=config_data, window_data=consts.WINDOW_DATA,
+                                   wall_data=consts.WALL_DATA, door_data=consts.DOOR_DATA,
+                                   ceiling_data=consts.CEILING_DATA)
 
 
 @app.route('/file_download')
@@ -270,7 +263,9 @@ def upload_file_solar_data():
 @app.route('/upload_load_profile', methods=['GET', 'POST'])
 def upload_load_profile():
     ex: set = {'json', 'xls', 'xlsx'}
-    err, filename, data = upload_file(ex, 'config', False)
+    if not os.path.exists(consts.LOAD_PROFILE_FOLDER):
+        os.makedirs(consts.LOAD_PROFILE_FOLDER)
+    err, filename, data = upload_file(ex, consts.LOAD_PROFILE_FOLDER, False)
 
     return render_template('file_upload.html', err_ending_load=err, name_load=filename, data=data)
 
@@ -332,27 +327,27 @@ def analyze_file():
 
 @app.route('/get_window/<frame>')
 def get_window(frame):
-    return jsonify(consts.window_data.get(frame, []))
+    return jsonify(consts.WINDOW_DATA.get(frame, []))
 
 
 @app.route('/get_wall/<wall>')
 def get_wall(wall):
-    return jsonify(consts.wall_data.get(wall, []))
+    return jsonify(consts.WALL_DATA.get(wall, []))
 
 
 @app.route('/get_floor/<floor>')
 def get_floor(floor):
-    return jsonify(consts.floor_data.get(floor, []))
+    return jsonify(consts.FLOOR_DATA.get(floor, []))
 
 
 @app.route('/get_ceiling/<ceiling>')
 def get_ceiling(ceiling):
-    return jsonify(consts.ceiling_data.get(ceiling, []))
+    return jsonify(consts.CEILING_DATA.get(ceiling, []))
 
 
 @app.route('/get_ceiling/<door>')
 def get_door(door):
-    return jsonify(consts.door_data.get(door, []))
+    return jsonify(consts.DOOR_DATA.get(door, []))
 
 
 @scheduler.task("cron", id="morning_saver", hour=5)

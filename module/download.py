@@ -35,8 +35,8 @@ def freeze_all(func):
 @freeze_all
 @lru_cache(maxsize=None)
 def generate_weather_data(request_data: dict, config_data: dict) -> list[str]:
-    if not os.path.exists(consts.downloads_file_Path):
-        os.mkdir(consts.downloads_file_Path)
+    if not os.path.exists(consts.DOWNLOADS_FILE_PATH):
+        os.mkdir(consts.DOWNLOADS_FILE_PATH)
 
     start_date = datetime.datetime.strptime(request_data['start_date_weather'], "%Y-%m-%d").strftime("%d-%m-%Y")
     end_date = datetime.datetime.strptime(request_data['end_date_weather'], "%Y-%m-%d").strftime("%d-%m-%Y")
@@ -69,15 +69,15 @@ def generate_weather_data(request_data: dict, config_data: dict) -> list[str]:
 
         energy_data[date] = functions.calc_energy(energy_data_list)
 
-    if os.path.exists(rf"{consts.downloads_file_Path}weather_data.xlsx"):
-        os.remove(rf"{consts.downloads_file_Path}weather_data.xlsx")
+    if os.path.exists(rf"{consts.DOWNLOADS_FILE_PATH}weather_data.xlsx"):
+        os.remove(rf"{consts.DOWNLOADS_FILE_PATH}weather_data.xlsx")
 
-    if os.path.exists(rf"{consts.downloads_file_Path}weather_plot.png"):
-        os.remove(rf"{consts.downloads_file_Path}weather_plot.png")
+    if os.path.exists(rf"{consts.DOWNLOADS_FILE_PATH}weather_plot.png"):
+        os.remove(rf"{consts.DOWNLOADS_FILE_PATH}weather_plot.png")
 
     if request_data.get("excel_weather", "") == "on":
         df = pd.DataFrame.from_dict(energy_data, orient='index', columns=['energy [kWh]'])
-        df.to_excel(f'{consts.downloads_file_Path}weather_data.xlsx')
+        df.to_excel(f'{consts.DOWNLOADS_FILE_PATH}weather_data.xlsx')
         msg.append("excel_weather")
 
     if request_data.get("plot_png_weather", "") == "on":
@@ -99,7 +99,7 @@ def generate_weather_data(request_data: dict, config_data: dict) -> list[str]:
         plt.yticks(ticks=ticks, ha="right", fontsize=20)
         plt.legend(loc="upper left", fontsize=20)
         plt.tight_layout()
-        plt.savefig(rf"{consts.downloads_file_Path}weather_plot.png")
+        plt.savefig(rf"{consts.DOWNLOADS_FILE_PATH}weather_plot.png")
 
         msg.append("plot_weather")
 
@@ -109,8 +109,8 @@ def generate_weather_data(request_data: dict, config_data: dict) -> list[str]:
 @freeze_all
 @lru_cache(maxsize=None)
 def generate_market_data(request_data: dict, config_data: dict) -> list[str]:
-    if not os.path.exists(consts.downloads_file_Path):
-        os.mkdir(consts.downloads_file_Path)
+    if not os.path.exists(consts.DOWNLOADS_FILE_PATH):
+        os.mkdir(consts.DOWNLOADS_FILE_PATH)
 
     market_class = functions.init_market(config_data, request_data.get('start_date_market'),
                                          request_data.get('end_date_market'))
@@ -135,14 +135,14 @@ def generate_market_data(request_data: dict, config_data: dict) -> list[str]:
             }
         )
 
-    if os.path.exists(rf"{consts.downloads_file_Path}market_data.xlsx"):
-        os.remove(rf"{consts.downloads_file_Path}market_data.xlsx")
-    if os.path.exists(rf"{consts.downloads_file_Path}plot_market.png"):
-        os.remove(rf"{consts.downloads_file_Path}plot_market.png")
+    if os.path.exists(rf"{consts.DOWNLOADS_FILE_PATH}market_data.xlsx"):
+        os.remove(rf"{consts.DOWNLOADS_FILE_PATH}market_data.xlsx")
+    if os.path.exists(rf"{consts.DOWNLOADS_FILE_PATH}plot_market.png"):
+        os.remove(rf"{consts.DOWNLOADS_FILE_PATH}plot_market.png")
 
     if request_data.get("excel_market", "") == "on":
         df = pd.DataFrame.from_dict(data_dict, orient='index', columns=['price [ct]'])
-        df.to_excel(f'{consts.downloads_file_Path}market_data.xlsx')
+        df.to_excel(f'{consts.DOWNLOADS_FILE_PATH}market_data.xlsx')
         msg.append("excel_market")
 
     if request_data.get("plot_png_market", "") == "on":
@@ -164,7 +164,7 @@ def generate_market_data(request_data: dict, config_data: dict) -> list[str]:
         plt.yticks(ticks=ticks, ha="right", fontsize=20)
         plt.legend(loc="upper left", fontsize=20)
         plt.tight_layout()
-        plt.savefig(rf"{consts.downloads_file_Path}market_plot.png")
+        plt.savefig(rf"{consts.DOWNLOADS_FILE_PATH}market_plot.png")
         msg.append("plot_market")
 
     return msg
