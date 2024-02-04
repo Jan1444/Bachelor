@@ -29,7 +29,7 @@
 
 .Box1 {
     background-color: darkcyan;
-    padding-left: 5px;
+    padding-left: 20px;
     margin-top: 1px;
     padding-bottom: 3px;
     padding-top: 3px;
@@ -50,17 +50,23 @@
     display: flex;
     align-items: center;
     margin-top: 5px;
+    margin-bottom: 30px;
 }
 
 
 .input-group button {
-    display: flex;
-    align-items: center;
-    margin-top: 5px;
-    margin-left: 75%;
-    height: 27px;
+    height: 25px;
     font-family: var(--font_family);
     font-size: calc(var(--font_height) - 10px);
+    width: 100px;
+}
+
+.remove_button{
+    margin-left: 65%;
+}
+
+.add_button{
+    margin-left: 11%;
 }
 
 .chart-div {
