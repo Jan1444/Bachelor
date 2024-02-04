@@ -12,17 +12,6 @@ var chartData4;
 var chartData5;
 
 
-document.addEventListener('DOMContentLoaded', function () {
-    addDay1();
-    addDay3();
-    addDay4();
-    addDay5();
-    removeDay1();
-    removeDay3();
-    removeDay4();
-    removeDay5();
-}, false);
-
 function drawChart1(chartData) {
     const data = new google.visualization.DataTable();
     data.addColumn('string', 'Zeit');
@@ -89,6 +78,7 @@ function drawChart1(chartData) {
 }
 
 function addDay1() {
+    console.log('Why?')
     if (currentDayIndex1 < 15) {
         currentDayIndex1++;
     }
