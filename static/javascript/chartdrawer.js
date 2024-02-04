@@ -1,42 +1,55 @@
 //https://developers.google.com/chart?hl=de
 
 var currentDayIndex1 = 1
-var currentDayIndex2 = 0
-var currentDayIndex3 = 0
-var currentDayIndex4 = 0
+var currentDayIndex2 = 1
+var currentDayIndex3 = 1
+var currentDayIndex4 = 1
+var currentDayIndex5 = 1
 var chartData1;
 var chartData2;
 var chartData3;
 var chartData4;
+var chartData5;
 
 
 document.addEventListener('DOMContentLoaded', function () {
     addDay1();
     addDay3();
     addDay4();
+    addDay5();
 }, false);
 
 function drawChart1(chartData) {
     const data = new google.visualization.DataTable();
     data.addColumn('string', 'Zeit');
     data.addColumn('number', 'Leistung [Wh]');
-    data.addRows(chartData.slice(0, (currentDayIndex1) * 96));
-    console.log(currentDayIndex1)
+
+
     chartData1 = chartData
+    data.addRows(chartData.slice(0, currentDayIndex1 * 96));
+
 
     const options = {
-        width: '100%',  // Setzen der Breite des Diagramms auf 800 Pixel
+        width: '100%',
         height: 575,
-        legend: 'none',
+        legend: {
+            position: 'right',
+            textStyle: {
+                color: 'white',
+                fontSize: 15,
+                fontName: 'Arial'
+            }
+        },
+        is3D: true,
         backgroundColor: 'transparent',
         hAxis: {
             title: 'Zeit',
             titleTextStyle: {
-                color: 'white',    // Farbe des Titels
-                fontName: 'Arial', // Schriftart des Titels
-                fontSize: 20,      // Schriftgröße des Titels
-                bold: false,        // Fett gedruckter Titel
-                italic: false      // Titel nicht kursiv
+                color: 'white',
+                fontName: 'Arial',
+                fontSize: 20,
+                bold: false,
+                italic: false
             },
             textStyle: {
                 color: 'white',
@@ -49,11 +62,11 @@ function drawChart1(chartData) {
         vAxis: {
             title: 'Leistung [W]',
             titleTextStyle: {
-                color: 'white',    // Farbe des Titels
-                fontName: 'Arial', // Schriftart des Titels
-                fontSize: 20,      // Schriftgröße des Titels
-                bold: false,        // Fett gedruckter Titel
-                italic: false      // Titel nicht kursiv
+                color: 'white',
+                fontName: 'Arial',
+                fontSize: 20,
+                bold: false,
+                italic: false
             },
             textStyle: {
                 color: 'white',
@@ -64,7 +77,7 @@ function drawChart1(chartData) {
             },
             minValue: 0
         },
-        colors: ['blue']
+        colors: ['blue', 'darkblue', 'lightblue']
     };
 
     const chart = new google.visualization.LineChart(document.getElementById('chart_div1'));
@@ -73,18 +86,15 @@ function drawChart1(chartData) {
 
 function addDay1() {
     drawChart1(chartData1);
-    currentDayIndex1 ++;
+    currentDayIndex1++;
 }
-
-
-
 
 
 function drawChart2(chartData) {
     const data = new google.visualization.DataTable();
     data.addColumn('string', 'Zeit');
     data.addColumn('number', 'Preis [ct/kWh]');
-    data.addRows(chartData.slice(0, (1 + currentDayIndex2) * 96));
+    data.addRows(chartData.slice(0, currentDayIndex2 * 96));
     chartData2 = chartData
 
     const options = {
@@ -138,7 +148,7 @@ function drawChart3(chartData) {
     const data = new google.visualization.DataTable();
     data.addColumn('string', 'Zeit');
     data.addColumn('number', 'Heizlast [Wh]');
-    data.addRows(chartData.slice(0, (1 + currentDayIndex3) * 96));
+    data.addRows(chartData.slice(0, currentDayIndex3 * 96));
     chartData3 = chartData
 
     const options = {
@@ -165,6 +175,7 @@ function drawChart3(chartData) {
         },
         vAxis: {
             title: 'Heizlast [Wh]',
+            minValue: 0,
             titleTextStyle: {
                 color: 'white',    // Farbe des Titels
                 fontName: 'Arial', // Schriftart des Titels
@@ -179,7 +190,6 @@ function drawChart3(chartData) {
                 bold: false,
                 italic: false
             },
-            minValue: 0,
 
         },
         colors: ['red']
@@ -196,15 +206,18 @@ function addDay3() {
 
 function drawChart4(chartData) {
     const data = new google.visualization.DataTable();
+
     data.addColumn('string', 'Zeit');
     data.addColumn('number', 'Differenz Heizenergie Solarleistung [Wh]');
-    data.addRows(chartData.slice(0, (1 + currentDayIndex4) * 96));
+
     chartData4 = chartData
+    data.addRows(chartData.slice(0, currentDayIndex4 * 96));
 
     const options = {
         width: '100%',  // Setzen der Breite des Diagramms auf 800 Pixel
         height: 575,
         legend: 'none',
+        isStacked: true,
         backgroundColor: 'transparent',
         hAxis: {
             title: 'Zeit',
@@ -224,7 +237,7 @@ function drawChart4(chartData) {
             }
         },
         vAxis: {
-            title: 'Differenz Heizenergie Solarleistung [Wh]',
+            title: 'Differenz Heizenergie Solarleistung\n[Wh]',
             titleTextStyle: {
                 color: 'white',    // Farbe des Titels
                 fontName: 'Arial', // Schriftart des Titels
@@ -250,4 +263,66 @@ function drawChart4(chartData) {
 function addDay4() {
     drawChart4(chartData4);
     currentDayIndex4++;
+}
+
+function drawChart5(chartData) {
+    const data = new google.visualization.DataTable();
+
+    data.addColumn('string', 'Zeit');
+    data.addColumn('number', 'Akkuladestand [%]');
+
+    chartData5 = chartData
+    data.addRows(chartData.slice(0, currentDayIndex5 * 96));
+
+    const options = {
+        width: '100%',  // Setzen der Breite des Diagramms auf 800 Pixel
+        height: 575,
+        legend: 'none',
+        isStacked: true,
+        backgroundColor: 'transparent',
+        hAxis: {
+            title: 'Zeit',
+            titleTextStyle: {
+                color: 'white',    // Farbe des Titels
+                fontName: 'Arial', // Schriftart des Titels
+                fontSize: 20,      // Schriftgröße des Titels
+                bold: false,        // Fett gedruckter Titel
+                italic: false      // Titel nicht kursiv
+            },
+            textStyle: {
+                color: 'white',
+                fontName: 'Arial New',
+                fontSize: 16,
+                bold: false,
+                italic: false
+            }
+        },
+        vAxis: {
+            title: 'Akkuladestand [%]',
+            minValue: 0,
+            titleTextStyle: {
+                color: 'white',    // Farbe des Titels
+                fontName: 'Arial', // Schriftart des Titels
+                fontSize: 20,      // Schriftgröße des Titels
+                bold: false,        // Fett gedruckter Titel
+                italic: false      // Titel nicht kursiv
+            },
+            textStyle: {
+                color: 'white',
+                fontName: 'Arial',
+                fontSize: 14,
+                bold: false,
+                italic: false
+            },
+        },
+        colors: ['brown']
+    };
+
+    const chart = new google.visualization.AreaChart(document.getElementById('chart_div5'));
+    chart.draw(data, options);
+}
+
+function addDay5() {
+    drawChart5(chartData5);
+    currentDayIndex5++;
 }

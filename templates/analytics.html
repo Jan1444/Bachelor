@@ -51,7 +51,7 @@
     </header>
     <div class="BoxContent">
         <nav class="Box1">
-            <b>Wetter Daten Heutige produzierte Energie: {{ energy_data }} Wh</b>
+            <b>Wetter Daten Heutige produzierte Energie: {{ energy_data }} Wh &#177; x%</b>
         </nav>
         <section class="chart">
             <div class="input-group">
@@ -82,27 +82,40 @@
         <section class="chart">
             <div id="chart_div4" class="chart-div"></div>
         </section>
-                <section class="input-group">
+        <section class="input-group">
             <button onclick="addDay4()">Weiteren Tag hinzufügen</button>
+        </section>
+        <nav class="Box1">
+            <b>Akkuladestand</b>
+        </nav>
+        <section class="chart">
+            <div id="chart_div5" class="chart-div"></div>
+        </section>
+        <section class="input-group">
+            <button onclick="addDay5()">Weiteren Tag hinzufügen</button>
         </section>
     </div>
     <script type="text/javascript">
-        google.charts.load('current', {'packages':['corechart']});
-        google.charts.setOnLoadCallback(function() {
+        google.charts.load('current', {'packages': ['corechart']});
+        google.charts.setOnLoadCallback(function () {
             const chartData1 = {{ pv_power_data | tojson | safe }};
             drawChart1(chartData1);
         });
-        google.charts.setOnLoadCallback(function() {
+        google.charts.setOnLoadCallback(function () {
             const chartData2 = {{ market_data | tojson | safe }};
             drawChart2(chartData2);
         });
-        google.charts.setOnLoadCallback(function() {
+        google.charts.setOnLoadCallback(function () {
             const chartData3 = {{ heating_power_data | tojson | safe }};
             drawChart3(chartData3);
         });
-        google.charts.setOnLoadCallback(function() {
+        google.charts.setOnLoadCallback(function () {
             const chartData4 = {{ differnce_power | tojson | safe }};
             drawChart4(chartData4);
+        });
+        google.charts.setOnLoadCallback(function () {
+            const chartData5 = {{ battery_power | tojson | safe }};
+            drawChart5(chartData5);
         });
     </script>
 </div>
