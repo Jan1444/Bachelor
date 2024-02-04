@@ -147,6 +147,26 @@
                 <input id="converter_power" minlength="1" name="converter_power"
                        type="text" value="{{ config['converter']['max_power'] }}">
             </div>
+            <div class="input-group">
+                <label for="converter_efficiency">Wechselrichter Effizienz [%]:</label>
+                <input id="converter_efficiency" minlength="1" name="converter_efficiency"
+                       type="text" value="{{ config['converter']['efficiency'] }}">
+            </div>
+        </section>
+        <nav class="Box1">
+            <b>Akku</b>
+        </nav>
+        <section>
+            <div class="input-group">
+                <label for="battery_capacity">Akku Kapazität [kWh]:</label>
+                <input id="battery_capacity" minlength="1" name="battery_capacity"
+                       type="text" value="{{ config['battery']['capacity'] }}">
+            </div>
+            <div class="input-group">
+                <label for="battery_max_deload">max. Entladetiefe DoD [%]:</label>
+                <input id="battery_max_deload" minlength="1" name="battery_max_deload"
+                       type="text" value="{{ config['battery']['max_deload'] }}">
+            </div>
         </section>
         <nav class="Box1">
             <b>Strompreis</b>

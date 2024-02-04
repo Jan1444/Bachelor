@@ -28,6 +28,7 @@ def write_data_to_config(config_data: dict, data: dict) -> dict | int:
         market = config_data.get('market')
         load_profile = config_data.get('load_profile')
         converter = config_data.get('converter')
+        battery = config_data.get('battery')
         shelly = config_data.get('shelly')
         air_conditioner = config_data.get('air_conditioner')
 
@@ -48,6 +49,10 @@ def write_data_to_config(config_data: dict, data: dict) -> dict | int:
         pv['mounting_type'] = int(data.get('mounting_type', 0))
 
         converter['max_power'] = float(data.get('converter_power', 0))
+        converter['efficiency'] = float(data.get('converter_efficiency', 0))
+
+        battery['capacity'] = float(data.get('battery_capacity', 0))
+        battery['max_deload'] = float(data.get('battery_max_deload', 0))
 
         market['consumer_price'] = float(data.get('consumer_price', 0))
 
