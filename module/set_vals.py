@@ -53,6 +53,7 @@ def write_data_to_config(config_data: dict, data: dict) -> dict | int:
 
         battery['capacity'] = float(data.get('battery_capacity', 0))
         battery['max_deload'] = float(data.get('battery_max_deload', 0))
+        battery['load_efficiency'] = float(data.get('battery_load_efficiency', 0))
 
         market['consumer_price'] = float(data.get('consumer_price', 0))
 
