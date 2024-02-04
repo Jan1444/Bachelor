@@ -17,12 +17,16 @@ document.addEventListener('DOMContentLoaded', function () {
     addDay3();
     addDay4();
     addDay5();
+    removeDay1();
+    removeDay3();
+    removeDay4();
+    removeDay5();
 }, false);
 
 function drawChart1(chartData) {
     const data = new google.visualization.DataTable();
     data.addColumn('string', 'Zeit');
-    data.addColumn('number', 'Leistung [Wh]');
+    data.addColumn('number', 'Leistung [W]');
 
 
     chartData1 = chartData
@@ -85,8 +89,18 @@ function drawChart1(chartData) {
 }
 
 function addDay1() {
+    if (currentDayIndex1 < 15) {
+        currentDayIndex1++;
+    }
     drawChart1(chartData1);
-    currentDayIndex1++;
+}
+
+function removeDay1() {
+
+    if (currentDayIndex1 > 1) {
+        currentDayIndex1--;
+    }
+    drawChart1(chartData1);
 }
 
 
@@ -200,8 +214,18 @@ function drawChart3(chartData) {
 }
 
 function addDay3() {
+    if (currentDayIndex3 < 15) {
+        currentDayIndex3++;
+    }
     drawChart3(chartData3);
-    currentDayIndex3++;
+}
+
+function removeDay3() {
+
+    if (currentDayIndex3 > 1) {
+        currentDayIndex3--;
+    }
+    drawChart3(chartData3);
 }
 
 function drawChart4(chartData) {
@@ -261,8 +285,18 @@ function drawChart4(chartData) {
 }
 
 function addDay4() {
+    if (currentDayIndex4 < 15) {
+        currentDayIndex4++;
+    }
     drawChart4(chartData4);
-    currentDayIndex4++;
+}
+
+function removeDay4() {
+
+    if (currentDayIndex4 > 1) {
+        currentDayIndex4--;
+    }
+    drawChart4(chartData4);
 }
 
 function drawChart5(chartData) {
@@ -323,6 +357,16 @@ function drawChart5(chartData) {
 }
 
 function addDay5() {
+    if (currentDayIndex5 < 15) {
+        currentDayIndex5++;
+    }
     drawChart5(chartData5);
-    currentDayIndex5++;
+}
+
+function removeDay5() {
+
+    if (currentDayIndex5 > 1) {
+        currentDayIndex5--;
+    }
+    drawChart5(chartData5);
 }
