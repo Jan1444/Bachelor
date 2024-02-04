@@ -59,11 +59,20 @@ def analytics():
     load_profile = config_data["load_profile"]
     battery = config_data.get('battery')
 
-    power_data: list = []
+    pv_power_data: list = []
     weather_time: list = []
 
     market_time: list = []
     market_price: list = []
+
+    diff_heating_pv: list = []
+
+    battery_load: list = []
+    min_capacity = battery.get('capacity', 0) * 1000 * (1 - battery.get('max_deload', 100) / 100)
+    battery_capacity = battery.get('capacity', 0) * 1000
+    state_of_charge: float = min_capacity / battery_capacity * 100
+    min_state_of_charge = min_capacity / battery_capacity * 100
+    load_efficiency: float = battery.get('load_efficiency', 0) / 100
 
     time_write_data = datetime.datetime.strptime(energy_data.get("write_time", {"time": "0"}).get("time"),
                                                  energy_data.get("write_time", {"format": "0"}).get("format"))
@@ -82,12 +91,12 @@ def analytics():
     radiation_data_dni: list = []
 
     for date, weather_today in weather.items():
-        for tme, data in weather_today.items():
+        for tme, load_profile_data in weather_today.items():
             if tme == 'daily':
                 continue
             time_float = fc.string_time_to_float(tme)
-            temp: float = data.get("temp", 0)
-            radiation_dni = data.get("dni_radiation", 0)
+            temp: float = load_profile_data.get("temp", 0)
+            radiation_dni = load_profile_data.get("dni_radiation", 0)
             azimuth, elevation = fc.get_sun_data(sun_class, time_float)
 
             power_dni: float = fc.get_pv_data(pv_class, temp, radiation_dni, azimuth, elevation, dni=True)
@@ -95,55 +104,45 @@ def analytics():
             if power_dni > converter_consts.get("max_power", 0):
                 power_dni = converter_consts.get("max_power", 0)
 
-            power_data.append(power_dni)
+            pv_power_data.append(power_dni)
             weather_time.append(f'{date} {tme}')
             radiation_data_dni.append(radiation_dni)
 
-    energy = fc.calc_energy(power_data[:95], kwh=False, round_=2)
+    energy_today = fc.calc_energy(pv_power_data[:95], kwh=False, round_=2)
 
     for t in market_class.data:
         market_time.append(t["start_timestamp"])
         market_price.append(t["consumerprice"])
 
-    hp = fc.heating_power(weather)
+    hp = fc.heating_power(config_data ,weather)
 
-    # write_data = analytics_module.prepare_data_to_write(weather_time, power_data, market_price, energy, None,
+    # write_data = analytics_module.prepare_data_to_write(weather_time, pv_power_data, market_price, energy, None,
     # radiation_data_dni)
     # energy_manager_data.write_energy_data(write_data)
 
     if not os.path.exists(consts.LOAD_PROFILE_FOLDER):
         os.makedirs(consts.LOAD_PROFILE_FOLDER)
 
-    data: dict = fc.load_load_profile(f'{consts.LOAD_PROFILE_FOLDER}/{load_profile.get("name")}')
+    load_profile_data: dict = fc.load_load_profile(f'{consts.LOAD_PROFILE_FOLDER}/{load_profile.get("name")}')
+    indx_diff_heat_pv = 0
+    for day, date in enumerate(weather.keys()):
+        date: str = date.rsplit('-', 1)[0]
+        curr_load: dict = load_profile_data.get(date, "")
+        for i, (tme, load_data) in enumerate(curr_load.items()):
+            diff_heating_pv.append(pv_power_data[indx_diff_heat_pv] - load_data)
+            #print(indx_diff_heat_pv, date, tme, weather_time[indx_diff_heat_pv], pv_power_data[indx_diff_heat_pv], load_data, diff_heating_pv[indx_diff_heat_pv])
+            indx_diff_heat_pv += 1
 
-    power_load: list = []
-
-    for day in range(0, 15):
-        date: str = (time_now.date() + datetime.timedelta(days=day)).strftime("%d-%m")
-        today_load: dict = data.get(date, "")
-        for i, (tme, load) in enumerate(today_load.items()):
-            indx = i * (day + 1)
-            power_load.append(power_data[indx] - load)
-
-    battery_load: list = []
-
-    min_capacity = battery.get('capacity', 0) * 1000 * (1 - battery.get('max_deload', 100) / 100)
-    battery_capacity = battery.get('capacity', 0) * 1000
-    state_of_charge: float = min_capacity / battery_capacity * 100
-    min_state_of_charge = min_capacity / battery_capacity * 100
-    load_efficiency: float = 0.95
-
-    for power in power_load:  # power_data
+    for power in diff_heating_pv:  # pv_power_data
         energy = power * 0.25
         netto_energy = energy * load_efficiency
         state_of_charge += netto_energy / battery_capacity * 100
-        print(power, state_of_charge, netto_energy, load_efficiency, battery_capacity)
         state_of_charge = max(min_state_of_charge, min(state_of_charge, 100))
         battery_load.append(state_of_charge)
 
-    diff_power = fc.calc_diff_hp_energy(hp[1], power_load)
+    diff_power = fc.calc_diff_hp_energy(config_data, hp[1], diff_heating_pv)
 
-    pv_power_data = [[time, value] for time, value in zip(weather_time, power_data)]
+    pv_power_data = [[time, value] for time, value in zip(weather_time, pv_power_data)]
 
     market_data = [[time, value] for time, value in zip(market_time, market_price)]
 
@@ -153,7 +152,7 @@ def analytics():
 
     battery_power = [[time, value] for time, value in zip(hp[0], battery_load)]
 
-    return render_template('analytics.html', energy_data=energy,
+    return render_template('analytics.html', energy_data=energy_today,
                            pv_power_data=pv_power_data, market_data=market_data,
                            heating_power_data=heating_power_data, differnce_power=differnce_power,
                            battery_power=battery_power)
@@ -278,7 +277,7 @@ def file_upload():
 @app.route('/upload_file_solar_data', methods=['GET', 'POST'])
 def upload_file_solar_data():
     ex: set = {'json'}
-    err, filename, data = upload_file(ex, 'config', False)
+    err, filename, data = upload_file(ex, 'uploads', False)
 
     return render_template('file_upload.html', err_ending_solar=err, name_solar=filename, data=data)
 
@@ -328,7 +327,9 @@ def upload_file(extensions: set, folder: str, delete_file=True):
 
 @app.route('/analyze_file', methods=['GET', 'POST'])
 def analyze_file():
-    ret = fc.data_analyzer()
+    config_data = config_manager.config_data
+
+    ret = fc.data_analyzer(config_data)
     if ret == -1:
         return render_template('file_upload.html', error="Bitte wählen Sie 'Einstrahlungskomponenten' aus")
 
