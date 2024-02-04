@@ -296,13 +296,13 @@ def unpack_data(data: dict) -> (list[str], list[float], list[float], list[float]
         print(f"In line: {error_key * 5 + 7}")
 
 
-def data_analyzer(path: None | str = None):
-    config_data = config_manager.config_data
-    config_pv: dict = config_data["pv"]
+def data_analyzer(config_data: dict, path: None | str = None):
     if path is None:
         path = rf"./uploads/{os.listdir("./uploads")[0]}"
 
     data = json.load(open(path, "rb+"))
+
+    config_pv: dict = config_data["pv"]
 
     location: dict = data["inputs"]["location"]
     meteo_data: dict = data["inputs"]["meteo_data"]
@@ -559,9 +559,7 @@ def heating_power(weather: dict):
     # today = weather.data[list(weather.data.keys())[0]]
 
     old_temp: int = 16
-    print(weather)
     for date, weather_today in weather.items():
-        print(weather_today)
         for tme, data in weather_today.items():
             if tme == 'daily':
                 continue
@@ -595,7 +593,7 @@ def heating_power(weather: dict):
             hp_data.append(d)
             tme_data.append(f"{date} {tme}")
 
-    debug.printer(diff_data, hp_data)
+    # debug.printer(diff_data, hp_data)
 
     return tme_data, hp_data
 
