@@ -593,7 +593,7 @@ def heating_power(weather: dict):
 
             diff_data.append(diff_temp)
             hp_data.append(d)
-            tme_data.append(f"{date}: {tme}")
+            tme_data.append(f"{date} {tme}")
 
     debug.printer(diff_data, hp_data)
 
@@ -644,11 +644,11 @@ def calc_diff_hp_energy(hp: list, power: list) -> list:
 
     cop: float = config_data.get("air_conditioner", {"air_conditioner_cop": 0}).get("air_conditioner_cop")
 
-    heating_energy: list = list(map(lambda x: x * cop, power))
+    heating_energy: list = list(map(lambda x: (x * cop) if x is not None else None, power))
     diff: list = []
 
     for i, h_energy in enumerate(heating_energy):
-        diff.append(h_energy - hp[i])
+        diff.append((h_energy - hp[i]) if h_energy is not None else None)
 
     return diff
 
@@ -667,15 +667,27 @@ def load_load_profile(path: str) -> dict:
         for row in df.values:
             date_str, load = row[0], row[1]
             try:
-                date_time = datetime.datetime.strptime(date_str, "%d.%m.%Y %H:%M")
+                date_time = datetime.datetime.strptime(date_str, "%d.%m.%Y %H:%M:%S")
+
                 date = date_time.date().strftime("%d-%m")
                 time = date_time.time().strftime("%H:%M")
 
                 if date not in data_dict:
                     data_dict[date] = {}
-                data_dict[date][time] = load  # * 1000
+                data_dict[date][time] = float(str(load).replace(",", '.'))  # * 1000
 
             except ValueError as e:
-                debug.printer(f"Error parsing date/time '{date_str}': {e}")
+                # debug.printer(f"Error parsing date/time '{date_str}': {e}")
+                pass
+
+            except TypeError as e:
+                # debug.printer(f"Error parsing date/time '{date_str}': {e}")
+                if 'timestamp' in str(type(date_str)):
+                    date_time = date_str
+                    date = date_time.date().strftime("%d-%m")
+                    time = date_time.time().strftime("%H:%M")
+                    if date not in data_dict:
+                        data_dict[date] = {}
+                    data_dict[date][time] = float(str(load).replace(",", '.'))  # * 1000
 
         return data_dict
