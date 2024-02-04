@@ -14,11 +14,7 @@ import requests
 import toml
 from frozendict import frozendict
 
-from config import ConfigManager as ConfigManager_config
-
 from module import classes, consts, debug
-
-config_manager = ConfigManager_config("config_test.toml")
 
 
 def freeze_all(func):
@@ -418,7 +414,7 @@ def data_analyzer(config_data: dict, path: None | str = None):
             max_energy, time_max_energy, average_energy)
 
 
-def heating_power(weather: dict):
+def heating_power(config_data: dict, weather: dict):
     def _calc_area(data_house: dict, prefix: str, prefix2: str | None = None):
         try:
             if prefix2 is None:
@@ -503,8 +499,6 @@ def heating_power(weather: dict):
             print(prefix)
             print(f"Attribute Missing: {err}")
             return 0
-
-    config_data = config_manager.config_data
 
     data: dict = config_data["house"]
     weather_data = config_data["coordinates"]
@@ -637,9 +631,7 @@ def comp_mor_ev_data(morning_data, evening_data):
     }
 
 
-def calc_diff_hp_energy(hp: list, power: list) -> list:
-    config_data: dict = config_manager.config_data
-
+def calc_diff_hp_energy(config_data: dict, hp: list, power: list) -> list:
     cop: float = config_data.get("air_conditioner", {"air_conditioner_cop": 0}).get("air_conditioner_cop")
 
     heating_energy: list = list(map(lambda x: (x * cop) if x is not None else None, power))
