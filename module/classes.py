@@ -80,10 +80,10 @@ class MarketData:
     def get_data(self, start: int | None = None, end: int | None = None) -> dict:
         """
         Retrieves data from the AWATTAR API for 24 hours, or the specified start and end time.
-        https://www.awattar.de/services/api
-        :param start: start time in millisecond.
-        :param end: end time in milliseconds.
-        :return: json string of the data as dict.
+        Https://www.awattar.de/services/api
+        :param start: start time in a millisecond.
+        :param end: End time in milliseconds.
+        :return: Json string of the data as dict.
         """
         if start and not end:
             url = rf"https://api.awattar.de/v1/marketdata?start={int(start)}"
@@ -94,7 +94,12 @@ class MarketData:
         else:
             url = r"https://api.awattar.de/v1/marketdata"
         print(url)
-        return self.session.get(url).json()['data']
+        response = self.session.get(url)
+        if response.from_cache:
+            print('Market data cached object')
+        else:
+            print('Market data new object')
+        return response.json()['data']
 
     def convert_dict(self, consumer_costs) -> None:
         """
@@ -156,8 +161,8 @@ class Weather:
         """
         Creates the dictionary for the weather data
         :param weather_data: received weather data from the api.
-        :param start_date: start date of the weather data.
-        :param end_date: end date of the weather data.
+        :param start_date: Start date of the weather data.
+        :param end_date: End date of the weather data.
         :return:
         """
         days: list = []
@@ -243,7 +248,13 @@ class Weather:
                         f"-{str(start.day).zfill(2)}"
                         f"&end_date={end.year}-{str(end.month).zfill(2)}-{str(end.day).zfill(2)}")
         print(url)
-        return self.session.get(url).json()
+
+        response = self.session.get(url)
+        if response.from_cache:
+            print('Weather data cached object')
+        else:
+            print('Weather data new object')
+        return response.json()
 
 
 class CalcSunPos:
@@ -546,7 +557,7 @@ class PVProfit:
 
         diffuse_energy: float = diffuse_radiation * (
                 0.5 * (
-                1 + np.cos(np.deg2rad(self.tilt_angle))) * (1 - f_1) + a / b * f_1 + f_2 *
+                    1 + np.cos(np.deg2rad(self.tilt_angle))) * (1 - f_1) + a / b * f_1 + f_2 *
                 np.sin(np.deg2rad(self.tilt_angle))
         )
 
@@ -1154,8 +1165,8 @@ class RequiredHeatingPower:
         """
 
         @lru_cache(maxsize=None)
-        def _calc(wall_obj: room.Wall1 | room.Wall2 | room.Wall3 | room.Wall4) -> tuple[float, float, float, float,
-        float, float]:
+        def _calc(wall_obj: room.Wall1 | room.Wall2 | room.Wall3 | room.Wall4) -> (float, float, float, float,
+                                                                                   float, float):
             """
 
             :param wall_obj:
