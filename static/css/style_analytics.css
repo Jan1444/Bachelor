@@ -12,15 +12,11 @@
 }
 
 
-
-
 :root {
     --font_family: Arial, SansSerif, serif;
     --font_height: 23px;
     --pic_width: 150px;
 }
-
-
 
 
 .BoxContent {
@@ -56,6 +52,16 @@
     margin-top: 5px;
 }
 
+
+.input-group button {
+    display: flex;
+    align-items: center;
+    margin-top: 5px;
+    margin-left: 75%;
+    height: 27px;
+    font-family: var(--font_family);
+    font-size: calc(var(--font_height) - 10px);
+}
 
 .chart-div {
     width: 100%;

@@ -1,7 +1,7 @@
 reload = true
 
 [write_time]
-time = "02-02-2024 14:12:02"
+time = "03-02-2024 19:59:01"
 format = "%d-%m-%Y %H:%M:%S"
 
 [coordinates]
@@ -18,10 +18,15 @@ nominal_temperature = 25.0
 mounting_type = 0
 
 [converter]
-max_power = 800.0
+max_power = 10000.0
+efficiency = 96.0
+
+[battery]
+capacity = 6.0
+max_deload = 90.0
 
 [market]
-consumer_price = 13.35
+consumer_price = 15.35
 
 [shelly]
 ip_address = "IP"
@@ -34,7 +39,7 @@ ip_address_cloud = ""
 ir_remote = ""
 
 [load_profile]
-name = "Lastgang Schulzentrum Südwest Bestand 2014.xls"
+name = "lastprofil_nsi_2023.xls"
 
 [house]
 house_year = 0
