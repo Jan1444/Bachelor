@@ -1,7 +1,7 @@
 reload = true
 
 [write_time]
-time = "03-02-2024 19:59:01"
+time = "04-02-2024 15:27:42"
 format = "%d-%m-%Y %H:%M:%S"
 
 [coordinates]
@@ -18,12 +18,13 @@ nominal_temperature = 25.0
 mounting_type = 0
 
 [converter]
-max_power = 10000.0
+max_power = 600.0
 efficiency = 96.0
 
 [battery]
 capacity = 6.0
 max_deload = 90.0
+load_efficiency = 95.0
 
 [market]
 consumer_price = 15.35
