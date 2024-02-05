@@ -384,7 +384,7 @@ def save_evening():
     energy_manager_evening_data.write_energy_data(write_dict)
 
 
-@scheduler.task("cron", id="data_compare", hour=23)
+@scheduler.task("cron", id="data_compare", hour=21)
 def compare_data():
     print("compare data")
     print(datetime.datetime.now())
