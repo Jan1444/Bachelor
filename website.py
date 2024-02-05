@@ -66,8 +66,9 @@ def analytics():
     diff_heating_pv: list = []
 
     battery_load: list = []
-    min_capacity = battery.get('capacity', 0) * 1000 * (1 - battery.get('max_deload', 100) / 100)
-    battery_capacity = battery.get('capacity', 0) * 1000
+    min_capacity = battery.get('capacity', 0) * 1_000 * (1 - battery.get('max_deload', 100) / 100)
+    charging_power = battery.get('charging_power', 0) * 0.25
+    battery_capacity = battery.get('capacity', 0) * 1_000
     state_of_charge: float = min_capacity / battery_capacity * 100
     min_state_of_charge = min_capacity / battery_capacity * 100
     load_efficiency: float = battery.get('load_efficiency', 0) / 100
@@ -130,6 +131,7 @@ def analytics():
         if energy < 0:
             netto_energy = energy * converter.get('efficiency')
         else:
+            energy = min(energy, charging_power)
             netto_energy = energy * load_efficiency
         state_of_charge += netto_energy / battery_capacity * 100
         state_of_charge = max(min_state_of_charge, min(state_of_charge, 100))
@@ -407,7 +409,7 @@ def compare_data():
     err = fc.comp_mor_ev_data(energy_data_morning, energy_data_evening)
     print(err)
 
-    if err.get("average_dni_difference", 21) > 20 or err.get("energy_difference", 1) > (200 / 1000):
+    if err.get("average_dni_difference", 21) > 20 or err.get("energy_difference", 1) > (200 / 1_000):
         print("Big error")
 
 
