@@ -1,47 +1,5 @@
 @charset "UTF-8";
 
-
-#main-container {
-    width: 100%;
-    background: linear-gradient(#051f30, #000000);
-    display: grid;
-    grid-template-columns: minmax(auto, auto) 1fr;
-
-    align-items: start;
-    justify-content: start;
-    overflow: hidden;
-}
-
-
-/* Tooltip-Container */
-.tooltip {
-    position: relative;
-    display: inline-block;
-    border-bottom: 1px dotted black;
-}
-
-/* Tooltip-Text */
-.tooltip .tooltiptext {
-    visibility: hidden;
-    width: 700px;
-    background-color: black;
-    color: whitesmoke;
-    text-align: left;
-    border-radius: 10px;
-    padding: 5px 5px;
-    position: absolute;
-    z-index: 1;
-    bottom: 10%;
-    left: 0;
-    margin-left: 20px;
-    font-size: var(--font_height);
-}
-
-/* Tooltip-Anzeige beim Darüberfahren */
-.tooltip:hover .tooltiptext {
-    visibility: visible;
-}
-
 :root {
     --font_family: Arial, SansSerif, serif;
     --font_size: 18px;
@@ -68,18 +26,19 @@ h1 {
     width: 100%;
 }
 
-.Box1{
+.Box1 {
     background-color: darkcyan;
     height: calc(var(--font_height) + 5px);
-    padding-left: 5px;
     margin-top: 5px;
+    padding-left: 20px;
 }
 
-.Box1 b{
+.Box1 b {
     font-family: var(--font_family);
     font-size: var(--font_height);
     color: white;
 }
+
 .error_class {
     border-color: red;
     border-width: 3px;
@@ -90,6 +49,7 @@ h1 {
     display: flex;
     align-items: center;
     margin-top: 5px;
+    padding-left: 25px;
 }
 
 .input-group label {
@@ -114,6 +74,7 @@ h1 {
         align-items: center;
         margin-top: 5px;
     }
+
     .input-group label {
         color: white;
         font-size: calc(var(--font_height) - 3px);
@@ -121,6 +82,7 @@ h1 {
         width: 100%;
         padding-left: 5px;
     }
+
     .input-group select, .input-group input {
         padding-left: 2px;
         font-family: var(--font_family);

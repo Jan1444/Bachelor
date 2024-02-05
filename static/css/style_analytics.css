@@ -1,14 +1,7 @@
 @charset "UTF-8";
 
 #main-container {
-    width: 100%;
-    background: linear-gradient(#051f30, #000000);
-    display: grid;
     grid-template-columns: minmax(auto, auto) 1fr;
-
-    align-items: start;
-    justify-content: start;
-    overflow: hidden;
 }
 
 

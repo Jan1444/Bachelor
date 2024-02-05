@@ -1,32 +1,4 @@
 @charset "UTF-8";
-/* Tooltip-Container */
-.tooltip {
-    position: relative;
-    display: inline-block;
-    border-bottom: 1px dotted black;
-}
-
-/* Tooltip-Text */
-.tooltip .tooltiptext {
-    visibility: hidden;
-    width: 700px;
-    background-color: black;
-    color: whitesmoke;
-    text-align: left;
-    border-radius: 10px;
-    padding: 5px 5px;
-    position: absolute;
-    z-index: 1;
-    bottom: 10%;
-    left: 0;
-    margin-left: 20px;
-    font-size: var(--font_height);
-}
-
-/* Tooltip-Anzeige beim Darüberfahren */
-.tooltip:hover .tooltiptext {
-    visibility: visible;
-}
 
 .BoxContent {
     grid-row-start: 2;
@@ -47,20 +19,22 @@
 .Box1{
     background-color: darkcyan;
     height: calc(var(--font_height) + 5px);
-    padding-left: 5px;
     margin-top: 5px;
+    padding-left: 20px;
 }
 
 .Box1 b{
     font-family: var(--font_family);
     font-size: var(--font_height);
     color: white;
+
 }
 
 .input-group {
     display: flex;
     align-items: center;
     margin-top: 5px;
+    padding-left: 20px;
 }
 
 .input-group label {
@@ -69,11 +43,11 @@
     font-size: calc(var(--font_height) - 3px);
     font-family: var(--font_family);
     width: 300px;
-    padding-left: 5px;
+
 }
 
-.input-group select, .input-group input {
+.input-group select, .input-group input, .input-group button {
     font-family: var(--font_family);
     font-size: calc(var(--font_height) - 3px);
-    width: 150px;
+
 }

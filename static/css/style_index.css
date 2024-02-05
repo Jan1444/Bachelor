@@ -16,7 +16,7 @@ table {
     font-family: var(--font_family);
     table-layout: fixed;
     width: 100%;
-
+    padding-left: 25px;
 }
 
 .BoxContent {
@@ -30,7 +30,7 @@ table {
 .Box1 {
     background-color: darkcyan;
     height: calc(var(--font_height) + 5px);
-    padding-left: 5px;
+    padding-left: 20px;
 }
 
 

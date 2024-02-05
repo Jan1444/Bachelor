@@ -17,10 +17,9 @@
 
 #main-container {
     width: 100%;
-    background: linear-gradient(#051f30, #000000);
+    background: linear-gradient(to right, rgb(52, 80, 109), #051f30 79.83%, #000000);
     display: grid;
     grid-template-columns: minmax(100px, auto) 1fr;
-
     align-items: start;
     justify-content: start;
     overflow: hidden;

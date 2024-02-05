@@ -1,33 +1,5 @@
 @charset "UTF-8";
 
-/* Tooltip-Container */
-.tooltip {
-    position: relative;
-    display: inline-block;
-    border-bottom: 1px dotted black;
-}
-/* Tooltip-Text */
-.tooltip .tooltiptext {
-    visibility: hidden;
-    width: 700px;
-    background-color: black;
-    color: whitesmoke;
-    text-align: left;
-    border-radius: 10px;
-    padding: 5px 5px;
-    position: absolute;
-    z-index: 1;
-    bottom: 10%;
-    left: 0;
-    margin-left: 20px;
-    font-size: var(--font_height);
-}
-
-/* Tooltip-Anzeige beim Darüberfahren */
-.tooltip:hover .tooltiptext {
-    visibility: visible;
-}
-
 :root {
     --font_family: Arial, SansSerif, serif;
     --font_size: 18px;
