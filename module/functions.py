@@ -202,12 +202,7 @@ def string_time_to_float(tme: str) -> float:
 
 def save_mor_ev_data(config_data: dict) -> dict:
     power_list: list = []
-    write_dict: dict = {
-        "write_time": {
-            "time": datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S"),
-            "format": "%d-%m-%Y %H:%M:%S"
-        }
-    }
+    write_dict: dict = {}
 
     weather_data: dict = get_weather_data(config_data)
     today_data = list(weather_data.keys())[0]
@@ -604,7 +599,7 @@ def comp_mor_ev_data(morning_data, evening_data):
 
     if time_evening <= time_morning:
         print("No comparison available, no right time!")
-        return -1
+        return {}
 
     total_dni_difference = 0
     count = 0
@@ -619,6 +614,7 @@ def comp_mor_ev_data(morning_data, evening_data):
             count += 1
 
     energy_difference = abs(evening_data.get("energy", 0) - morning_data.get("energy", 0))
+    energy_difference = abs(evening_data.get("energy", 0) / morning_data.get("energy", 0)) * 100
 
     if count > 0:
         average_dni_difference = total_dni_difference / count
