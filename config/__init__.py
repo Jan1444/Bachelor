@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import pathlib
 import toml
+import datetime
 
 
 class ConfigManager:
@@ -21,6 +22,11 @@ class ConfigManager:
             self._config_data = toml.load(fp)
 
     def write_config_data(self, data):
+        time_format: str = "%d-%m-%Y %H:%M:%S"
+        time_write = datetime.datetime.now().strftime(time_format)
+        data['write_time']['time'] = time_write
+        data['write_time']['format'] = time_format
+        data['reload'] = True
         with self.config_path.open(mode="w") as f:
             toml.dump(data, f)
             self._config_data = data
