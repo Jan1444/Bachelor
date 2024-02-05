@@ -40,20 +40,14 @@ def write_data_to_config(config_data: dict, data: dict) -> dict | int:
 
         config_data['reload'] = True
 
-        pv['tilt_angle'] = float(data.get('tilt_angle', 0))
-        pv['area'] = float(data.get('area', 0))
-        pv['module_efficiency'] = float(data.get('module_efficiency', 0))
-        pv['exposure_angle'] = float(data.get('exposure_angle', 0))
-        pv['temperature_coefficient'] = float(data.get('temperature_coefficient', 0))
-        pv['nominal_temperature'] = float(data.get('nominal_temperature', 0))
-        pv['mounting_type'] = int(data.get('mounting_type', 0))
+        for key in pv:
+            pv[key] = float(data.get(key, 0))
 
-        converter['max_power'] = float(data.get('converter_power', 0))
-        converter['efficiency'] = float(data.get('converter_efficiency', 0))
+        for key in converter:
+            converter[key] = float(data.get(f'converter_{key}', 0))
 
-        battery['capacity'] = float(data.get('battery_capacity', 0))
-        battery['max_deload'] = float(data.get('battery_max_deload', 0))
-        battery['load_efficiency'] = float(data.get('battery_load_efficiency', 0))
+        for key in battery:
+            battery[key] = float(data.get(f'battery_{key}', 0))
 
         market['consumer_price'] = float(data.get('consumer_price', 0))
 
@@ -61,11 +55,9 @@ def write_data_to_config(config_data: dict, data: dict) -> dict | int:
 
         shelly['ip_address'] = str(data.get('ip_address', ''))
 
-        air_conditioner["air_conditioner"] = str(data.get('air_conditioner', ''))
+        for key in air_conditioner:
+            air_conditioner[key] = str(data.get(f'air_conditioner_{key}', ''))
         air_conditioner["air_conditioner_cop"] = float(data.get('air_conditioner_cop', ''))
-        air_conditioner["air_conditioner_steering"] = str(data.get('air_conditioner_steering', ''))
-        air_conditioner["ip_address_cloud"] = str(data.get('ip_address_cloud', ''))
-        air_conditioner["ir_remote"] = str(data.get('ir_remote', ''))
 
         house['house_year'] = int(data.get('house_year', 0))
 
