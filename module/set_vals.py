@@ -34,12 +34,6 @@ def write_data_to_config(config_data: dict, data: dict) -> dict | int:
 
         house = config_data.get('house')
 
-        time_format: str = "%d-%m-%Y %H:%M:%S"
-        tme['time'] = datetime.datetime.now().strftime(time_format)
-        tme['format'] = time_format
-
-        config_data['reload'] = True
-
         for key in pv:
             pv[key] = float(data.get(key, 0))
 
