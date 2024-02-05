@@ -639,21 +639,52 @@ def calc_diff_hp_energy(config_data: dict, hp: list, power: list) -> list:
     return diff
 
 
-def load_load_profile(path: str) -> dict:
+def load_load_profile(path: str | None) -> dict:
+    print(path)
+
+    def _create_null_profile() -> dict:
+        empty_dict: dict = {}
+        start = datetime.date(2024, 1, 1)
+        end = datetime.date(2024, 12, 31)
+
+        delta = (end - start).days
+
+        for i in range(0, delta + 1):
+            day = start + datetime.timedelta(days=i)
+            date = day.strftime("%d-%m")
+            empty_dict[date] = {}
+            for hour in range(0, 24):
+                for minute in range(0, 60, 15):
+                    tme = f'{str(hour).zfill(2)}:{str(minute).zfill(2)}'
+                    empty_dict[date][tme] = 0
+        return empty_dict
+
+    if path is None or 'None' in path:
+        return _create_null_profile()
+
     data_extension = path[path.rfind('.'):]
 
     if '.json' in data_extension:
         sheet = json.load(open(path, "rb+"))
 
     elif '.xlsx' in data_extension or '.xls' in data_extension:
-        xl = pd.ExcelFile(path)
+        try:
+            xl = pd.ExcelFile(path)
+        except FileNotFoundError:
+            return _create_null_profile()
+
         df = xl.parse(xl.sheet_names[0])
         data_dict = {}
 
         for row in df.values:
-            date_str, load = row[0], row[1]
             try:
-                date_time = datetime.datetime.strptime(date_str, "%d.%m.%Y %H:%M:%S")
+                date_str, load = row[0], row[1]
+
+                if 'timestamp' in str(type(date_str)):
+                    date_time = date_str
+
+                else:
+                    date_time = datetime.datetime.strptime(date_str, "%d.%m.%Y %H:%M:%S")
 
                 date = date_time.date().strftime("%d-%m")
                 time = date_time.time().strftime("%H:%M")
@@ -661,19 +692,8 @@ def load_load_profile(path: str) -> dict:
                 if date not in data_dict:
                     data_dict[date] = {}
                 data_dict[date][time] = float(str(load).replace(",", '.'))  # * 1000
-
-            except ValueError as e:
-                # debug.printer(f"Error parsing date/time '{date_str}': {e}")
-                pass
-
-            except TypeError as e:
-                # debug.printer(f"Error parsing date/time '{date_str}': {e}")
-                if 'timestamp' in str(type(date_str)):
-                    date_time = date_str
-                    date = date_time.date().strftime("%d-%m")
-                    time = date_time.time().strftime("%H:%M")
-                    if date not in data_dict:
-                        data_dict[date] = {}
-                    data_dict[date][time] = float(str(load).replace(",", '.'))  # * 1000
+            except Exception as e:
+                print(f'Following error is occurred by loading load_profile: {e}')
+                return _create_null_profile()
 
         return data_dict
