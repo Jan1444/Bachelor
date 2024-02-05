@@ -99,7 +99,7 @@ class MarketData:
             print('Market data cached object')
         else:
             print('Market data new object')
-        return response.json()['data']
+        return response.json().get('data')
 
     def convert_dict(self, consumer_costs) -> None:
         """

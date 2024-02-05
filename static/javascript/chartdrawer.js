@@ -324,6 +324,7 @@ function drawChart5(chartData) {
         vAxis: {
             title: 'Akkuladestand [%]',
             minValue: 0,
+            maxValue: 100,
             titleTextStyle: {
                 color: 'white',    // Farbe des Titels
                 fontName: 'Arial', // Schriftart des Titels

@@ -1,7 +1,7 @@
 reload = true
 
 [write_time]
-time = "04-02-2024 15:27:42"
+time = "04-02-2024 20:55:30"
 format = "%d-%m-%Y %H:%M:%S"
 
 [coordinates]
@@ -24,7 +24,7 @@ efficiency = 96.0
 [battery]
 capacity = 6.0
 max_deload = 90.0
-load_efficiency = 95.0
+load_efficiency = 98.0
 
 [market]
 consumer_price = 15.35

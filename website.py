@@ -55,7 +55,7 @@ def analytics():
     energy_manager_data.reload_data()
     energy_data = energy_manager_data.energy_data
 
-    converter_consts = config_data["converter"]
+    converter = config_data["converter"]
     load_profile = config_data["load_profile"]
     battery = config_data.get('battery')
 
@@ -101,8 +101,8 @@ def analytics():
 
             power_dni: float = fc.get_pv_data(pv_class, temp, radiation_dni, azimuth, elevation, dni=True)
 
-            if power_dni > converter_consts.get("max_power", 0):
-                power_dni = converter_consts.get("max_power", 0)
+            if power_dni > converter.get("max_power", 0):
+                power_dni = converter.get("max_power", 0)
 
             pv_power_data.append(power_dni)
             weather_time.append(f'{date} {tme}')
@@ -135,7 +135,10 @@ def analytics():
 
     for power in diff_heating_pv:  # pv_power_data
         energy = power * 0.25
-        netto_energy = energy * load_efficiency
+        if energy < 0:
+            netto_energy = energy * converter.get('efficiency')
+        else:
+            netto_energy = energy * load_efficiency
         state_of_charge += netto_energy / battery_capacity * 100
         state_of_charge = max(min_state_of_charge, min(state_of_charge, 100))
         battery_load.append(state_of_charge)
