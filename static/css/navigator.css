@@ -17,7 +17,7 @@
 
 #main-container {
     width: 100%;
-    background: linear-gradient(to right, rgb(52, 80, 109), #051f30 79.83%, #000000);
+    background: linear-gradient(to right, rgb(52, 80, 109), #092638 7.14%);
     display: grid;
     grid-template-columns: minmax(100px, auto) 1fr;
     align-items: start;
