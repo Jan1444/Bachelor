@@ -143,8 +143,8 @@
         </nav>
         <section>
             <div class="input-group">
-                <label for="converter_power">Wechselrichter Leistung [W]:</label>
-                <input id="converter_power" minlength="1" name="converter_power"
+                <label for="converter_max_power">Wechselrichter Leistung [W]:</label>
+                <input id="converter_max_power" minlength="1" name="converter_max_power"
                        type="text" value="{{ config['converter']['max_power'] }}">
             </div>
             <div class="input-group">
@@ -161,6 +161,11 @@
                 <label for="battery_capacity">Akku Kapazität [kWh]:</label>
                 <input id="battery_capacity" minlength="1" name="battery_capacity"
                        type="text" value="{{ config['battery']['capacity'] }}">
+            </div>
+            <div class="input-group">
+                <label for="battery_charging_power">max. Ladeleistung [W]:</label>
+                <input id="battery_charging_power" minlength="1" name="battery_charging_power"
+                       type="text" value="{{ config['battery']['charging_power'] }}">
             </div>
             <div class="input-group">
                 <label for="battery_max_deload">max. Entladetiefe DoD [%]:</label>
@@ -222,16 +227,16 @@
         </section>
         <section>
             <div class="input-group">
-                <label for="air_conditioner">Hersteller:</label>
-                <select name="air_conditioner" id="air_conditioner"
+                <label for="air_conditioner_type">Hersteller:</label>
+                <select name="air_conditioner_type" id="air_conditioner_type"
                         onchange=toggleFieldset2("air_conditioner","air_conditioner_steering")>
                     <option value="">Gerät wählen</option>
-                    <option {% if config['air_conditioner']['air_conditioner'] == "Danfoss" %}
+                    <option {% if config['air_conditioner']['type'] == "Danfoss" %}
                         selected="selected"
                     {% endif %}
                         value="Danfoss">Danfoss
                     </option>
-                    <option {% if config['air_conditioner']['air_conditioner'] == "Mitsubishi" %}
+                    <option {% if config['air_conditioner']['type'] == "Mitsubishi" %}
                         selected="selected"
                     {% endif %}
                         value="Mitsubishi">Mitsubishi
