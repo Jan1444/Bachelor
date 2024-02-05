@@ -57,7 +57,6 @@ def analytics():
     battery = config_data.get('battery')
 
     pv_data_data: list = []
-    pv_power_data2: dict = {}
     weather_time: list = []
 
     market_time: list = []
@@ -85,14 +84,16 @@ def analytics():
 
     market_class = fc.init_market(config_data)
 
+    load_profile_data: dict = fc.load_load_profile(f'{consts.LOAD_PROFILE_FOLDER}/{load_profile.get("name")}')
+
     for date, weather_today in weather.items():
-        pv_power_data2.update({date: {}})
-        for tme, load_profile_data in weather_today.items():
-            if tme == 'daily':
-                continue
-            time_float = fc.string_time_to_float(tme)
-            temp: float = load_profile_data.get("temp", 0)
-            radiation_dni = load_profile_data.get("dni_radiation", 0)
+        weather_today.pop("daily")
+        date_load: str = date.rsplit('-', 1)[0]
+        curr_load: dict = load_profile_data.get(date_load, "")
+        for (tme_pv, data), (tme_load, load_data) in zip(weather_today.items(), curr_load.items()):
+            time_float = fc.string_time_to_float(tme_pv)
+            temp: float = data.get("temp", 0)
+            radiation_dni = data.get("dni_radiation", 0)
             azimuth, elevation = fc.get_sun_data(sun_class, time_float)
 
             power_dni: float = fc.get_pv_data(pv_class, temp, radiation_dni, azimuth, elevation, dni=True)
@@ -100,42 +101,30 @@ def analytics():
             if power_dni > converter.get("max_power", 0):
                 power_dni = converter.get("max_power", 0)
 
-            pv_power_data2[date].update({tme: power_dni})
-
-            weather_time.append(f'{date} {tme}')
-
+            weather_time.append(f'{date} {tme_pv}')
             pv_data_data.append(power_dni)
+
+            if tme_pv == tme_load:
+                load_diff: float = power_dni - load_data
+                diff_heating_pv.append(load_diff)
+
+                energy = load_diff * 0.25
+                if energy < 0:
+                    netto_energy = energy * converter.get('efficiency')
+                else:
+                    energy = min(energy, charging_power)
+                    netto_energy = energy * load_efficiency
+                state_of_charge += netto_energy / battery_capacity * 100
+                state_of_charge = max(min_state_of_charge, min(state_of_charge, 100))
+                battery_load.append(state_of_charge)
 
     energy_today = fc.calc_energy(pv_data_data[:95], kwh=False, round_=2)
 
-    for t in market_class.data:
-        market_time.append(t["start_timestamp"])
-        market_price.append(t["consumerprice"])
+    for data in market_class.data:
+        market_time.append(data["start_timestamp"])
+        market_price.append(data["consumerprice"])
 
     hp = fc.heating_power(config_data, weather)
-
-    if not os.path.exists(consts.LOAD_PROFILE_FOLDER):
-        os.makedirs(consts.LOAD_PROFILE_FOLDER)
-
-    load_profile_data: dict = fc.load_load_profile(f'{consts.LOAD_PROFILE_FOLDER}/{load_profile.get("name")}')
-
-    for date, day in pv_power_data2.items():
-        date: str = date.rsplit('-', 1)[0]
-        curr_load: dict = load_profile_data.get(date, "")
-        for (tme_pv, power), (tme_load, load_data) in zip(day.items(), curr_load.items()):
-            if tme_pv == tme_load:
-                diff_heating_pv.append(power - load_data)
-
-    for power in diff_heating_pv:  # pv_power_data
-        energy = power * 0.25
-        if energy < 0:
-            netto_energy = energy * converter.get('efficiency')
-        else:
-            energy = min(energy, charging_power)
-            netto_energy = energy * load_efficiency
-        state_of_charge += netto_energy / battery_capacity * 100
-        state_of_charge = max(min_state_of_charge, min(state_of_charge, 100))
-        battery_load.append(state_of_charge)
 
     diff_power = fc.calc_diff_hp_energy(config_data, hp[1], diff_heating_pv)
 
