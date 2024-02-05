@@ -121,8 +121,8 @@ def analytics():
     for date, day in pv_power_data2.items():
         date: str = date.rsplit('-', 1)[0]
         curr_load: dict = load_profile_data.get(date, "")
-        for (tme1, power), (tme2, load_data) in zip(day.items(), curr_load.items()):
-            if tme1 == tme2:
+        for (tme_pv, power), (tme_load, load_data) in zip(day.items(), curr_load.items()):
+            if tme_pv == tme_load:
                 diff_heating_pv.append(power - load_data)
 
     for power in diff_heating_pv:  # pv_power_data
