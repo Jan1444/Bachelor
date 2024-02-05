@@ -135,8 +135,6 @@ def analytics():
         state_of_charge = max(min_state_of_charge, min(state_of_charge, 100))
         battery_load.append(state_of_charge)
 
-    print(pv_power_data2.values())
-
     diff_power = fc.calc_diff_hp_energy(config_data, hp[1], diff_heating_pv)
 
     pv_power_data = [[time, value] for time, value in zip(weather_time, pv_data_data)]
