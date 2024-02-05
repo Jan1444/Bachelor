@@ -52,14 +52,12 @@ def dashboard():
 def analytics():
     config_data = config_manager.config_data
 
-    energy_manager_data.reload_data()
-    energy_data = energy_manager_data.energy_data
-
     converter = config_data["converter"]
     load_profile = config_data["load_profile"]
     battery = config_data.get('battery')
 
-    pv_power_data: list = []
+    pv_data_data: list = []
+    pv_power_data2: dict = {}
     weather_time: list = []
 
     market_time: list = []
@@ -74,8 +72,6 @@ def analytics():
     min_state_of_charge = min_capacity / battery_capacity * 100
     load_efficiency: float = battery.get('load_efficiency', 0) / 100
 
-    time_write_data = datetime.datetime.strptime(energy_data.get("write_time", {"time": "0"}).get("time"),
-                                                 energy_data.get("write_time", {"format": "0"}).get("format"))
     time_now = datetime.datetime.now()
 
     sun_class = fc.init_sun(config_data)
@@ -88,9 +84,8 @@ def analytics():
 
     market_class = fc.init_market(config_data)
 
-    radiation_data_dni: list = []
-
     for date, weather_today in weather.items():
+        pv_power_data2.update({date: {}})
         for tme, load_profile_data in weather_today.items():
             if tme == 'daily':
                 continue
@@ -104,34 +99,31 @@ def analytics():
             if power_dni > converter.get("max_power", 0):
                 power_dni = converter.get("max_power", 0)
 
-            pv_power_data.append(power_dni)
-            weather_time.append(f'{date} {tme}')
-            radiation_data_dni.append(radiation_dni)
+            pv_power_data2[date].update({tme: power_dni})
 
-    energy_today = fc.calc_energy(pv_power_data[:95], kwh=False, round_=2)
+            weather_time.append(f'{date} {tme}')
+
+            pv_data_data.append(power_dni)
+
+    energy_today = fc.calc_energy(pv_data_data[:95], kwh=False, round_=2)
 
     for t in market_class.data:
         market_time.append(t["start_timestamp"])
         market_price.append(t["consumerprice"])
 
-    hp = fc.heating_power(config_data ,weather)
-
-    # write_data = analytics_module.prepare_data_to_write(weather_time, pv_power_data, market_price, energy, None,
-    # radiation_data_dni)
-    # energy_manager_data.write_energy_data(write_data)
+    hp = fc.heating_power(config_data, weather)
 
     if not os.path.exists(consts.LOAD_PROFILE_FOLDER):
         os.makedirs(consts.LOAD_PROFILE_FOLDER)
 
     load_profile_data: dict = fc.load_load_profile(f'{consts.LOAD_PROFILE_FOLDER}/{load_profile.get("name")}')
-    indx_diff_heat_pv = 0
-    for day, date in enumerate(weather.keys()):
+
+    for date, day in pv_power_data2.items():
         date: str = date.rsplit('-', 1)[0]
         curr_load: dict = load_profile_data.get(date, "")
-        for i, (tme, load_data) in enumerate(curr_load.items()):
-            diff_heating_pv.append(pv_power_data[indx_diff_heat_pv] - load_data)
-            #print(indx_diff_heat_pv, date, tme, weather_time[indx_diff_heat_pv], pv_power_data[indx_diff_heat_pv], load_data, diff_heating_pv[indx_diff_heat_pv])
-            indx_diff_heat_pv += 1
+        for (tme1, power), (tme2, load_data) in zip(day.items(), curr_load.items()):
+            if tme1 == tme2:
+                diff_heating_pv.append(power - load_data)
 
     for power in diff_heating_pv:  # pv_power_data
         energy = power * 0.25
@@ -143,9 +135,11 @@ def analytics():
         state_of_charge = max(min_state_of_charge, min(state_of_charge, 100))
         battery_load.append(state_of_charge)
 
+    print(pv_power_data2.values())
+
     diff_power = fc.calc_diff_hp_energy(config_data, hp[1], diff_heating_pv)
 
-    pv_power_data = [[time, value] for time, value in zip(weather_time, pv_power_data)]
+    pv_power_data = [[time, value] for time, value in zip(weather_time, pv_data_data)]
 
     market_data = [[time, value] for time, value in zip(market_time, market_price)]
 
