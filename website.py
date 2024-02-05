@@ -371,7 +371,7 @@ def get_door(door):
     return jsonify(consts.DOOR_DATA.get(door, []))
 
 
-@scheduler.task("cron", id="morning_saver", hour=5)
+@scheduler.task("cron", id="morning_saver", hour=6)
 def save_morning():
     print("save_data morning")
     print(datetime.datetime.now())
@@ -383,7 +383,7 @@ def save_morning():
     energy_manager_morning_data.write_energy_data(write_dict)
 
 
-@scheduler.task("cron", id="evening_saver", hour=21)
+@scheduler.task("cron", id="evening_saver", hour=20)
 def save_evening():
     print("save_data evening")
     print(datetime.datetime.now())
@@ -399,9 +399,6 @@ def save_evening():
 def compare_data():
     print("compare data")
     print(datetime.datetime.now())
-
-    energy_manager_evening_data.reload_data()
-    energy_manager_morning_data.reload_data()
 
     energy_data_morning = energy_manager_morning_data.energy_data
     energy_data_evening = energy_manager_evening_data.energy_data
