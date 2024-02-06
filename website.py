@@ -90,6 +90,7 @@ def analytics():
         weather_today.pop("daily")
         date_load: str = date.rsplit('-', 1)[0]
         curr_load: dict = load_profile_data.get(date_load, "")
+
         for (tme_pv, data), (tme_load, load_data) in zip(weather_today.items(), curr_load.items()):
             time_float = fc.string_time_to_float(tme_pv)
             temp: float = data.get("temp", 0)
@@ -126,7 +127,7 @@ def analytics():
 
     hp = fc.heating_power(config_data, weather)
 
-    diff_power = fc.calc_diff_hp_energy(config_data, hp[1], diff_heating_pv)
+    diff_power = fc.calc_diff_hp_energy(config_data, hp[1], hp[2], diff_heating_pv)
 
     pv_power_data = [[time, value] for time, value in zip(weather_time, pv_data_data)]
 
@@ -134,13 +135,13 @@ def analytics():
 
     heating_power_data = [[time, value] for time, value in zip(hp[0], hp[1])]
 
-    differnce_power = [[time, value] for time, value in zip(hp[0], diff_power)]
+    difference_power = [[time, value] for time, value in zip(hp[0], diff_power)]
 
     battery_power = [[time, value] for time, value in zip(hp[0], battery_load)]
 
     return render_template('analytics.html', energy_data=energy_today,
                            pv_power_data=pv_power_data, market_data=market_data,
-                           heating_power_data=heating_power_data, differnce_power=differnce_power,
+                           heating_power_data=heating_power_data, differnce_power=difference_power,
                            battery_power=battery_power)
 
 
