@@ -1,7 +1,8 @@
+[data]
 reload = true
 
 [write_time]
-time = "05-02-2024 21:33:10"
+time = "06-02-2024 16:50:26"
 format = "%d-%m-%Y %H:%M:%S"
 
 [coordinates]
