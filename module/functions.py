@@ -580,7 +580,9 @@ def heating_power(config_data: dict, weather: dict):
 
             d = hp.calc_heating_power(room)
 
-            cop_temp.append(0.19 * outdoor_temp + 1.7)
+            cop = ((1/14) * outdoor_temp + 2.5) if outdoor_temp > -20 else 1
+
+            cop_temp.append(cop)
             diff_data.append(diff_temp)
             hp_data.append(d)
             tme_data.append(f"{date} {tme}")
@@ -631,19 +633,14 @@ def comp_mor_ev_data(morning_data, evening_data):
 
 
 def calc_diff_hp_energy(config_data: dict, hp: list, cop: list, power: list) -> list:
-
     heating_energy: list = list(map(lambda p, c: (p * c) if p is not None else None, power, cop))
 
-    diff: list = []
-
-    for i, h_energy in enumerate(heating_energy):
-        diff.append((h_energy - hp[i]) if h_energy is not None else None)
+    diff: list = list(map(lambda e, p: e - p, heating_energy, hp))
 
     return diff
 
 
 def load_load_profile(path: str | None) -> dict:
-    print(path)
 
     def _create_null_profile() -> dict:
         empty_dict: dict = {}
@@ -654,12 +651,12 @@ def load_load_profile(path: str | None) -> dict:
 
         for i in range(0, delta + 1):
             day = start + datetime.timedelta(days=i)
-            date = day.strftime("%d-%m")
-            empty_dict[date] = {}
+            date_ = day.strftime("%d-%m")
+            empty_dict[date_] = {}
             for hour in range(0, 24):
                 for minute in range(0, 60, 15):
                     tme = f'{str(hour).zfill(2)}:{str(minute).zfill(2)}'
-                    empty_dict[date][tme] = 0
+                    empty_dict[date_][tme] = 0
         return empty_dict
 
     if path is None or 'None' in path:
