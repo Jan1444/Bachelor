@@ -114,6 +114,7 @@ def analytics():
             else:
                 energy = min(energy, charging_power)
                 netto_energy = energy * load_efficiency
+
             state_of_charge += netto_energy / battery_capacity * 100
             state_of_charge = max(min_state_of_charge, min(state_of_charge, 100))
             battery_load.append(state_of_charge)
