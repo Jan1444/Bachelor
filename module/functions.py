@@ -129,7 +129,7 @@ def calc_energy(power: list, interval: float = 0.25, kwh: bool = True, round_: N
     if kwh:
         multiplier = 1000
     power_values = list(map(lambda x: x / multiplier, power))
-    total_energy = sum(power_values[i] * interval for i in range(len(power_values) - 1))
+    total_energy = sum(power * interval for power in power_values)
 
     if round_ is not None:
         total_energy = round(total_energy, round_)
@@ -633,8 +633,8 @@ def comp_mor_ev_data(morning_data, evening_data):
 
 
 def calc_diff_hp_energy(config_data: dict, hp: list, cop: list, power: list) -> list:
-    heating_energy: list = list(map(lambda p, c: (p * c) if p is not None else None, power, cop))
 
+    heating_energy: list = list(map(lambda p, c: (p * c) if p is not None else None, power, cop))
     diff: list = list(map(lambda e, p: e - p, heating_energy, hp))
 
     return diff

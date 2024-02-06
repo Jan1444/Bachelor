@@ -59,9 +59,6 @@ def analytics():
     pv_data_data: list = []
     weather_time: list = []
 
-    market_time: list = []
-    market_price: list = []
-
     diff_heating_pv: list = []
 
     battery_load: list = []
@@ -105,25 +102,26 @@ def analytics():
             weather_time.append(f'{date} {tme_pv}')
             pv_data_data.append(power_dni)
 
-            if tme_pv == tme_load:
-                load_diff: float = power_dni - load_data
-                diff_heating_pv.append(load_diff)
+            if tme_pv != tme_load:
+                continue
 
-                energy = load_diff * 0.25
-                if energy < 0:
-                    netto_energy = energy * converter.get('efficiency')
-                else:
-                    energy = min(energy, charging_power)
-                    netto_energy = energy * load_efficiency
-                state_of_charge += netto_energy / battery_capacity * 100
-                state_of_charge = max(min_state_of_charge, min(state_of_charge, 100))
-                battery_load.append(state_of_charge)
+            load_diff: float = power_dni - load_data
+            diff_heating_pv.append(load_diff)
+
+            energy = load_diff * 0.25
+            if energy < 0:
+                netto_energy = energy * converter.get('efficiency')
+            else:
+                energy = min(energy, charging_power)
+                netto_energy = energy * load_efficiency
+            state_of_charge += netto_energy / battery_capacity * 100
+            state_of_charge = max(min_state_of_charge, min(state_of_charge, 100))
+            battery_load.append(state_of_charge)
 
     energy_today = fc.calc_energy(pv_data_data[:95], kwh=False, round_=2)
 
-    for data in market_class.data:
-        market_time.append(data["start_timestamp"])
-        market_price.append(data["consumerprice"])
+    market_time = [time.get('start_timestamp') for time in market_class.data]
+    market_price = [price.get('consumerprice') for price in market_class.data]
 
     hp = fc.heating_power(config_data, weather)
 
