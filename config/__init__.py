@@ -26,7 +26,7 @@ class ConfigManager:
         time_write = datetime.datetime.now().strftime(time_format)
         data['write_time']['time'] = time_write
         data['write_time']['format'] = time_format
-        data['reload'] = True
-        with self.config_path.open(mode="w") as f:
+        data['data']['reload'] = True
+        with self.config_path.open(mode="w", encoding='UTF-8') as f:
             toml.dump(data, f)
             self._config_data = data

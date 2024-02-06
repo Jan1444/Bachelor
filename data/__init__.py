@@ -38,6 +38,6 @@ class EnergyManager:
                 }
             }
         )
-        with self.energy_path.open(mode="w") as f:
+        with self.energy_path.open(mode="w", encoding='UTF-8') as f:
             toml.dump(data, f)
             self._energy_data = data
