@@ -540,10 +540,12 @@ def heating_power(config_data: dict, weather: dict):
     indoor_temp: float = (trv_data.get("tmp").get("value")) if trv_data is not None else 22
     """
     indoor_temp: float = 22
+    cop: float = config_data.get("air_conditioner", {"air_conditioner_cop": 0}).get("air_conditioner_cop")
 
     hp_data: list = []
     diff_data: list = []
     tme_data: list = []
+    cop_temp: list = []
 
     # today = weather.data[list(weather.data.keys())[0]]
 
@@ -578,13 +580,14 @@ def heating_power(config_data: dict, weather: dict):
 
             d = hp.calc_heating_power(room)
 
+            cop_temp.append(0.19 * outdoor_temp + 1.7)
             diff_data.append(diff_temp)
             hp_data.append(d)
             tme_data.append(f"{date} {tme}")
 
     # debug.printer(diff_data, hp_data)
 
-    return tme_data, hp_data
+    return tme_data, hp_data, cop_temp
 
 
 def comp_mor_ev_data(morning_data, evening_data):
@@ -627,10 +630,10 @@ def comp_mor_ev_data(morning_data, evening_data):
     }
 
 
-def calc_diff_hp_energy(config_data: dict, hp: list, power: list) -> list:
-    cop: float = config_data.get("air_conditioner", {"air_conditioner_cop": 0}).get("air_conditioner_cop")
+def calc_diff_hp_energy(config_data: dict, hp: list, cop: list, power: list) -> list:
 
-    heating_energy: list = list(map(lambda x: (x * cop) if x is not None else None, power))
+    heating_energy: list = list(map(lambda p, c: (p * c) if p is not None else None, power, cop))
+
     diff: list = []
 
     for i, h_energy in enumerate(heating_energy):
