@@ -190,7 +190,8 @@ class Weather:
                     "temp": "",
                     "cloudcover": "",
                     "direct_radiation": "",
-                    "dni_radiation": ""
+                    "dni_radiation": "",
+                    "ghi_radiation": ""
                 }
 
     def _sort_weather(self, unsorted_data: dict) -> None:
@@ -203,6 +204,7 @@ class Weather:
         for i, t in enumerate(unsorted_data["minutely_15"]["time"]):
             self.data[date][t[11:]]["direct_radiation"] = unsorted_data["minutely_15"]["direct_radiation"][i]
             self.data[date][t[11:]]["dni_radiation"] = unsorted_data["minutely_15"]["direct_normal_irradiance"][i]
+            self.data[date][t[11:]]["ghi_radiation"] = unsorted_data["minutely_15"]["shortwave_radiation"][i]
             if t[11:] == "23:45":
                 date = datetime.datetime.strptime(date, '%d-%m-%Y') + datetime.timedelta(days=1)
                 date = date.strftime('%d-%m-%Y')
@@ -235,14 +237,16 @@ class Weather:
         """
         if start_date is None or end_date is None:
             url: str = (f"https://api.open-meteo.com/v1/forecast?latitude={self.latitude}&longitude={self.longitude}&"
-                        "minutely_15=direct_normal_irradiance,direct_radiation&hourly=temperature_2m,cloudcover&"
+                        "minutely_15=direct_normal_irradiance,direct_radiation,shortwave_radiation"
+                        "&hourly=temperature_2m,cloudcover&"
                         "models=best_match&daily=temperature_2m_max,temperature_2m_min,sunrise,sunset&"
                         "timezone=Europe%2FBerlin&forecast_days=3")
         else:
             start: datetime = datetime.datetime.strptime(start_date, "%d-%m-%Y")
             end: datetime = datetime.datetime.strptime(end_date, "%d-%m-%Y")
             url: str = (f"https://api.open-meteo.com/v1/forecast?latitude={self.latitude}&longitude={self.longitude}&"
-                        f"minutely_15=direct_normal_irradiance,direct_radiation&hourly=temperature_2m,cloudcover&"
+                        f"minutely_15=direct_normal_irradiance,direct_radiation,shortwave_radiation"
+                        f"&hourly=temperature_2m,cloudcover&"
                         f"models=best_match&daily=temperature_2m_max,temperature_2m_min,sunrise,sunset&"
                         f"timezone=Europe%2FBerlin&start_date={start.year}-{str(start.month).zfill(2)}"
                         f"-{str(start.day).zfill(2)}"

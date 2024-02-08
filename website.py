@@ -92,9 +92,14 @@ def analytics():
             time_float = fc.string_time_to_float(tme_pv)
             temp: float = data.get("temp", 0)
             radiation_dni = data.get("dni_radiation", 0)
+            radiation_ghi = data.get("ghi_radiation", 0)
+
             azimuth, elevation = fc.get_sun_data(sun_class, time_float)
 
             power_dni: float = fc.get_pv_data(pv_class, temp, radiation_dni, azimuth, elevation, dni=True)
+            power_ghi: float = fc.get_pv_data(pv_class, temp, radiation_ghi, azimuth, elevation, dni=False)
+
+            power_dni = power_ghi
 
             if power_dni > converter.get("max_power", 0):
                 power_dni = converter.get("max_power", 0)

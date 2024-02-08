@@ -177,15 +177,15 @@ def init_pv(config_data: dict) -> classes.PVProfit:
     return p
 
 
-def get_pv_data(pv_class: classes.PVProfit, temp: float, rad: float, azimuth: float, elevation: float,
+def get_pv_data(pv_class: classes.PVProfit, temp: float, radiation: float, azimuth: float, elevation: float,
                 dni: bool = False) -> (
         float, float):
     incidence_angle = pv_class.calc_incidence_angle(elevation, azimuth)
     if dni:
-        power: float = pv_class.calc_power_with_dni(rad, incidence_angle, temp)
+        power: float = pv_class.calc_power_with_dni(radiation, incidence_angle, temp)
         return power
-    eff: float = pv_class.calc_temp_dependency(temp, rad)
-    power: float = pv_class.calc_power(rad, incidence_angle, elevation, eff)
+    eff: float = pv_class.calc_temp_dependency(temp, radiation)
+    power: float = pv_class.calc_power(radiation, incidence_angle, elevation, eff)
     return power
 
 
@@ -217,12 +217,15 @@ def save_mor_ev_data(config_data: dict) -> dict:
         azimuth, elevation = get_sun_data(sun_class, tme_float)
         temp: float = float(data.get("temp", 0))
         radiation: float = float(data.get("dni_radiation", 0))
+        radiation_ghi: float = float(data.get("ghi_radiation", 0))
         power: float = get_pv_data(pv_class, temp, radiation, azimuth, elevation, True)
+        power: float = get_pv_data(pv_class, temp, radiation_ghi, azimuth, elevation, False)
 
         write_dict.update(
             {
                 tme: {
                     "dni_radiation": radiation,
+                    "ghi_radiation": radiation_ghi,
                     "cloudcover": data.get("cloudcover", 0),
                     "temp": temp,
                     "power": power
@@ -616,6 +619,7 @@ def comp_mor_ev_data(morning_data, evening_data):
         morning_values = morning_data.get(time_point)
         if morning_values:
             total_dni_difference += abs(evening_values.get('dni_radiation', 0) - morning_values.get('dni_radiation', 0))
+            total_dni_difference += abs(evening_values.get('ghi_radiation', 0) - morning_values.get('ghi_radiation', 0))
             count += 1
 
     energy_difference = abs(evening_data.get("energy", 0) - morning_data.get("energy", 0))
