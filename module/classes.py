@@ -123,8 +123,8 @@ class Weather:
     # https://open-meteo.com/en/docs#latitude=49.5139&longitude=11.2825&minutely_15=diffuse_radiation_instant&
     # hourly=temperature_2m,cloudcover
 
-    def __init__(self, latitude: float, longitude: float, start_date: str | None = None, end_date: str | None = None) \
-            -> None:
+    def __init__(self, latitude: float, longitude: float, start_date: str | None = None, end_date: str | None = None,
+                 api: str = 'weather') -> None:
         """
         Initialize the class
         :param latitude:
@@ -137,7 +137,12 @@ class Weather:
         self._expire_time = 1
         self.session = requests_cache.CachedSession(r'cache/weatherdata.cache',
                                                     expire_after=datetime.timedelta(hours=self._expire_time))
-        weather_data: dict = self.get_weather(start_date, end_date)
+        if api == 'ensemble':
+            weather = False
+        else:
+            weather = True
+
+        weather_data: dict = self.get_weather(start_date, end_date, weather)
         self.data: dict = {}
         try:
             self._create_dict(weather_data, start_date, end_date)
@@ -166,14 +171,11 @@ class Weather:
         :return:
         """
         days: list = []
-        if start_date is not None and end_date is not None:
-            for date in weather_data["hourly"]["time"]:
-                date = datetime.datetime.strptime(date, '%Y-%m-%dT%H:%M').strftime('%d-%m-%Y')
-                days.append(date)
-        else:
-            for date in weather_data["hourly"]["time"]:
-                date = datetime.datetime.strptime(date, '%Y-%m-%dT%H:%M').strftime('%d-%m-%Y')
-                days.append(date)
+
+        for date in weather_data["hourly"]["time"]:
+            date = datetime.datetime.strptime(date, '%Y-%m-%dT%H:%M').strftime('%d-%m-%Y')
+            days.append(date)
+
         times: list = [f"{str(hour).zfill(2)}:{str(minute).zfill(2)}"
                        for hour in range(24)
                        for minute in range(0, 60, 15)]
@@ -229,36 +231,347 @@ class Weather:
             date = datetime.datetime.strptime(date, '%d-%m-%Y') + datetime.timedelta(days=1)
             date = date.strftime('%d-%m-%Y')
 
-    def get_weather(self, start_date: str | None, end_date: str | None) -> dict:
+    def get_weather(self, start_date: str | None, end_date: str | None, weather: bool = True) -> dict:
         """
         Gets the weather for the given latitude and longitude
         :return: A dict with the following variables: direct radiation, temperatur, cloudcover, temperature max,
                  temperatur min, sunrise, sunset.
         """
         if start_date is None or end_date is None:
-            url: str = (f"https://api.open-meteo.com/v1/forecast?latitude={self.latitude}&longitude={self.longitude}&"
-                        "minutely_15=direct_normal_irradiance,direct_radiation,shortwave_radiation"
-                        "&hourly=temperature_2m,cloudcover&"
-                        "models=best_match&daily=temperature_2m_max,temperature_2m_min,sunrise,sunset&"
-                        "timezone=Europe%2FBerlin&forecast_days=3")
+            if weather:
+                url: str = (f"https://api.open-meteo.com/v1/forecast?"
+                            f"latitude={self.latitude}&longitude={self.longitude}&"
+                            "minutely_15=direct_normal_irradiance,direct_radiation,shortwave_radiation"
+                            "&hourly=temperature_2m,cloudcover&"
+                            "models=best_match&"
+                            "daily=temperature_2m_max,temperature_2m_min,sunrise,sunset&"
+                            "timezone=Europe%2FBerlin&forecast_days=3")
+            elif not weather:
+                url: str = (f"https://ensemble-api.open-meteo.com/v1/ensemble?"
+                            f"latitude={self.latitude}&longitude={self.longitude}&"
+                            f"hourly=shortwave_radiation&"
+                            f"timezone=Europe%2FBerlin&"
+                            f"forecast_days=35&"
+                            f"models=gfs05")
         else:
             start: datetime = datetime.datetime.strptime(start_date, "%d-%m-%Y")
             end: datetime = datetime.datetime.strptime(end_date, "%d-%m-%Y")
-            url: str = (f"https://api.open-meteo.com/v1/forecast?latitude={self.latitude}&longitude={self.longitude}&"
-                        f"minutely_15=direct_normal_irradiance,direct_radiation,shortwave_radiation"
-                        f"&hourly=temperature_2m,cloudcover&"
-                        f"models=best_match&daily=temperature_2m_max,temperature_2m_min,sunrise,sunset&"
-                        f"timezone=Europe%2FBerlin&start_date={start.year}-{str(start.month).zfill(2)}"
-                        f"-{str(start.day).zfill(2)}"
-                        f"&end_date={end.year}-{str(end.month).zfill(2)}-{str(end.day).zfill(2)}")
-        print(url)
 
+            if weather:
+                url: str = (f"https://api.open-meteo.com/v1/forecast?"
+                            f"latitude={self.latitude}&longitude={self.longitude}&"
+                            f"minutely_15=direct_normal_irradiance,direct_radiation,shortwave_radiation"
+                            f"&hourly=temperature_2m,cloudcover&"
+                            f"models=best_match&"
+                            f"daily=temperature_2m_max,temperature_2m_min,sunrise,sunset&"
+                            f"timezone=Europe%2FBerlin&"
+                            f"start_date={start.year}-{str(start.month).zfill(2)}-{str(start.day).zfill(2)}&"
+                            f"end_date={end.year}-{str(end.month).zfill(2)}-{str(end.day).zfill(2)}")
+            elif not weather:
+                url: str = (f"https://ensemble-api.open-meteo.com/v1/ensemble?"
+                            f"latitude={self.latitude}&longitude={self.longitude}&"
+                            f"hourly=weather_code&"
+                            f"timezone=Europe%2FBerlin&"
+                            f"start_date={start.year}-{str(start.month).zfill(2)}-{str(start.day).zfill(2)}&"
+                            f"end_date={end.year}-{str(end.month).zfill(2)}-{str(end.day).zfill(2)}&"
+                            f"models=gfs05")
+
+            else:
+                return None
+
+        print(url)
         response = self.session.get(url)
         if response.from_cache:
             print('Weather data cached object')
         else:
             print('Weather data new object')
         return response.json()
+
+    @staticmethod
+    def weather_code(code: str, day_or_night: str) -> dict:
+        data = {
+            "0": {
+                "day": {
+                    "description": "Sunny",
+                    "image": "http://openweathermap.org/img/wn/01d@2x.png"
+                },
+                "night": {
+                    "description": "Clear",
+                    "image": "http://openweathermap.org/img/wn/01n@2x.png"
+                }
+            },
+            "1": {
+                "day": {
+                    "description": "Mainly Sunny",
+                    "image": "http://openweathermap.org/img/wn/01d@2x.png"
+                },
+                "night": {
+                    "description": "Mainly Clear",
+                    "image": "http://openweathermap.org/img/wn/01n@2x.png"
+                }
+            },
+            "2": {
+                "day": {
+                    "description": "Partly Cloudy",
+                    "image": "http://openweathermap.org/img/wn/02d@2x.png"
+                },
+                "night": {
+                    "description": "Partly Cloudy",
+                    "image": "http://openweathermap.org/img/wn/02n@2x.png"
+                }
+            },
+            "3": {
+                "day": {
+                    "description": "Cloudy",
+                    "image": "http://openweathermap.org/img/wn/03d@2x.png"
+                },
+                "night": {
+                    "description": "Cloudy",
+                    "image": "http://openweathermap.org/img/wn/03n@2x.png"
+                }
+            },
+            "45": {
+                "day": {
+                    "description": "Foggy",
+                    "image": "http://openweathermap.org/img/wn/50d@2x.png"
+                },
+                "night": {
+                    "description": "Foggy",
+                    "image": "http://openweathermap.org/img/wn/50n@2x.png"
+                }
+            },
+            "48": {
+                "day": {
+                    "description": "Rime Fog",
+                    "image": "http://openweathermap.org/img/wn/50d@2x.png"
+                },
+                "night": {
+                    "description": "Rime Fog",
+                    "image": "http://openweathermap.org/img/wn/50n@2x.png"
+                }
+            },
+            "51": {
+                "day": {
+                    "description": "Light Drizzle",
+                    "image": "http://openweathermap.org/img/wn/09d@2x.png"
+                },
+                "night": {
+                    "description": "Light Drizzle",
+                    "image": "http://openweathermap.org/img/wn/09n@2x.png"
+                }
+            },
+            "53": {
+                "day": {
+                    "description": "Drizzle",
+                    "image": "http://openweathermap.org/img/wn/09d@2x.png"
+                },
+                "night": {
+                    "description": "Drizzle",
+                    "image": "http://openweathermap.org/img/wn/09n@2x.png"
+                }
+            },
+            "55": {
+                "day": {
+                    "description": "Heavy Drizzle",
+                    "image": "http://openweathermap.org/img/wn/09d@2x.png"
+                },
+                "night": {
+                    "description": "Heavy Drizzle",
+                    "image": "http://openweathermap.org/img/wn/09n@2x.png"
+                }
+            },
+            "56": {
+                "day": {
+                    "description": "Light Freezing Drizzle",
+                    "image": "http://openweathermap.org/img/wn/09d@2x.png"
+                },
+                "night": {
+                    "description": "Light Freezing Drizzle",
+                    "image": "http://openweathermap.org/img/wn/09n@2x.png"
+                }
+            },
+            "57": {
+                "day": {
+                    "description": "Freezing Drizzle",
+                    "image": "http://openweathermap.org/img/wn/09d@2x.png"
+                },
+                "night": {
+                    "description": "Freezing Drizzle",
+                    "image": "http://openweathermap.org/img/wn/09n@2x.png"
+                }
+            },
+            "61": {
+                "day": {
+                    "description": "Light Rain",
+                    "image": "http://openweathermap.org/img/wn/10d@2x.png"
+                },
+                "night": {
+                    "description": "Light Rain",
+                    "image": "http://openweathermap.org/img/wn/10n@2x.png"
+                }
+            },
+            "63": {
+                "day": {
+                    "description": "Rain",
+                    "image": "http://openweathermap.org/img/wn/10d@2x.png"
+                },
+                "night": {
+                    "description": "Rain",
+                    "image": "http://openweathermap.org/img/wn/10n@2x.png"
+                }
+            },
+            "65": {
+                "day": {
+                    "description": "Heavy Rain",
+                    "image": "http://openweathermap.org/img/wn/10d@2x.png"
+                },
+                "night": {
+                    "description": "Heavy Rain",
+                    "image": "http://openweathermap.org/img/wn/10n@2x.png"
+                }
+            },
+            "66": {
+                "day": {
+                    "description": "Light Freezing Rain",
+                    "image": "http://openweathermap.org/img/wn/10d@2x.png"
+                },
+                "night": {
+                    "description": "Light Freezing Rain",
+                    "image": "http://openweathermap.org/img/wn/10n@2x.png"
+                }
+            },
+            "67": {
+                "day": {
+                    "description": "Freezing Rain",
+                    "image": "http://openweathermap.org/img/wn/10d@2x.png"
+                },
+                "night": {
+                    "description": "Freezing Rain",
+                    "image": "http://openweathermap.org/img/wn/10n@2x.png"
+                }
+            },
+            "71": {
+                "day": {
+                    "description": "Light Snow",
+                    "image": "http://openweathermap.org/img/wn/13d@2x.png"
+                },
+                "night": {
+                    "description": "Light Snow",
+                    "image": "http://openweathermap.org/img/wn/13n@2x.png"
+                }
+            },
+            "73": {
+                "day": {
+                    "description": "Snow",
+                    "image": "http://openweathermap.org/img/wn/13d@2x.png"
+                },
+                "night": {
+                    "description": "Snow",
+                    "image": "http://openweathermap.org/img/wn/13n@2x.png"
+                }
+            },
+            "75": {
+                "day": {
+                    "description": "Heavy Snow",
+                    "image": "http://openweathermap.org/img/wn/13d@2x.png"
+                },
+                "night": {
+                    "description": "Heavy Snow",
+                    "image": "http://openweathermap.org/img/wn/13n@2x.png"
+                }
+            },
+            "77": {
+                "day": {
+                    "description": "Snow Grains",
+                    "image": "http://openweathermap.org/img/wn/13d@2x.png"
+                },
+                "night": {
+                    "description": "Snow Grains",
+                    "image": "http://openweathermap.org/img/wn/13n@2x.png"
+                }
+            },
+            "80": {
+                "day": {
+                    "description": "Light Showers",
+                    "image": "http://openweathermap.org/img/wn/09d@2x.png"
+                },
+                "night": {
+                    "description": "Light Showers",
+                    "image": "http://openweathermap.org/img/wn/09n@2x.png"
+                }
+            },
+            "81": {
+                "day": {
+                    "description": "Showers",
+                    "image": "http://openweathermap.org/img/wn/09d@2x.png"
+                },
+                "night": {
+                    "description": "Showers",
+                    "image": "http://openweathermap.org/img/wn/09n@2x.png"
+                }
+            },
+            "82": {
+                "day": {
+                    "description": "Heavy Showers",
+                    "image": "http://openweathermap.org/img/wn/09d@2x.png"
+                },
+                "night": {
+                    "description": "Heavy Showers",
+                    "image": "http://openweathermap.org/img/wn/09n@2x.png"
+                }
+            },
+            "85": {
+                "day": {
+                    "description": "Light Snow Showers",
+                    "image": "http://openweathermap.org/img/wn/13d@2x.png"
+                },
+                "night": {
+                    "description": "Light Snow Showers",
+                    "image": "http://openweathermap.org/img/wn/13n@2x.png"
+                }
+            },
+            "86": {
+                "day": {
+                    "description": "Snow Showers",
+                    "image": "http://openweathermap.org/img/wn/13d@2x.png"
+                },
+                "night": {
+                    "description": "Snow Showers",
+                    "image": "http://openweathermap.org/img/wn/13n@2x.png"
+                }
+            },
+            "95": {
+                "day": {
+                    "description": "Thunderstorm",
+                    "image": "http://openweathermap.org/img/wn/11d@2x.png"
+                },
+                "night": {
+                    "description": "Thunderstorm",
+                    "image": "http://openweathermap.org/img/wn/11n@2x.png"
+                }
+            },
+            "96": {
+                "day": {
+                    "description": "Light Thunderstorms With Hail",
+                    "image": "http://openweathermap.org/img/wn/11d@2x.png"
+                },
+                "night": {
+                    "description": "Light Thunderstorms With Hail",
+                    "image": "http://openweathermap.org/img/wn/11n@2x.png"
+                }
+            },
+            "99": {
+                "day": {
+                    "description": "Thunderstorm With Hail",
+                    "image": "http://openweathermap.org/img/wn/11d@2x.png"
+                },
+                "night": {
+                    "description": "Thunderstorm With Hail",
+                    "image": "http://openweathermap.org/img/wn/11n@2x.png"
+                }
+            }
+        }
+        return date.get(code).get(day_or_night)
 
 
 class CalcSunPos:
@@ -561,7 +874,7 @@ class PVProfit:
 
         diffuse_energy: float = diffuse_radiation * (
                 0.5 * (
-                    1 + np.cos(np.deg2rad(self.tilt_angle))) * (1 - f_1) + a / b * f_1 + f_2 *
+                1 + np.cos(np.deg2rad(self.tilt_angle))) * (1 - f_1) + a / b * f_1 + f_2 *
                 np.sin(np.deg2rad(self.tilt_angle))
         )
 
