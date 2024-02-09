@@ -659,7 +659,7 @@ class CalcSunPos:
 
     @lru_cache(maxsize=None)
     def adjust_for_new_angle(self, original_gb, original_tilt_angle, original_azimuth_angle, new_tilt_angle,
-                             new_azimuth_angle, time):
+                             new_azimuth_angle, tme):
         """
 
         :param original_gb:
@@ -667,7 +667,7 @@ class CalcSunPos:
         :param original_azimuth_angle:
         :param new_tilt_angle:
         :param new_azimuth_angle:
-        :param time:
+        :param tme:
         :return:
         """
 
@@ -689,8 +689,8 @@ class CalcSunPos:
                 )
             )
 
-        sun_azimuth = self.calc_azimuth(time)
-        sun_elevation = self.calc_solar_elevation(time)
+        sun_azimuth = self.calc_azimuth(tme)
+        sun_elevation = self.calc_solar_elevation(tme)
         incidence_angle_original = _calc_incidence_angle(sun_elevation, sun_azimuth, original_tilt_angle,
                                                          original_azimuth_angle)
         gb_horizontal = original_gb / np.cos(np.deg2rad(incidence_angle_original))
