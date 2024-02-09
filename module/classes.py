@@ -145,7 +145,7 @@ class Weather:
         weather_data: dict = self.get_weather(start_date, end_date, weather)
         self.data: dict = {}
         try:
-            self._create_dict(weather_data, start_date, end_date)
+            self._create_dict(weather_data)
             self._sort_weather(weather_data)
         except LookupError as e:
             if "reason" in weather_data.keys():
@@ -162,7 +162,7 @@ class Weather:
         """
         return str(self.data)
 
-    def _create_dict(self, weather_data: dict, start_date: str | None, end_date: str | None) -> None:
+    def _create_dict(self, weather_data: dict) -> None:
         """
         Creates the dictionary for the weather data
         :param weather_data: received weather data from the api.
@@ -170,15 +170,13 @@ class Weather:
         :param end_date: End date of the weather data.
         :return:
         """
-        days: list = []
-
-        for date in weather_data["hourly"]["time"]:
-            date = datetime.datetime.strptime(date, '%Y-%m-%dT%H:%M').strftime('%d-%m-%Y')
-            days.append(date)
+        days: list = [datetime.datetime.strptime(date, '%Y-%m-%dT%H:%M').strftime('%d-%m-%Y')
+                      for date in weather_data["hourly"]["time"]]
 
         times: list = [f"{str(hour).zfill(2)}:{str(minute).zfill(2)}"
                        for hour in range(24)
                        for minute in range(0, 60, 15)]
+
         for day in days:
             self.data[str(day)] = {}
             self.data[str(day)]["daily"] = {
@@ -201,35 +199,40 @@ class Weather:
         Sorts the weather in the created dictionary
         :return: None
         """
-        date = datetime.datetime.strptime(unsorted_data["minutely_15"]["time"][0],
-                                          '%Y-%m-%dT%H:%M').strftime('%d-%m-%Y')
-        for i, t in enumerate(unsorted_data["minutely_15"]["time"]):
-            self.data[date][t[11:]]["direct_radiation"] = unsorted_data["minutely_15"]["direct_radiation"][i]
-            self.data[date][t[11:]]["dni_radiation"] = unsorted_data["minutely_15"]["direct_normal_irradiance"][i]
-            self.data[date][t[11:]]["ghi_radiation"] = unsorted_data["minutely_15"]["shortwave_radiation"][i]
-            if t[11:] == "23:45":
-                date = datetime.datetime.strptime(date, '%d-%m-%Y') + datetime.timedelta(days=1)
-                date = date.strftime('%d-%m-%Y')
-        date = datetime.datetime.strptime(unsorted_data["minutely_15"]["time"][0],
-                                          '%Y-%m-%dT%H:%M').strftime('%d-%m-%Y')
-        tt: str | None = None
-        for i, t in enumerate(unsorted_data["hourly"]["time"]):
+        min15 = unsorted_data["minutely_15"]
+        hour = unsorted_data["hourly"]
+        daily = unsorted_data["daily"]
+
+        date = datetime.datetime.strptime(min15["time"][0], '%Y-%m-%dT%H:%M').strftime('%d-%m-%Y')
+        for indx, tme in enumerate(min15["time"]):
+            self.data[date][tme[11:]]["direct_radiation"] = min15["direct_radiation"][indx]
+            self.data[date][tme[11:]]["dni_radiation"] = min15["direct_normal_irradiance"][indx]
+            self.data[date][tme[11:]]["ghi_radiation"] = min15["shortwave_radiation"][indx]
+            if tme[11:] == "23:45":
+                date = (datetime.datetime.strptime(date, '%d-%m-%Y') +
+                        datetime.timedelta(days=1)).strftime('%d-%m-%Y')
+
+        date = datetime.datetime.strptime(min15["time"][0], '%Y-%m-%dT%H:%M').strftime('%d-%m-%Y')
+
+        tme: str | None = None
+        for indx, t in enumerate(hour["time"]):
             for x in range(0, 60, 15):
-                tt = f"{t[11:13]}:{str(x).zfill(2)}"
-                self.data[date][tt]["temp"] = unsorted_data["hourly"]["temperature_2m"][i]
-                self.data[date][tt]["cloudcover"] = unsorted_data["hourly"]["cloudcover"][i]
-            if tt == "23:45":
-                date = datetime.datetime.strptime(date, '%d-%m-%Y') + datetime.timedelta(days=1)
-                date = date.strftime('%d-%m-%Y')
-        date = datetime.datetime.strptime(unsorted_data["minutely_15"]["time"][0],
-                                          '%Y-%m-%dT%H:%M').strftime('%d-%m-%Y')
-        for i, d in enumerate(unsorted_data["daily"]["time"]):
-            self.data[date]["daily"]["temp_max"] = unsorted_data["daily"]["temperature_2m_max"][i]
-            self.data[date]["daily"]["temp_min"] = unsorted_data["daily"]["temperature_2m_min"][i]
-            self.data[date]["daily"]["sunrise"] = unsorted_data["daily"]["sunrise"][i][11:]
-            self.data[date]["daily"]["sunset"] = unsorted_data["daily"]["sunset"][i][11:]
-            date = datetime.datetime.strptime(date, '%d-%m-%Y') + datetime.timedelta(days=1)
-            date = date.strftime('%d-%m-%Y')
+                tme = f"{t[11:13]}:{str(x).zfill(2)}"
+                self.data[date][tme]["temp"] = hour["temperature_2m"][indx]
+                self.data[date][tme]["cloudcover"] = hour["cloudcover"][indx]
+            if tme == "23:45":
+                date = (datetime.datetime.strptime(date, '%d-%m-%Y') +
+                        datetime.timedelta(days=1)).strftime('%d-%m-%Y')
+
+        date = datetime.datetime.strptime(min15["time"][0], '%Y-%m-%dT%H:%M').strftime('%d-%m-%Y')
+
+        for indx, d in enumerate(unsorted_data["daily"]["time"]):
+            self.data[date]["daily"]["temp_max"] = daily["temperature_2m_max"][indx]
+            self.data[date]["daily"]["temp_min"] = daily["temperature_2m_min"][indx]
+            self.data[date]["daily"]["sunrise"] = daily["sunrise"][indx][11:]
+            self.data[date]["daily"]["sunset"] = daily["sunset"][indx][11:]
+            date = (datetime.datetime.strptime(date, '%d-%m-%Y') +
+                    datetime.timedelta(days=1)).strftime('%d-%m-%Y')
 
     def get_weather(self, start_date: str | None, end_date: str | None, weather: bool = True) -> dict:
         """
@@ -277,7 +280,7 @@ class Weather:
                             f"models=gfs05")
 
             else:
-                return None
+                return {}
 
         print(url)
         response = self.session.get(url)
