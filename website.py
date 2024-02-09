@@ -27,8 +27,7 @@ app.secret_key = os.urandom(24)
 
 scheduler = APScheduler()
 scheduler.api_enabled = True
-scheduler.init_app(app)
-scheduler.start()
+
 
 config_manager = ConfigManager("config_test.toml")
 energy_manager_data = EnergyManager("data.toml")
@@ -404,5 +403,16 @@ def compare_data():
         print("Big error")
 
 
+@scheduler.task("interval", id="steering", seconds=900)
+def steering():
+    print(datetime.datetime.now())
+    print("steering")
+
+    pass
+
+
 if __name__ == '__main__':
+    scheduler.init_app(app)
+    scheduler.start()
+    
     app.run(debug=True, host='0.0.0.0', port=8888)
