@@ -66,7 +66,10 @@ def analytics():
     time_now = datetime.datetime.now()
 
     sun_class = fc.init_sun(config_data)
-    pv_class = fc.init_pv(config_data)
+    pv_class = fc.init_pv(config_data, number=1)
+    pv_class2 = fc.init_pv(config_data, number=2)
+    pv_class3 = fc.init_pv(config_data, number=3)
+    pv_class4 = fc.init_pv(config_data, number=4)
 
     start_date = time_now.date().strftime('%d-%m-%Y')
     end_date = (time_now + datetime.timedelta(days=14)).date().strftime('%d-%m-%Y')
@@ -88,21 +91,24 @@ def analytics():
         for (tme_pv, data), (tme_load, load_data) in zip(weather_today.items(), curr_load.items()):
             time_float = fc.string_time_to_float(tme_pv)
             temp: float = data.get("temp", 0)
-            # radiation_dni = data.get("dni_radiation", 0)
             radiation_ghi = data.get("ghi_radiation", 0)
 
             azimuth, elevation = fc.get_sun_data(sun_class, time_float)
 
-            # power_dni: float = fc.get_pv_data(pv_class, temp, radiation_dni, azimuth, elevation, dni=True)
-            power_ghi: float = fc.get_pv_data(pv_class, temp, radiation_ghi, azimuth, elevation, dni=False)
+            power_ghi: float = fc.get_pv_data(pv_class, temp, radiation_ghi, azimuth, elevation)
 
-            power_dni = power_ghi
+            if config_data['pv']['alignment'] >= 2:
+                power_ghi += fc.get_pv_data(pv_class2, temp, radiation_ghi, azimuth, elevation)
+            if config_data['pv']['alignment'] >= 3:
+                power_ghi += fc.get_pv_data(pv_class3, temp, radiation_ghi, azimuth, elevation)
+            if config_data['pv']['alignment'] >= 4:
+                power_ghi += fc.get_pv_data(pv_class4, temp, radiation_ghi, azimuth, elevation)
 
-            if power_dni > converter.get("max_power", 0):
-                power_dni = converter.get("max_power", 0)
+            if power_ghi > converter.get("max_power", 0):
+                power_ghi = converter.get("max_power", 0)
 
             weather_time.append(f'{date} {tme_pv}')
-            pv_data_data.append(power_dni)
+            pv_data_data.append(power_ghi)
 
             if tme_pv != tme_load:
                 continue
@@ -110,7 +116,7 @@ def analytics():
             heating_power: float = hp[1][indx]
             cop: float = hp[2][indx]
 
-            load_diff: float = power_dni - load_data
+            load_diff: float = power_ghi - load_data
 
             diff_energy: float = (load_diff * cop) - heating_power
 
@@ -417,4 +423,4 @@ if __name__ == '__main__':
     scheduler.init_app(app)
     scheduler.start()
 
-    app.run(debug=True, host='0.0.0.0', port=8888)
+    app.run(debug=debug.debug_on, host='0.0.0.0', port=8888)
