@@ -169,10 +169,11 @@ def get_sun_data(sun_class: classes.CalcSunPos, tme: float) -> (float, float):
     return az, el
 
 
-def init_pv(config_data: dict) -> classes.PVProfit:
+def init_pv(config_data: dict, number: int = 1) -> classes.PVProfit:
     pv = config_data["pv"]
-    p = classes.PVProfit(pv["module_efficiency"], pv["area"], pv["tilt_angle"], pv["exposure_angle"],
-                         pv["temperature_coefficient"], pv["nominal_temperature"], pv["mounting_type"])
+    p = classes.PVProfit(pv[f"module_efficiency{number}"], pv[f"area{number}"], pv[f"tilt_angle{number}"],
+                         pv[f"exposure_angle{number}"], pv[f"temperature_coefficient{number}"],
+                         pv[f"nominal_temperature{number}"], pv[f"mounting_type{number}"])
     return p
 
 
@@ -635,7 +636,7 @@ def comp_mor_ev_data(morning_data, evening_data):
     }
 
 
-def calc_diff_hp_energy(config_data: dict, hp: list, cop: list, power: list) -> list:
+def calc_diff_hp_energy(hp: list, cop: list, power: list) -> list:
 
     heating_energy: list = list(map(lambda p, c: (p * c) if p is not None else None, power, cop))
     diff: list = list(map(lambda e, p: e - p, heating_energy, hp))
@@ -668,7 +669,7 @@ def load_load_profile(path: str | None) -> dict:
     data_extension = path[path.rfind('.'):]
 
     if '.json' in data_extension:
-        pass
+        return _create_null_profile()
         # sheet = json.load(open(path, "rb+"))
 
     elif '.xlsx' in data_extension or '.xls' in data_extension:

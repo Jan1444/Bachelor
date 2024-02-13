@@ -2,7 +2,7 @@
 reload = true
 
 [write_time]
-time = "13-02-2024 13:38:33"
+time = "13-02-2024 14:23:38"
 format = "%d-%m-%Y %H:%M:%S"
 
 [coordinates]
@@ -10,7 +10,7 @@ latitude = 49.51981
 longitude = 11.29489
 
 [pv]
-alignment = 4.0
+alignment = 1.0
 tilt_angle1 = 35.0
 area1 = 5.16
 module_efficiency1 = 20.0
@@ -64,7 +64,7 @@ ip_address_cloud = ""
 ir_remote = ""
 
 [load_profile]
-name = ""
+name = "lastprofil_nsi_2023.xls"
 
 [house]
 house_year = 0

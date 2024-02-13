@@ -24,7 +24,6 @@ app.secret_key = os.urandom(24)
 scheduler = APScheduler()
 scheduler.api_enabled = True
 
-
 config_manager = ConfigManager("config_test.toml")
 energy_manager_data = EnergyManager("data.toml")
 energy_manager_morning_data = EnergyManager("mor_data.toml")
@@ -54,7 +53,7 @@ def analytics():
     pv_data_data: list = []
     weather_time: list = []
 
-    diff_heating_pv: list = []
+    diff_power: list = []
 
     battery_load: list = []
     min_capacity = battery.get('capacity', 0) * 1_000 * (1 - battery.get('max_deload', 100) / 100)
@@ -77,6 +76,9 @@ def analytics():
     market_class = fc.init_market(config_data)
 
     load_profile_data: dict = fc.load_load_profile(f'{consts.LOAD_PROFILE_FOLDER}/{load_profile.get("name")}')
+
+    hp = fc.heating_power(config_data, weather)
+    indx = 0
 
     for date, weather_today in weather.items():
         weather_today.pop("daily")
@@ -105,10 +107,15 @@ def analytics():
             if tme_pv != tme_load:
                 continue
 
-            load_diff: float = power_dni - load_data
-            diff_heating_pv.append(load_diff)
+            heating_power: float = hp[1][indx]
+            cop: float = hp[2][indx]
 
-            energy = load_diff * 0.25
+            load_diff: float = power_dni - load_data
+
+            diff_energy: float = (load_diff * cop) - heating_power
+
+            energy = diff_energy * 0.25
+
             if energy < 0:
                 netto_energy = energy * converter.get('efficiency')
             else:
@@ -119,14 +126,14 @@ def analytics():
             state_of_charge = max(min_state_of_charge, min(state_of_charge, 100))
             battery_load.append(state_of_charge)
 
+            diff_power.append(diff_energy)
+
+            indx += 1
+
     energy_today = fc.calc_energy(pv_data_data[:95], kwh=False, round_=2)
 
     market_time = [time.get('start_timestamp') for time in market_class.data]
     market_price = [price.get('consumerprice') for price in market_class.data]
-
-    hp = fc.heating_power(config_data, weather)
-
-    diff_power = fc.calc_diff_hp_energy(config_data, hp[1], hp[2], diff_heating_pv)
 
     pv_power_data = [[time, value] for time, value in zip(weather_time, pv_data_data)]
 
@@ -409,5 +416,5 @@ def steering():
 if __name__ == '__main__':
     scheduler.init_app(app)
     scheduler.start()
-    
+
     app.run(debug=True, host='0.0.0.0', port=8888)

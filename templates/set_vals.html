@@ -479,7 +479,7 @@
             <div class="input-group">
                 <label for="load_profile_name">Lastprofil:</label>
                 <select name="load_profile_name" id="load_profile_name">
-                    <option value="">Lastprofil wählen:</option>
+                    <option value="None">Lastprofil wählen:</option>
                     {% for file in load_files %}
                         <option value="{{ file }}"
                                 {% if file == config['load_profile']['name'] %}
