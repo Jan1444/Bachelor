@@ -3,10 +3,7 @@
 import datetime
 import os
 
-import matplotlib.pyplot as plt
-import numpy as np
-
-from flask import Flask, render_template, request, send_from_directory, flash, redirect, jsonify
+from flask import Flask, render_template, request, send_from_directory, flash, jsonify
 from werkzeug.utils import secure_filename
 from flask_apscheduler import APScheduler
 
@@ -16,7 +13,6 @@ from data import EnergyManager
 from module import consts, debug
 from module import functions as fc
 from module import set_vals
-from module import analytics as analytics_module
 from module import download as download_module
 
 UPLOAD_FOLDER = 'uploads'

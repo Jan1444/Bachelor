@@ -166,8 +166,6 @@ class Weather:
         """
         Creates the dictionary for the weather data
         :param weather_data: received weather data from the api.
-        :param start_date: Start date of the weather data.
-        :param end_date: End date of the weather data.
         :return:
         """
         days: list = [datetime.datetime.strptime(date, '%Y-%m-%dT%H:%M').strftime('%d-%m-%Y')
@@ -240,6 +238,7 @@ class Weather:
         :return: A dict with the following variables: direct radiation, temperatur, cloudcover, temperature max,
                  temperatur min, sunrise, sunset.
         """
+        url: str = ''
         if start_date is None or end_date is None:
             if weather:
                 url: str = (f"https://api.open-meteo.com/v1/forecast?"
@@ -574,7 +573,7 @@ class Weather:
                 }
             }
         }
-        return date.get(code).get(day_or_night)
+        return data.get(code).get(day_or_night)
 
 
 class CalcSunPos:
@@ -877,7 +876,7 @@ class PVProfit:
 
         diffuse_energy: float = diffuse_radiation * (
                 0.5 * (
-                1 + np.cos(np.deg2rad(self.tilt_angle))) * (1 - f_1) + a / b * f_1 + f_2 *
+                    1 + np.cos(np.deg2rad(self.tilt_angle))) * (1 - f_1) + a / b * f_1 + f_2 *
                 np.sin(np.deg2rad(self.tilt_angle))
         )
 

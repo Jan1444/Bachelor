@@ -7,7 +7,6 @@ from functools import lru_cache, wraps
 
 import matplotlib.pyplot as plt
 import numpy as np
-import openpyxl
 import pandas as pd
 
 import requests
@@ -218,7 +217,7 @@ def save_mor_ev_data(config_data: dict) -> dict:
         temp: float = float(data.get("temp", 0))
         radiation: float = float(data.get("dni_radiation", 0))
         radiation_ghi: float = float(data.get("ghi_radiation", 0))
-        power: float = get_pv_data(pv_class, temp, radiation, azimuth, elevation, True)
+        # power: float = get_pv_data(pv_class, temp, radiation, azimuth, elevation, True)
         power: float = get_pv_data(pv_class, temp, radiation_ghi, azimuth, elevation, False)
 
         write_dict.update(
@@ -669,7 +668,8 @@ def load_load_profile(path: str | None) -> dict:
     data_extension = path[path.rfind('.'):]
 
     if '.json' in data_extension:
-        sheet = json.load(open(path, "rb+"))
+        pass
+        # sheet = json.load(open(path, "rb+"))
 
     elif '.xlsx' in data_extension or '.xls' in data_extension:
         try:

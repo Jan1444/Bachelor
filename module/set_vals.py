@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import datetime
-
 from module import debug
 from module import functions
 
@@ -23,7 +21,6 @@ def write_data_to_config(config_data: dict, data: dict) -> dict | int:
             config_data['coordinates']['latitude'] = lat
             config_data['coordinates']['longitude'] = lon
 
-        tme = config_data.get('write_time')
         pv = config_data.get('pv')
         market = config_data.get('market')
         load_profile = config_data.get('load_profile')
