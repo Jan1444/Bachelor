@@ -206,22 +206,22 @@ function togglealigment(selectId, FieldSetId1, FieldSetId2,FieldSetId3,FieldSetI
     const fieldSet2 = document.getElementById(FieldSetId2);
     const fieldSet3 = document.getElementById(FieldSetId3);
     const fieldSet4 = document.getElementById(FieldSetId4);
-    if (selectValue === "1") {
+    if (selectValue === '1') {
         fieldSet1.style.display = "block";
         fieldSet2.style.display = "none";
         fieldSet3.style.display = "none";
         fieldSet4.style.display = "none";
-    }else if (selectValue === "2"){
+    }else if (selectValue === '2'){
         fieldSet1.style.display = "block";
         fieldSet2.style.display = "block";
         fieldSet3.style.display = "none";
         fieldSet4.style.display = "none";
-    }else if (selectValue === "3"){
+    }else if (selectValue === '3'){
         fieldSet1.style.display = "block";
         fieldSet2.style.display = "block";
         fieldSet3.style.display = "block";
-        fieldSet4.style.display = "block";
-    }else if (selectValue === "4"){
+        fieldSet4.style.display = "none";
+    }else if (selectValue === '4'){
         fieldSet1.style.display = "block";
         fieldSet2.style.display = "block";
         fieldSet3.style.display = "block";

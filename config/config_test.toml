@@ -2,7 +2,7 @@
 reload = true
 
 [write_time]
-time = "07-02-2024 23:52:20"
+time = "13-02-2024 13:38:33"
 format = "%d-%m-%Y %H:%M:%S"
 
 [coordinates]
@@ -10,13 +10,35 @@ latitude = 49.51981
 longitude = 11.29489
 
 [pv]
-tilt_angle = 35.0
-area = 5.16
-module_efficiency = 20.0
-exposure_angle = 0.0
-temperature_coefficient = -0.35
-nominal_temperature = 25.0
-mounting_type = 0.0
+alignment = 4.0
+tilt_angle1 = 35.0
+area1 = 5.16
+module_efficiency1 = 20.0
+exposure_angle1 = 0.0
+temperature_coefficient1 = -0.35
+nominal_temperature1 = 25.0
+mounting_type1 = 0.0
+tilt_angle2 = 0.0
+area2 = 0.0
+module_efficiency2 = 0.0
+exposure_angle2 = 0.0
+temperature_coefficient2 = 0.0
+nominal_temperature2 = 0.0
+mounting_type2 = -1.0
+tilt_angle3 = 0.0
+area3 = 0.0
+module_efficiency3 = 0.0
+exposure_angle3 = 0.0
+temperature_coefficient3 = 0.0
+nominal_temperature3 = 0.0
+mounting_type3 = -1.0
+tilt_angle4 = 0.0
+area4 = 0.0
+module_efficiency4 = 0.0
+exposure_angle4 = 0.0
+temperature_coefficient4 = 0.0
+nominal_temperature4 = 0.0
+mounting_type4 = -1.0
 
 [converter]
 max_power = 600.0
@@ -42,7 +64,7 @@ ip_address_cloud = ""
 ir_remote = ""
 
 [load_profile]
-name = "lastprofil_nsi_2023.xls"
+name = ""
 
 [house]
 house_year = 0

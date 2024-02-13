@@ -3,7 +3,7 @@
 import datetime
 import os
 
-from flask import Flask, render_template, request, send_from_directory, flash, jsonify
+from flask import Flask, render_template, request, send_from_directory, redirect, flash, jsonify
 from werkzeug.utils import secure_filename
 from flask_apscheduler import APScheduler
 
@@ -225,7 +225,7 @@ def safe_settings():
 
         debug.printer(data)
 
-        if data["mounting_type"] == "-1":
+        if data["mounting_type1"] == "-1":
             return render_template('set_vals.html',
                                    error_mounting_type='Bitte wählen Sie einen Montagetypen aus',
                                    config=config_data, window_data=consts.WINDOW_DATA,
@@ -240,7 +240,7 @@ def safe_settings():
             write_data = set_vals.write_data_to_config(config_data, data)
             config_manager.write_config_data(write_data)
 
-            return render_template('index.html', config=config_data)
+            return redirect('/')
         else:
             return render_template('set_vals.html',
                                    error='Bitte füllen Sie mindestens Latitude, Longitude aus oder die Adresse',

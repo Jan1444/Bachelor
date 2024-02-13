@@ -108,6 +108,15 @@ hr {
 }
 
 
+.cell2 {
+    flex: 1;
+    padding: 3px;
+    box-sizing: border-box;
+}
+
+
+
+
 @media screen and (max-width: 768px) {
     .input-group label {
         width: 200px; /* Angepasste Breite für Tablets */
