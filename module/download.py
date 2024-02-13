@@ -88,6 +88,12 @@ def generate_weather_data(request_data: dict, config_data: dict) -> list[str]:
             x = 10
             y = 5
 
+        if x < 2 ** 16:
+            x = int(2 ** 16 - 1) / 100
+            y = int(x * 0.4)
+
+        print(x, y)
+
         plt.figure(figsize=(x, y))
         plt.grid()
         plt.step(list(energy_data.keys()), list(energy_data.values()), label="Energy[kWh]")
@@ -149,16 +155,20 @@ def generate_market_data(request_data: dict, config_data: dict) -> list[str]:
         if 50 < len(price_data) < 1000:
             x = int(len(price_data) * 0.25)
             y = int(x * 0.4)
-            print(len(price_data))
-            print(x,y)
+
         elif len(price_data) >= 1000:
             x = int(len(price_data) * 0.025)
             y = int(x * 0.4)
-            print(len(price_data))
-            print(x,y)
+
         else:
             x = 10
             y = 5
+
+        if x < 2 ** 16:
+            x = int(2 ** 16 - 1) / 100
+            y = int(x * 0.4)
+
+        print(x, y)
 
         plt.figure(figsize=(x, y))
         plt.grid()
