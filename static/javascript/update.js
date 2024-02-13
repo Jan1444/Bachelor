@@ -200,4 +200,33 @@ function toggleFieldset3(selectId, FieldSetId1, FieldSetId2,FieldSetId3,FieldSet
     }
 }
 
+function togglealigment(selectId, FieldSetId1, FieldSetId2,FieldSetId3,FieldSetId4) {
+    const selectValue = document.getElementById(selectId).value;
+    const fieldSet1 = document.getElementById(FieldSetId1);
+    const fieldSet2 = document.getElementById(FieldSetId2);
+    const fieldSet3 = document.getElementById(FieldSetId3);
+    const fieldSet4 = document.getElementById(FieldSetId4);
+    if (selectValue === "1") {
+        fieldSet1.style.display = "block";
+        fieldSet2.style.display = "none";
+        fieldSet3.style.display = "none";
+        fieldSet4.style.display = "none";
+    }else if (selectValue === "2"){
+        fieldSet1.style.display = "block";
+        fieldSet2.style.display = "block";
+        fieldSet3.style.display = "none";
+        fieldSet4.style.display = "none";
+    }else if (selectValue === "3"){
+        fieldSet1.style.display = "block";
+        fieldSet2.style.display = "block";
+        fieldSet3.style.display = "block";
+        fieldSet4.style.display = "block";
+    }else if (selectValue === "4"){
+        fieldSet1.style.display = "block";
+        fieldSet2.style.display = "block";
+        fieldSet3.style.display = "block";
+        fieldSet4.style.display = "block";
+    }
+}
+
 

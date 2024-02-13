@@ -66,76 +66,160 @@
         <nav class="Box1">
             <b>PV-Anlage</b>
         </nav>
-        <section>
+        <section class="container">
             <div class="input-group">
-                <label for="tilt_angle">Neigungswinkel [°]:</label>
-                <input id="tilt_angle" minlength="2" name="tilt_angle" type="text"
-                       value="{{ config['pv']['tilt_angle'] }}">
-            </div>
-            <div class="input-group">
-                <label for="area">Modulfläche [qm]:</label>
-                <input id="area" minlength="2" name="area" type="text" value="{{ config['pv']['area'] }}">
-            </div>
-            <div class="input-group">
-                <label for="module_efficiency">Modul-Effizienz [%]:</label>
-                <input id="module_efficiency" minlength="2" name="module_efficiency"
-                       type="text" value="{{ config['pv']['module_efficiency'] }}">
-            </div>
-            <div class="input-group">
-                <label for="exposure_angle">Ausrichtungswinkel [°]:</label>
-                <input id="exposure_angle" minlength="1" name="exposure_angle"
-                       type="text" value="{{ config['pv']['exposure_angle'] }}">
-            </div>
-            <div class="input-group">
-                {% if error_mounting_type %}
-                    <p class="error_class">{{ error_mounting_type }}</p>
-                {% endif %}
-                <label for="mounting_type">Montagetyp:</label>
-                <select name="mounting_type" id="mounting_type"
-                        {% if error_mounting_type %}
-                        class="error_class"
-                        {% endif %}>
-                    <option value="-1">Montagetyp wählen</option>
-                    <option {% if config['pv']['mounting_type'] == 0 %} selected="selected" {% endif %}
-                                                                        value="0">Völlig freie Aufständerung
-                    </option>
-                    <option {% if config['pv']['mounting_type'] == 1 %} selected="selected" {% endif %}
-                                                                        value="1">Auf dem Dach, großer Abstand
-                    </option>
-                    <option {% if config['pv']['mounting_type'] == 2 %} selected="selected" {% endif %}
-                                                                        value="2">Auf dem Dach bzw. dachintegriert, gute
-                        Hinterlüftung
-                    </option>
-                    <option {% if config['pv']['mounting_type'] == 3 %} selected="selected" {% endif %}
-                                                                        value="3">Auf dem Dach bzw. dachintegriert,
-                        schlechte Hinterlüftung
-                    </option>
-                    <option {% if config['pv']['mounting_type'] == 4 %} selected="selected" {% endif %}
-                                                                        value="4">An der Fassade bzw.
-                        fassadenintegriert, gute Hinterlüftung
-                    </option>
-                    <option {% if config['pv']['mounting_type'] == 5 %} selected="selected" {% endif %}
-                                                                        value="5">An der Fassade bzw.
-                        fassadenintegriert, schlechte Hinterlüftung
-                    </option>
-                    <option {% if config['pv']['mounting_type'] == 6 %} selected="selected" {% endif %}
-                                                                        value="6">Dachintegration, ohne Hinterlüftung
-                    </option>
-                    <option {% if config['pv']['mounting_type'] == 7 %} selected="selected" {% endif %}
-                                                                        value="7">Fassadenintegration, ohne
-                        Hinterlüftung
-                    </option>
+                <label for="alignment">Mehr als eine Ausrichtung</label>
+                <select id="alignment" name="alignment" onchange="togglealigment('alignment','alignment1','alignment2', 'alignment3')">
+                    <option value="1">Nein</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
                 </select>
             </div>
-            <div class="input-group">
-                <label for="temperature_coefficient">Temperatur Koeffizient [%/°C]:</label>
-                <input id="temperature_coefficient" minlength="1" name="temperature_coefficient" type="text"
-                       value="{{ config['pv']['temperature_coefficient'] }}">
+            <div id="alignment1" style="display: block">
+                    <div class="input-group">
+                        <label for="tilt_angle">Neigungswinkel [°]:</label>
+                        <input id="tilt_angle" minlength="2" name="tilt_angle" type="text"
+                               value="{{ config['pv']['tilt_angle'] }}">
+                    </div>
+                    <div class="input-group">
+                        <label for="area">Modulfläche [qm]:</label>
+                        <input id="area" minlength="2" name="area" type="text" value="{{ config['pv']['area'] }}">
+                    </div>
+                    <div class="input-group">
+                        <label for="module_efficiency">Modul-Effizienz [%]:</label>
+                        <input id="module_efficiency" minlength="2" name="module_efficiency"
+                               type="text" value="{{ config['pv']['module_efficiency'] }}">
+                    </div>
+                    <div class="input-group">
+                        <label for="exposure_angle">Ausrichtungswinkel [°]:</label>
+                        <input id="exposure_angle" minlength="1" name="exposure_angle"
+                               type="text" value="{{ config['pv']['exposure_angle'] }}">
+                    </div>
+                    <div class="input-group">
+                        {% if error_mounting_type %}
+                            <p class="error_class">{{ error_mounting_type }}</p>
+                        {% endif %}
+                        <label for="mounting_type">Montagetyp:</label>
+                        <select name="mounting_type" id="mounting_type"
+                                {% if error_mounting_type %}
+                                class="error_class"
+                                {% endif %}>
+                            <option value="-1">Montagetyp wählen</option>
+                            <option {% if config['pv']['mounting_type'] == 0 %} selected="selected" {% endif %}
+                                                                                value="0">Völlig freie Aufständerung
+                            </option>
+                            <option {% if config['pv']['mounting_type'] == 1 %} selected="selected" {% endif %}
+                                                                                value="1">Auf dem Dach, großer Abstand
+                            </option>
+                            <option {% if config['pv']['mounting_type'] == 2 %} selected="selected" {% endif %}
+                                                                                value="2">Auf dem Dach bzw. dachintegriert, gute
+                                Hinterlüftung
+                            </option>
+                            <option {% if config['pv']['mounting_type'] == 3 %} selected="selected" {% endif %}
+                                                                                value="3">Auf dem Dach bzw. dachintegriert,
+                                schlechte Hinterlüftung
+                            </option>
+                            <option {% if config['pv']['mounting_type'] == 4 %} selected="selected" {% endif %}
+                                                                                value="4">An der Fassade bzw.
+                                fassadenintegriert, gute Hinterlüftung
+                            </option>
+                            <option {% if config['pv']['mounting_type'] == 5 %} selected="selected" {% endif %}
+                                                                                value="5">An der Fassade bzw.
+                                fassadenintegriert, schlechte Hinterlüftung
+                            </option>
+                            <option {% if config['pv']['mounting_type'] == 6 %} selected="selected" {% endif %}
+                                                                                value="6">Dachintegration, ohne Hinterlüftung
+                            </option>
+                            <option {% if config['pv']['mounting_type'] == 7 %} selected="selected" {% endif %}
+                                                                                value="7">Fassadenintegration, ohne
+                                Hinterlüftung
+                            </option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="temperature_coefficient">Temperatur Koeffizient [%/°C]:</label>
+                        <input id="temperature_coefficient" minlength="1" name="temperature_coefficient" type="text"
+                               value="{{ config['pv']['temperature_coefficient'] }}">
+                    </div>
+                    <div class="input-group">
+                        <label for="nominal_temperature">Nominal Temperatur [°C]:</label>
+                        <input id="nominal_temperature" minlength="1" name="nominal_temperature"
+                               type="text" value="{{ config['pv']['nominal_temperature'] }}">
+                    </div>
             </div>
-            <div class="input-group">
-                <label for="nominal_temperature">Nominal Temperatur [°C]:</label>
-                <input id="nominal_temperature" minlength="1" name="nominal_temperature"
-                       type="text" value="{{ config['pv']['nominal_temperature'] }}">
+            <div id="alignment2" style="display: none;">
+                <hr style="background-color: cyan">
+                <div class="input-group">
+                    <label for="tilt_angle">Neigungswinkel [°]:</label>
+                    <input id="tilt_angle" minlength="2" name="tilt_angle" type="text"
+                           value="{{ config['pv']['tilt_angle'] }}">
+                </div>
+                <div class="input-group">
+                    <label for="area">Modulfläche [qm]:</label>
+                    <input id="area" minlength="2" name="area" type="text" value="{{ config['pv']['area'] }}">
+                </div>
+                <div class="input-group">
+                    <label for="module_efficiency">Modul-Effizienz [%]:</label>
+                    <input id="module_efficiency" minlength="2" name="module_efficiency"
+                           type="text" value="{{ config['pv']['module_efficiency'] }}">
+                </div>
+                <div class="input-group">
+                    <label for="exposure_angle">Ausrichtungswinkel [°]:</label>
+                    <input id="exposure_angle" minlength="1" name="exposure_angle"
+                           type="text" value="{{ config['pv']['exposure_angle'] }}">
+                </div>
+                <div class="input-group">
+                    {% if error_mounting_type %}
+                        <p class="error_class">{{ error_mounting_type }}</p>
+                    {% endif %}
+                    <label for="mounting_type">Montagetyp:</label>
+                    <select name="mounting_type" id="mounting_type"
+                            {% if error_mounting_type %}
+                            class="error_class"
+                            {% endif %}>
+                        <option value="-1">Montagetyp wählen</option>
+                        <option {% if config['pv']['mounting_type'] == 0 %} selected="selected" {% endif %}
+                                                                            value="0">Völlig freie Aufständerung
+                        </option>
+                        <option {% if config['pv']['mounting_type'] == 1 %} selected="selected" {% endif %}
+                                                                            value="1">Auf dem Dach, großer Abstand
+                        </option>
+                        <option {% if config['pv']['mounting_type'] == 2 %} selected="selected" {% endif %}
+                                                                            value="2">Auf dem Dach bzw. dachintegriert, gute
+                            Hinterlüftung
+                        </option>
+                        <option {% if config['pv']['mounting_type'] == 3 %} selected="selected" {% endif %}
+                                                                            value="3">Auf dem Dach bzw. dachintegriert,
+                            schlechte Hinterlüftung
+                        </option>
+                        <option {% if config['pv']['mounting_type'] == 4 %} selected="selected" {% endif %}
+                                                                            value="4">An der Fassade bzw.
+                            fassadenintegriert, gute Hinterlüftung
+                        </option>
+                        <option {% if config['pv']['mounting_type'] == 5 %} selected="selected" {% endif %}
+                                                                            value="5">An der Fassade bzw.
+                            fassadenintegriert, schlechte Hinterlüftung
+                        </option>
+                        <option {% if config['pv']['mounting_type'] == 6 %} selected="selected" {% endif %}
+                                                                            value="6">Dachintegration, ohne Hinterlüftung
+                        </option>
+                        <option {% if config['pv']['mounting_type'] == 7 %} selected="selected" {% endif %}
+                                                                            value="7">Fassadenintegration, ohne
+                            Hinterlüftung
+                        </option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="temperature_coefficient">Temperatur Koeffizient [%/°C]:</label>
+                    <input id="temperature_coefficient" minlength="1" name="temperature_coefficient" type="text"
+                           value="{{ config['pv']['temperature_coefficient'] }}">
+                </div>
+                <div class="input-group">
+                    <label for="nominal_temperature">Nominal Temperatur [°C]:</label>
+                    <input id="nominal_temperature" minlength="1" name="nominal_temperature"
+                           type="text" value="{{ config['pv']['nominal_temperature'] }}">
+                </div>
             </div>
         </section>
         <nav class="Box1">

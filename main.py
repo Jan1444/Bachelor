@@ -3,6 +3,7 @@
 import matplotlib.pyplot as plt
 import requests
 from functools import lru_cache
+import json
 
 from module import classes
 from config import ConfigManager
@@ -147,10 +148,24 @@ def main():
                                  pv_consts["module_efficiency"], pv_consts["area"],
                                  pv_consts["tilt_angle"], pv_consts["exposure_angle"],
                                  pv_consts["mounting_type"], market_consts["consumer_price"])
-    #test_day_data(w.data[list(w.data.keys())[0]], sun, pv, m)
+    # test_day_data(w.data[list(w.data.keys())[0]], sun, pv, m)
 
-    #plt.legend(loc="upper left")
-    #plt.show()
+    '''test_data = {
+        "12.02.2024": w.data[list(w.data.keys())[0]],
+        '13.02.2024': w.data[list(w.data.keys())[1]]
+    }'''
+    with open("data/data.json", "r") as fp:
+        test_data = json.load(fp)
+
+    test_data.update({
+        '14.02.2024': w.data[list(w.data.keys())[2]]
+    })
+
+    with open("data/data.json", "w") as f:
+        json.dump(test_data, f)
+
+    # plt.legend(loc="upper left")
+    # plt.show()
 
 
 if __name__ == "__main__":

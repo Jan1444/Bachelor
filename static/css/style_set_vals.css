@@ -18,19 +18,26 @@ h1 {
     margin-bottom: 30px;
 }
 
+hr {
+    border: 1px solid darkcyan;
+    margin-top: 5px;
+    margin-left: 25px;
+    margin-right: calc(100% - 150px - 300px - 10px);
+}
+
 .error_class {
     border-color: red;
     border-width: 3px;
 }
 
-.Box1{
+.Box1 {
     background-color: darkcyan;
     height: calc(var(--font_height) + 5px);
     padding-left: 20px;
     margin-top: 5px;
 }
 
-.Box1 b{
+.Box1 b {
     font-family: var(--font_family);
     font-size: var(--font_height);
     color: white;
@@ -57,11 +64,11 @@ h1 {
     width: 150px;
 }
 
-.visible{
+.visible {
     display: block;
 }
 
-.invisible{
+.invisible {
     display: none;
 }
 
@@ -101,11 +108,11 @@ h1 {
 }
 
 
-
 @media screen and (max-width: 768px) {
     .input-group label {
         width: 200px; /* Angepasste Breite für Tablets */
     }
+
     .row {
         flex-direction: column;
     }
@@ -121,6 +128,7 @@ h1 {
     .input-group {
         flex-direction: column; /* Stapelt Label und Input vertikal */
     }
+
     .input-group input, .input-group select {
         font-size: calc(var(--font_height) / 1.5);
         margin-left: 2px;
@@ -131,14 +139,15 @@ h1 {
         width: 100%;
         margin-bottom: 5px;
     }
-    .Box1{
+
+    .Box1 {
         background-color: darkcyan;
         height: calc(var(--font_height) / 1.5 + 5px);
         padding-left: 5px;
         margin-top: 1px;
     }
 
-    .Box1 b{
+    .Box1 b {
         font-family: var(--font_family);
         font-size: calc(var(--font_height) / 1.5);
         color: white;
