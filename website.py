@@ -15,6 +15,8 @@ from module import functions as fc
 from module import set_vals
 from module import download as download_module
 
+from numpy import array
+
 UPLOAD_FOLDER = 'uploads'
 
 app = Flask(__name__)
@@ -141,7 +143,7 @@ def analytics():
     market_time = [time.get('start_timestamp') for time in market_class.data]
     market_price = [price.get('consumerprice') for price in market_class.data]
 
-    pv_power_data = [[time, value] for time, value in zip(weather_time, pv_data_data)]
+    pv_power_data = [[time, value] for time, value in zip(weather_time, array(pv_data_data, dtype=float))]
 
     market_data = [[time, value] for time, value in zip(market_time, market_price)]
 
