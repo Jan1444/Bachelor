@@ -32,7 +32,34 @@ def write_data_to_config(config_data: dict, data: dict) -> dict | int:
         house = config_data.get('house')
 
         for key in pv:
-            pv[key] = float(data.get(key, 0))
+            alignment = int(data.get('alignment'))
+            pv['alignment'] = alignment
+
+            print(key)
+
+            if '1' in key:
+                if alignment >= 1:
+                    pv[key] = float(data.get(key, 0))
+                else:
+                    pv[key] = 0.0
+
+            if '2' in key:
+                if alignment >= 2:
+                    pv[key] = float(data.get(key, 0))
+                else:
+                    pv[key] = 0.0
+
+            if '3' in key:
+                if alignment >= 3:
+                    pv[key] = float(data.get(key, 0))
+                else:
+                    pv[key] = 0.0
+
+            if '4' in key:
+                if alignment >= 4:
+                    pv[key] = float(data.get(key, 0))
+                else:
+                    pv[key] = 0.0
 
         for key in converter:
             converter[key] = float(data.get(f'converter_{key}', 0))

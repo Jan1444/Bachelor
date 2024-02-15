@@ -2,7 +2,7 @@
 reload = true
 
 [write_time]
-time = "13-02-2024 16:45:48"
+time = "13-02-2024 17:18:56"
 format = "%d-%m-%Y %H:%M:%S"
 
 [coordinates]
@@ -10,34 +10,34 @@ latitude = 49.51981
 longitude = 11.29489
 
 [pv]
-alignment = 4.0
+alignment = 1
 tilt_angle1 = 35.0
-area1 = 0.0
+area1 = 5.16
 module_efficiency1 = 20.0
 exposure_angle1 = 0.0
 temperature_coefficient1 = -0.35
 nominal_temperature1 = 25.0
 mounting_type1 = 0.0
-tilt_angle2 = 35.0
+tilt_angle2 = 0.0
 area2 = 0.0
-module_efficiency2 = 20.0
-exposure_angle2 = 90.0
-temperature_coefficient2 = -0.35
-nominal_temperature2 = 25.0
+module_efficiency2 = 0.0
+exposure_angle2 = 0.0
+temperature_coefficient2 = 0.0
+nominal_temperature2 = 0.0
 mounting_type2 = 0.0
-tilt_angle3 = 35.0
-area3 = 5.16
-module_efficiency3 = 20.0
-exposure_angle3 = 180.0
-temperature_coefficient3 = -0.35
-nominal_temperature3 = 25.0
+tilt_angle3 = 0.0
+area3 = 0.0
+module_efficiency3 = 0.0
+exposure_angle3 = 0.0
+temperature_coefficient3 = 0.0
+nominal_temperature3 = 0.0
 mounting_type3 = 0.0
-tilt_angle4 = 35.0
+tilt_angle4 = 0.0
 area4 = 0.0
-module_efficiency4 = 20.0
-exposure_angle4 = 270.0
-temperature_coefficient4 = -0.35
-nominal_temperature4 = 25.0
+module_efficiency4 = 0.0
+exposure_angle4 = 0.0
+temperature_coefficient4 = 0.0
+nominal_temperature4 = 0.0
 mounting_type4 = 0.0
 
 [converter]
