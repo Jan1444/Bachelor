@@ -601,17 +601,23 @@ class CalcSunPos:
         self.left_days: int = (self.current_date - datetime.datetime(self.current_date.year, 1, 1)).days
         self.days_per_year: int = (datetime.datetime(self.current_date.year, 12, 31) -
                                    datetime.datetime(self.current_date.year, 1, 1)).days + 1
-        self.day_angle: float = np.deg2rad(360.0) * self.left_days / self.days_per_year
+        self.day_angle: float = np.deg2rad(360.0, dtype=np.float32) * self.left_days / self.days_per_year
 
-        self.sun_declination: float = (  # rad
-                np.deg2rad(0.3948) - np.deg2rad(23.2559) * np.cos(self.day_angle + np.deg2rad(9.1)) -
-                np.deg2rad(0.3915) * np.cos(2.0 * self.day_angle + np.deg2rad(5.4)) -
-                np.deg2rad(0.1764) * np.cos(3.0 * self.day_angle + np.deg2rad(26.0)))
+        self.sun_declination: float = (
+                np.deg2rad(0.3948, dtype=np.float32) - np.deg2rad(23.2559, dtype=np.float32) *
+                np.cos(self.day_angle + np.deg2rad(9.1, dtype=np.float32), dtype=np.float32) -
+                np.deg2rad(0.3915, dtype=np.float32) *
+                np.cos(2.0 * self.day_angle + np.deg2rad(5.4, dtype=np.float32), dtype=np.float32) -
+                np.deg2rad(0.1764, dtype=np.float32) *
+                np.cos(3.0 * self.day_angle + np.deg2rad(26.0, dtype=np.float32), dtype=np.float32))
 
         self.time_equation: float = (
-                np.deg2rad(0.0066) + np.deg2rad(7.3525) * np.cos(self.day_angle + np.deg2rad(85.9)) +
-                np.deg2rad(9.9359) * np.cos(2.0 * self.day_angle + np.deg2rad(108.9)) +
-                np.deg2rad(0.3387) * np.cos(3.0 * self.day_angle + np.deg2rad(105.2)))
+                np.deg2rad(0.0066, dtype=np.float32) + np.deg2rad(7.3525, dtype=np.float32) *
+                np.cos(self.day_angle + np.deg2rad(85.9, dtype=np.float32), dtype=np.float32) +
+                np.deg2rad(9.9359, dtype=np.float32) *
+                np.cos(2.0 * self.day_angle + np.deg2rad(108.9, dtype=np.float32), dtype=np.float32) +
+                np.deg2rad(0.3387, dtype=np.float32) *
+                np.cos(3.0 * self.day_angle + np.deg2rad(105.2, dtype=np.float32), dtype=np.float32))
 
     def __str__(self) -> str:
         """
@@ -630,15 +636,17 @@ class CalcSunPos:
         :param t: Time as float.
         :return: The azimuth in degrees.
         """
-        sun_height: float = np.deg2rad(self.calc_solar_elevation(t))
+        sun_height: float = np.deg2rad(self.calc_solar_elevation(t), dtype=np.float32)
         if self.real_local_time > 12:
             sun_azimuth: float = np.deg2rad(180) + np.arccos(
-                (np.sin(sun_height) * np.sin(self.latitude) - np.sin(self.sun_declination)) /
-                (np.cos(sun_height) * np.cos(self.latitude)))
+                (np.sin(sun_height, dtype=np.float32) *
+                 np.sin(self.latitude, dtype=np.float32) - np.sin(self.sun_declination, dtype=np.float32)) /
+                (np.cos(sun_height, dtype=np.float32) * np.cos(self.latitude, dtype=np.float32)))
         else:
-            sun_azimuth: float = np.deg2rad(180) - np.arccos(
-                (np.sin(sun_height) * np.sin(self.latitude) - np.sin(self.sun_declination)) /
-                (np.cos(sun_height) * np.cos(self.latitude)))
+            sun_azimuth: float = np.deg2rad(180, dtype=np.float32) - np.arccos(
+                (np.sin(sun_height, dtype=np.float32) *
+                 np.sin(self.latitude, dtype=np.float32) - np.sin(self.sun_declination, dtype=np.float32)) /
+                (np.cos(sun_height, dtype=np.float32) * np.cos(self.latitude, dtype=np.float32)))
         return np.rad2deg(sun_azimuth)
 
     @lru_cache(maxsize=None)
@@ -649,12 +657,15 @@ class CalcSunPos:
         :return: The solar elevation in degrees.
         """
         self.time_last_calc: float = round((int(t)) + ((t - int(t)) * 100 / 60), 2) - 0.25
-        self.mid_local_time: float = self.time_last_calc + self.longitude * np.deg2rad(4)
+        self.mid_local_time: float = self.time_last_calc + self.longitude * np.deg2rad(4, dtype=np.float32)
         self.real_local_time: float = self.mid_local_time + self.time_equation
         self.hour_angle: float = (12.00 - self.real_local_time) * np.deg2rad(15)
-        sun_height: float = np.arcsin(np.cos(self.hour_angle) * np.cos(self.latitude) * np.cos(self.sun_declination)
-                                      + np.sin(self.latitude) * np.sin(self.sun_declination))
-        return np.rad2deg(sun_height)
+        sun_height: float = np.arcsin(np.cos(self.hour_angle, dtype=np.float32) *
+                                      np.cos(self.latitude, dtype=np.float32) *
+                                      np.cos(self.sun_declination, dtype=np.float32)
+                                      + np.sin(self.latitude, dtype=np.float32) *
+                                      np.sin(self.sun_declination, dtype=np.float32), dtype=np.float32)
+        return np.rad2deg(sun_height, dtype=np.float32)
 
     @lru_cache(maxsize=None)
     def adjust_for_new_angle(self, original_gb, original_tilt_angle, original_azimuth_angle, new_tilt_angle,
@@ -682,9 +693,11 @@ class CalcSunPos:
             """
             return np.rad2deg(
                 np.arccos(
-                    np.cos(np.deg2rad(elevation_sun)) * np.sin(np.deg2rad(tilt_angle)) *
-                    np.cos(np.deg2rad(azimuth_sun - panel_azimuth)) + np.sin(np.deg2rad(elevation_sun)) *
-                    np.cos(np.deg2rad(tilt_angle))
+                    np.cos(np.deg2rad(elevation_sun, dtype=np.float32), dtype=np.float32) *
+                    np.sin(np.deg2rad(tilt_angle, dtype=np.float32), dtype=np.float32) *
+                    np.cos(np.deg2rad(azimuth_sun - panel_azimuth, dtype=np.float32), dtype=np.float32) +
+                    np.sin(np.deg2rad(elevation_sun, dtype=np.float32), dtype=np.float32) *
+                    np.cos(np.deg2rad(tilt_angle, dtype=np.float32), dtype=np.float32)
                 )
             )
 
@@ -820,8 +833,9 @@ class PVProfit:
         if incidence_angle == -1:
             return 0
         try:
-            power_direct_gen = (power_direct_horizontal * np.cos(np.deg2rad(incidence_angle)) /
-                                np.sin(np.deg2rad(90 - sun_height)))
+            power_direct_gen = (power_direct_horizontal *
+                                np.cos(np.deg2rad(incidence_angle, dtype=np.float32), dtype=np.float32) /
+                                np.sin(np.deg2rad(90 - sun_height, dtype=np.float32), dtype=np.float32))
             return abs(power_direct_gen * current_efficiency * self.module_area)
         except (ValueError, TypeError):
             if power_direct_horizontal is None:
@@ -841,7 +855,7 @@ class PVProfit:
         air_mass: float = 1 / np.sin(np.deg2rad(sun_height))
         clarity_index: float = ((((diffuse_radiation + direct_radiation * np.arcsin(sun_height)) /
                                   diffuse_radiation) + kappa * np.power(incidence_angle, 3)) /
-                                (1 + kappa * np.power(incidence_angle, 3)))  # Epsilon
+                                (1 + kappa * np.power(incidence_angle, 3, dtype=np.float32)))  # Epsilon
         brightness_index: float = air_mass * direct_radiation / 1361  # Delta
 
         index: int = 0
