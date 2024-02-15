@@ -592,8 +592,8 @@ class CalcSunPos:
         self.hour_angle: float | None = None
         self.real_local_time: float | None = None
         self.mid_local_time: float | None = None
-        self.latitude: float = np.deg2rad(latitude)
-        self.longitude: float = np.deg2rad(longitude)
+        self.latitude: np.float32 = np.deg2rad(latitude, dtype=np.float32)
+        self.longitude: np.float32 = np.deg2rad(longitude, dtype=np.float32)
         if date is None:
             self.current_date: datetime.datetime.time = datetime.datetime.now()
         else:
@@ -668,8 +668,8 @@ class CalcSunPos:
         return np.rad2deg(sun_height, dtype=np.float32)
 
     @lru_cache(maxsize=None)
-    def adjust_for_new_angle(self, original_gb, original_tilt_angle, original_azimuth_angle, new_tilt_angle,
-                             new_azimuth_angle, tme) -> np.float32:
+    def adjust_for_new_angle(self, original_gb: float, original_tilt_angle: float, original_azimuth_angle: float,
+                             new_tilt_angle: float, new_azimuth_angle: float, tme: float) -> np.float32:
         """
 
         :param original_gb:
@@ -729,12 +729,12 @@ class PVProfit:
         :param temperature_coefficient: the temperature coefficient in %/°C
         :param nominal_temperature: the nominal temperature in °C.
         """
-        self.module_efficiency: float = module_efficiency / 100
+        self.module_efficiency: np.float32 = np.float32(module_efficiency / 100)
         self.module_area: int = module_area
-        self.tilt_angle: float = tilt_angle
-        self.exposure_angle: float = exposure_angle
-        self.temperature_coefficient: float = temperature_coefficient / 100
-        self.nominal_temperature: float = nominal_temperature
+        self.tilt_angle: np.float32 = np.float32(tilt_angle)
+        self.exposure_angle: np.float32 = np.float32(exposure_angle)
+        self.temperature_coefficient: np.float32 = np.float32(temperature_coefficient / 100)
+        self.nominal_temperature: np.float32 = np.float32(nominal_temperature)
         self.mounting_type_dict: dict = {
             -1: 100,
             0: 22,  # Völlig freie Aufständerung
