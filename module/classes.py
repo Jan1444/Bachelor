@@ -4,6 +4,7 @@ import datetime
 from functools import lru_cache, wraps
 
 import numpy as np
+from numpy import float32, sin, cos, arcsin, arccos, deg2rad, rad2deg
 import requests
 import requests_cache
 
@@ -13,9 +14,9 @@ from module import debug
 def precision(func, precision_: int = 5):
     @wraps(func)
     def wrapped(*args, **kwargs):
-        precision_args = (np.round(arg, precision_) if isinstance(arg, (float, np.float32)) else arg for arg in args)
+        precision_args = (np.round(arg, precision_) if isinstance(arg, (float, float32)) else arg for arg in args)
 
-        precision_kwargs = {k: (np.round(v, precision_) if isinstance(v, (float, np.float32)) else v) for k, v in
+        precision_kwargs = {k: (np.round(v, precision_) if isinstance(v, (float, float32)) else v) for k, v in
                             kwargs.items()}
 
         return func(*precision_args, **precision_kwargs)
@@ -605,8 +606,8 @@ class CalcSunPos:
         self.hour_angle: float | None = None
         self.real_local_time: float | None = None
         self.mid_local_time: float | None = None
-        self.latitude: np.float32 = np.deg2rad(latitude, dtype=np.float32)
-        self.longitude: np.float32 = np.deg2rad(longitude, dtype=np.float32)
+        self.latitude: float32 = deg2rad(latitude, dtype=float32)
+        self.longitude: float32 = deg2rad(longitude, dtype=float32)
         if date is None:
             self.current_date: datetime.datetime.time = datetime.datetime.now()
         else:
@@ -614,78 +615,78 @@ class CalcSunPos:
         self.left_days: int = (self.current_date - datetime.datetime(self.current_date.year, 1, 1)).days
         self.days_per_year: int = (datetime.datetime(self.current_date.year, 12, 31) -
                                    datetime.datetime(self.current_date.year, 1, 1)).days + 1
-        self.day_angle: float = np.deg2rad(360.0, dtype=np.float32) * self.left_days / self.days_per_year
+        self.day_angle: float = deg2rad(360.0, dtype=float32) * self.left_days / self.days_per_year
 
-        self.sun_declination: np.float32 = (
-                np.deg2rad(0.3948, dtype=np.float32) - np.deg2rad(23.2559, dtype=np.float32) *
-                np.cos(self.day_angle + np.deg2rad(9.1, dtype=np.float32), dtype=np.float32) -
-                np.deg2rad(0.3915, dtype=np.float32) *
-                np.cos(2.0 * self.day_angle + np.deg2rad(5.4, dtype=np.float32), dtype=np.float32) -
-                np.deg2rad(0.1764, dtype=np.float32) *
-                np.cos(3.0 * self.day_angle + np.deg2rad(26.0, dtype=np.float32), dtype=np.float32))
+        self.sun_declination: float32 = (
+                deg2rad(0.3948, dtype=float32) - deg2rad(23.2559, dtype=float32) *
+                cos(self.day_angle + deg2rad(9.1, dtype=float32), dtype=float32) -
+                deg2rad(0.3915, dtype=float32) *
+                cos(2.0 * self.day_angle + deg2rad(5.4, dtype=float32), dtype=float32) -
+                deg2rad(0.1764, dtype=float32) *
+                cos(3.0 * self.day_angle + deg2rad(26.0, dtype=float32), dtype=float32))
 
-        self.time_equation: np.float32 = (
-                np.deg2rad(0.0066, dtype=np.float32) + np.deg2rad(7.3525, dtype=np.float32) *
-                np.cos(self.day_angle + np.deg2rad(85.9, dtype=np.float32), dtype=np.float32) +
-                np.deg2rad(9.9359, dtype=np.float32) *
-                np.cos(2.0 * self.day_angle + np.deg2rad(108.9, dtype=np.float32), dtype=np.float32) +
-                np.deg2rad(0.3387, dtype=np.float32) *
-                np.cos(3.0 * self.day_angle + np.deg2rad(105.2, dtype=np.float32), dtype=np.float32))
+        self.time_equation: float32 = (
+                deg2rad(0.0066, dtype=float32) + deg2rad(7.3525, dtype=float32) *
+                cos(self.day_angle + deg2rad(85.9, dtype=float32), dtype=float32) +
+                deg2rad(9.9359, dtype=float32) *
+                cos(2.0 * self.day_angle + deg2rad(108.9, dtype=float32), dtype=float32) +
+                deg2rad(0.3387, dtype=float32) *
+                cos(3.0 * self.day_angle + deg2rad(105.2, dtype=float32), dtype=float32))
 
     def __str__(self) -> str:
         """
         Can be used to print the data
         :return: str of the data.
         """
-        t: np.float32 = np.float32(datetime.datetime.now().time().strftime("%H.%M"))
+        t: float32 = float32(datetime.datetime.now().time().strftime("%H.%M"))
         return (f"Uhrzeit: {str(t)[:2]}:{str(t)[3:]} Uhr\n"
                 f"Die aktuelle Sonnenposition ist: {np.round(self.calc_azimuth(t), 2)}°\n"
                 f"und die aktuelle Sonnenhöhe beträgt {np.round(self.calc_solar_elevation(t), 2)}°")
 
     @precision
     @lru_cache(maxsize=1_000)
-    def calc_azimuth(self, t: float) -> np.float32:
+    def calc_azimuth(self, t: float) -> float32:
         """
         Calcs the azimuth to the given time.
         :param t: Time as float.
         :return: The azimuth in degrees.
         """
-        sun_height: np.float32 = np.deg2rad(self.calc_solar_elevation(t), dtype=np.float32)
+        sun_height: float32 = deg2rad(self.calc_solar_elevation(t), dtype=float32)
         if self.real_local_time > 12:
-            sun_azimuth: np.float32 = np.deg2rad(180, dtype=np.float32) + np.arccos(
-                (np.sin(sun_height, dtype=np.float32) *
-                 np.sin(self.latitude, dtype=np.float32) - np.sin(self.sun_declination, dtype=np.float32)) /
-                (np.cos(sun_height, dtype=np.float32) * np.cos(self.latitude, dtype=np.float32)))
+            sun_azimuth: float32 = deg2rad(180, dtype=float32) + arccos(
+                (sin(sun_height, dtype=float32) *
+                 sin(self.latitude, dtype=float32) - sin(self.sun_declination, dtype=float32)) /
+                (cos(sun_height, dtype=float32) * cos(self.latitude, dtype=float32)))
         else:
-            sun_azimuth: np.float32 = np.deg2rad(180, dtype=np.float32) - np.arccos(
-                (np.sin(sun_height, dtype=np.float32) *
-                 np.sin(self.latitude, dtype=np.float32) - np.sin(self.sun_declination, dtype=np.float32)) /
-                (np.cos(sun_height, dtype=np.float32) * np.cos(self.latitude, dtype=np.float32)))
-        return np.rad2deg(sun_azimuth, dtype=np.float32)
+            sun_azimuth: float32 = deg2rad(180, dtype=float32) - arccos(
+                (sin(sun_height, dtype=float32) *
+                 sin(self.latitude, dtype=float32) - sin(self.sun_declination, dtype=float32)) /
+                (cos(sun_height, dtype=float32) * cos(self.latitude, dtype=float32)))
+        return rad2deg(sun_azimuth, dtype=float32)
 
     @precision
     @lru_cache(maxsize=1_000)
-    def calc_solar_elevation(self, t: float) -> np.float32:
+    def calc_solar_elevation(self, t: float) -> float32:
         """
         Calcs solar elevation to the given time.
         :param t: Time as a float.
         :return: The solar elevation in degrees.
         """
-        self.time_last_calc: np.float32 = np.float32(np.round((int(t)) + ((t - int(t)) * 100 / 60), 2) - 0.25)
-        self.mid_local_time: np.float32 = self.time_last_calc + self.longitude * np.deg2rad(4, dtype=np.float32)
-        self.real_local_time: np.float32 = self.mid_local_time + self.time_equation
-        self.hour_angle: np.float32 = (12.00 - self.real_local_time) * np.deg2rad(15, dtype=np.float32)
-        sun_height: np.float32 = np.arcsin(np.cos(self.hour_angle, dtype=np.float32) *
-                                           np.cos(self.latitude, dtype=np.float32) *
-                                           np.cos(self.sun_declination, dtype=np.float32)
-                                           + np.sin(self.latitude, dtype=np.float32) *
-                                           np.sin(self.sun_declination, dtype=np.float32), dtype=np.float32)
-        return np.rad2deg(sun_height, dtype=np.float32)
+        self.time_last_calc: float32 = float32(np.round((int(t)) + ((t - int(t)) * 100 / 60), 2) - 0.25)
+        self.mid_local_time: float32 = self.time_last_calc + self.longitude * deg2rad(4, dtype=float32)
+        self.real_local_time: float32 = self.mid_local_time + self.time_equation
+        self.hour_angle: float32 = (12.00 - self.real_local_time) * deg2rad(15, dtype=float32)
+        sun_height: float32 = arcsin(cos(self.hour_angle, dtype=float32) *
+                                     cos(self.latitude, dtype=float32) *
+                                     cos(self.sun_declination, dtype=float32)
+                                     + sin(self.latitude, dtype=float32) *
+                                     sin(self.sun_declination, dtype=float32), dtype=float32)
+        return rad2deg(sun_height, dtype=float32)
 
     @precision
     @lru_cache(maxsize=1_000)
     def adjust_for_new_angle(self, original_gb: float, original_tilt_angle: float, original_azimuth_angle: float,
-                             new_tilt_angle: float, new_azimuth_angle: float, tme: float) -> np.float32:
+                             new_tilt_angle: float, new_azimuth_angle: float, tme: float) -> float32:
         """
 
         :param original_gb:
@@ -699,7 +700,7 @@ class CalcSunPos:
 
         @precision
         @lru_cache(maxsize=1_000)
-        def _calc_incidence_angle(elevation_sun, azimuth_sun, tilt_angle, panel_azimuth) -> np.float32:
+        def _calc_incidence_angle(elevation_sun, azimuth_sun, tilt_angle, panel_azimuth) -> float32:
             """
 
             :param elevation_sun:
@@ -708,24 +709,24 @@ class CalcSunPos:
             :param panel_azimuth:
             :return:
             """
-            return np.rad2deg(
-                np.arccos(
-                    np.cos(np.deg2rad(elevation_sun, dtype=np.float32), dtype=np.float32) *
-                    np.sin(np.deg2rad(tilt_angle, dtype=np.float32), dtype=np.float32) *
-                    np.cos(np.deg2rad(azimuth_sun - panel_azimuth, dtype=np.float32), dtype=np.float32) +
-                    np.sin(np.deg2rad(elevation_sun, dtype=np.float32), dtype=np.float32) *
-                    np.cos(np.deg2rad(tilt_angle, dtype=np.float32), dtype=np.float32)
+            return rad2deg(
+                arccos(
+                    cos(deg2rad(elevation_sun, dtype=float32), dtype=float32) *
+                    sin(deg2rad(tilt_angle, dtype=float32), dtype=float32) *
+                    cos(deg2rad(azimuth_sun - panel_azimuth, dtype=float32), dtype=float32) +
+                    sin(deg2rad(elevation_sun, dtype=float32), dtype=float32) *
+                    cos(deg2rad(tilt_angle, dtype=float32), dtype=float32)
                 )
             )
 
-        sun_azimuth: np.float32 = self.calc_azimuth(tme)
-        sun_elevation: np.float32 = self.calc_solar_elevation(tme)
-        incidence_angle_original: np.float32 = _calc_incidence_angle(sun_elevation, sun_azimuth, original_tilt_angle,
-                                                                     original_azimuth_angle)
-        gb_horizontal: np.float32 = original_gb / np.cos(np.deg2rad(incidence_angle_original))
-        incidence_angle_new: np.float32 = _calc_incidence_angle(sun_elevation, sun_azimuth, new_tilt_angle,
-                                                                new_azimuth_angle)
-        adjusted_gb: np.float32 = gb_horizontal * np.cos(np.deg2rad(incidence_angle_new))
+        sun_azimuth: float32 = self.calc_azimuth(tme)
+        sun_elevation: float32 = self.calc_solar_elevation(tme)
+        incidence_angle_original: float32 = _calc_incidence_angle(sun_elevation, sun_azimuth, original_tilt_angle,
+                                                                  original_azimuth_angle)
+        gb_horizontal: float32 = original_gb / cos(deg2rad(incidence_angle_original))
+        incidence_angle_new: float32 = _calc_incidence_angle(sun_elevation, sun_azimuth, new_tilt_angle,
+                                                             new_azimuth_angle)
+        adjusted_gb: float32 = gb_horizontal * cos(deg2rad(incidence_angle_new))
 
         return adjusted_gb
 
@@ -746,12 +747,12 @@ class PVProfit:
         :param temperature_coefficient: the temperature coefficient in %/°C
         :param nominal_temperature: the nominal temperature in °C.
         """
-        self.module_efficiency: np.float32 = np.float32(module_efficiency / 100)
+        self.module_efficiency: float32 = float32(module_efficiency / 100)
         self.module_area: int = module_area
-        self.tilt_angle: np.float32 = np.float32(tilt_angle)
-        self.exposure_angle: np.float32 = np.float32(exposure_angle)
-        self.temperature_coefficient: np.float32 = np.float32(temperature_coefficient / 100)
-        self.nominal_temperature: np.float32 = np.float32(nominal_temperature)
+        self.tilt_angle: float32 = float32(tilt_angle)
+        self.exposure_angle: float32 = float32(exposure_angle)
+        self.temperature_coefficient: float32 = float32(temperature_coefficient / 100)
+        self.nominal_temperature: float32 = float32(nominal_temperature)
         self.mounting_type_dict: dict = {
             -1: 100,
             0: 22,  # Völlig freie Aufständerung
@@ -796,7 +797,7 @@ class PVProfit:
 
     @precision
     @lru_cache(maxsize=1_000)
-    def calc_incidence_angle(self, sun_height: float, sun_azimuth: float) -> np.float32:
+    def calc_incidence_angle(self, sun_height: float, sun_azimuth: float) -> float32:
         """
 
         :param sun_height:
@@ -804,18 +805,18 @@ class PVProfit:
         :return:
         """
         if sun_height > 0:
-            return np.rad2deg(np.arccos(-np.cos(np.deg2rad(sun_height, dtype=np.float32), dtype=np.float32) *
-                                        np.sin(np.deg2rad(self.tilt_angle, dtype=np.float32), dtype=np.float32) *
-                                        np.cos(np.deg2rad(sun_azimuth, dtype=np.float32) -
-                                               np.deg2rad(self.exposure_angle, dtype=np.float32), dtype=np.float32) +
-                                        np.sin(np.deg2rad(sun_height, dtype=np.float32), dtype=np.float32) *
-                                        np.cos(np.deg2rad(self.tilt_angle, dtype=np.float32), dtype=np.float32)),
-                              dtype=np.float32)
+            return rad2deg(arccos(-cos(deg2rad(sun_height, dtype=float32), dtype=float32) *
+                                  sin(deg2rad(self.tilt_angle, dtype=float32), dtype=float32) *
+                                  cos(deg2rad(sun_azimuth, dtype=float32) -
+                                      deg2rad(self.exposure_angle, dtype=float32), dtype=float32) +
+                                  sin(deg2rad(sun_height, dtype=float32), dtype=float32) *
+                                  cos(deg2rad(self.tilt_angle, dtype=float32), dtype=float32)),
+                           dtype=float32)
         return -1
 
     @precision
     @lru_cache(maxsize=1_000)
-    def calc_pv_temp(self, temperature: float, radiation: float) -> np.float32:
+    def calc_pv_temp(self, temperature: float, radiation: float) -> float32:
         """
         Calcs the temperature of the pv system
         :param temperature: the surnp.rounding temperature in °C
@@ -823,7 +824,7 @@ class PVProfit:
         :return: the temperatur of the pv panel in °C.
         """
         try:
-            return np.float32(temperature + self.mounting_type * radiation / 1000)
+            return float32(temperature + self.mounting_type * radiation / 1000)
         except (ValueError, TypeError):
             if temperature is None:
                 print("No temperature")
@@ -833,22 +834,22 @@ class PVProfit:
 
     @precision
     @lru_cache(maxsize=1_000)
-    def calc_temp_dependency(self, temperature: float, radiation: float) -> np.float32:
+    def calc_temp_dependency(self, temperature: float, radiation: float) -> float32:
         """
         Calcs the current efficiency of the pv panel
         :param temperature: the current surnp.rounding temperatur in °C
         :param radiation: the current radiation in W/m²
         :return: the current efficiency as float.
         """
-        current_efficiency = np.float32(self.module_efficiency + (self.calc_pv_temp(temperature, radiation)
-                                                                  - self.nominal_temperature) *
-                                        self.temperature_coefficient)
+        current_efficiency = float32(self.module_efficiency + (self.calc_pv_temp(temperature, radiation)
+                                                               - self.nominal_temperature) *
+                                     self.temperature_coefficient)
         return current_efficiency
 
     @precision
     @lru_cache(maxsize=1_000)
     def calc_power(self, power_direct_horizontal: float, incidence_angle: float, sun_height: float,
-                   current_efficiency: float) -> np.float32:
+                   current_efficiency: float) -> float32:
         """
         Calcs the energy output of the pv panel,
         :param power_direct_horizontal: the direct radiation of the weather data,
@@ -860,17 +861,17 @@ class PVProfit:
         if incidence_angle == -1:
             return 0
         try:
-            power_direct_gen = np.float32(power_direct_horizontal *
-                                          np.cos(np.deg2rad(incidence_angle, dtype=np.float32), dtype=np.float32) /
-                                          np.sin(np.deg2rad(90 - sun_height, dtype=np.float32), dtype=np.float32))
-            return np.float32(abs(power_direct_gen * current_efficiency * self.module_area))
+            power_direct_gen = float32(power_direct_horizontal *
+                                       cos(deg2rad(incidence_angle, dtype=float32), dtype=float32) /
+                                       sin(deg2rad(90 - sun_height, dtype=float32), dtype=float32))
+            return float32(abs(power_direct_gen * current_efficiency * self.module_area))
         except (ValueError, TypeError):
             if power_direct_horizontal is None:
                 print("No radiation")
             return 0
 
     def calc_diffuse_radiation(self, sun_height: float, diffuse_radiation, direct_radiation,
-                               incidence_angle: float) -> np.float32:
+                               incidence_angle: float) -> float32:
         """
         Calcs the diffuse radiation with the Perez Model
         :param sun_height:
@@ -879,13 +880,13 @@ class PVProfit:
         :param incidence_angle:
         :return:
         """
-        kappa: np.float32 = np.float32(1.041)
-        air_mass: np.float32 = np.float32(1 / np.sin(np.deg2rad(sun_height, dtype=np.float32), dtype=np.float32))
-        clarity_index: np.float32 = np.float32(
-            (((diffuse_radiation + direct_radiation * np.arcsin(sun_height, dtype=np.float32)) /
+        kappa: float32 = float32(1.041)
+        air_mass: float32 = float32(1 / sin(deg2rad(sun_height, dtype=float32), dtype=float32))
+        clarity_index: float32 = float32(
+            (((diffuse_radiation + direct_radiation * arcsin(sun_height, dtype=float32)) /
               diffuse_radiation) + kappa * np.power(incidence_angle, 3)) /
-            (1 + kappa * np.power(incidence_angle, 3, dtype=np.float32)))  # Epsilon
-        brightness_index: np.float32 = np.float32(air_mass * direct_radiation / 1361)  # Delta
+            (1 + kappa * np.power(incidence_angle, 3, dtype=float32)))  # Epsilon
+        brightness_index: float32 = float32(air_mass * direct_radiation / 1361)  # Delta
 
         index: int = 0
 
@@ -906,29 +907,29 @@ class PVProfit:
         elif clarity_index > 6.2:
             index = 8
 
-        f_1: np.float32 = np.float32(self.diffuse_index_F11[index] +
-                                     self.diffuse_index_F12[index] * brightness_index +
-                                     self.diffuse_index_F13[index] * incidence_angle)
+        f_1: float32 = float32(self.diffuse_index_F11[index] +
+                               self.diffuse_index_F12[index] * brightness_index +
+                               self.diffuse_index_F13[index] * incidence_angle)
 
-        f_2: np.float32 = np.float32(self.diffuse_index_F21[index] +
-                                     self.diffuse_index_F22[index] * brightness_index +
-                                     self.diffuse_index_F23[index] * incidence_angle)
+        f_2: float32 = float32(self.diffuse_index_F21[index] +
+                               self.diffuse_index_F22[index] * brightness_index +
+                               self.diffuse_index_F23[index] * incidence_angle)
 
-        a: float = np.max(0, np.cos(np.deg2rad(incidence_angle, dtype=np.float32), dtype=np.float32))
-        b: float = np.max(0.087, np.sin(np.deg2rad(sun_height, dtype=np.float32), dtype=np.float32))
+        a: float = np.max(0, cos(deg2rad(incidence_angle, dtype=float32), dtype=float32))
+        b: float = np.max(0.087, sin(deg2rad(sun_height, dtype=float32), dtype=float32))
 
-        diffuse_energy: np.float32 = np.float32(diffuse_radiation * (
+        diffuse_energy: float32 = float32(diffuse_radiation * (
                 0.5 * (
-                1 + np.cos(np.deg2rad(self.tilt_angle, dtype=np.float32), dtype=np.float32)) * (
+                1 + cos(deg2rad(self.tilt_angle, dtype=float32), dtype=float32)) * (
                         1 - f_1) + a / b * f_1 + f_2 *
-                np.sin(np.deg2rad(self.tilt_angle, dtype=np.float32), dtype=np.float32)
+                sin(deg2rad(self.tilt_angle, dtype=float32), dtype=float32)
         ))
 
         return diffuse_energy
 
     @precision
     @lru_cache(maxsize=1_000)
-    def calc_power_with_dni(self, dni: float, incidence_angle: float, temperature: float) -> np.float32:
+    def calc_power_with_dni(self, dni: float, incidence_angle: float, temperature: float) -> float32:
         """
         Calculates the energy output of the PV panel using Direct Normal Irradiance (DNI)
         :param temperature:
@@ -940,7 +941,7 @@ class PVProfit:
             return 0
 
         try:
-            adjusted_dni = np.float32(dni * np.cos(np.deg2rad(incidence_angle, dtype=np.float32), dtype=np.float32))
+            adjusted_dni = float32(dni * cos(deg2rad(incidence_angle, dtype=float32), dtype=float32))
 
             pv_temperature = self.calc_pv_temp(temperature, adjusted_dni)
             current_efficiency = self.calc_temp_dependency(pv_temperature, adjusted_dni)
@@ -956,147 +957,147 @@ class RequiredHeatingPower:
     # https://www.bosch-homecomfort.com/de/de/wohngebaeude/wissen/heizungsratgeber/heizleistung-berechnen/
     @dataclasses.dataclass
     class Room:
-        volume: np.float32 = np.float32(0.0)
+        volume: float32 = float32(0.0)
 
         @dataclasses.dataclass
         class Wall1:
-            u_wert: np.float32 = np.float32(0.0)
-            area: np.float32 = np.float32(0.0)
-            temp_diff: np.float32 = np.float32(0.0)
-            interior_wall_temp: np.float32 = np.float32(0.0)
+            u_wert: float32 = float32(0.0)
+            area: float32 = float32(0.0)
+            temp_diff: float32 = float32(0.0)
+            interior_wall_temp: float32 = float32(0.0)
 
             @dataclasses.dataclass
             class Window1:
-                u_wert: np.float32 = np.float32(0.0)
-                area: np.float32 = np.float32(0.0)
+                u_wert: float32 = float32(0.0)
+                area: float32 = float32(0.0)
 
             @dataclasses.dataclass
             class Window2:
-                u_wert: np.float32 = np.float32(0.0)
-                area: np.float32 = np.float32(0.0)
+                u_wert: float32 = float32(0.0)
+                area: float32 = float32(0.0)
 
             @dataclasses.dataclass
             class Window3:
-                u_wert: np.float32 = np.float32(0.0)
-                area: np.float32 = np.float32(0.0)
+                u_wert: float32 = float32(0.0)
+                area: float32 = float32(0.0)
 
             @dataclasses.dataclass
             class Window4:
-                u_wert: np.float32 = np.float32(0.0)
-                area: np.float32 = np.float32(0.0)
+                u_wert: float32 = float32(0.0)
+                area: float32 = float32(0.0)
 
             @dataclasses.dataclass
             class Door:
-                u_wert: np.float32 = np.float32(0.0)
-                area: np.float32 = np.float32(0.0)
+                u_wert: float32 = float32(0.0)
+                area: float32 = float32(0.0)
 
         @dataclasses.dataclass
         class Wall2:
-            u_wert: np.float32 = np.float32(0.0)
-            area: np.float32 = np.float32(0.0)
-            temp_diff: np.float32 = np.float32(0.0)
-            interior_wall_temp: np.float32 = np.float32(0.0)
+            u_wert: float32 = float32(0.0)
+            area: float32 = float32(0.0)
+            temp_diff: float32 = float32(0.0)
+            interior_wall_temp: float32 = float32(0.0)
 
             @dataclasses.dataclass
             class Window1:
-                u_wert: np.float32 = np.float32(0.0)
-                area: np.float32 = np.float32(0.0)
+                u_wert: float32 = float32(0.0)
+                area: float32 = float32(0.0)
 
             @dataclasses.dataclass
             class Window2:
-                u_wert: np.float32 = np.float32(0.0)
-                area: np.float32 = np.float32(0.0)
+                u_wert: float32 = float32(0.0)
+                area: float32 = float32(0.0)
 
             @dataclasses.dataclass
             class Window3:
-                u_wert: np.float32 = np.float32(0.0)
-                area: np.float32 = np.float32(0.0)
+                u_wert: float32 = float32(0.0)
+                area: float32 = float32(0.0)
 
             @dataclasses.dataclass
             class Window4:
-                u_wert: np.float32 = np.float32(0.0)
-                area: np.float32 = np.float32(0.0)
+                u_wert: float32 = float32(0.0)
+                area: float32 = float32(0.0)
 
             @dataclasses.dataclass
             class Door:
-                u_wert: np.float32 = np.float32(0.0)
-                area: np.float32 = np.float32(0.0)
+                u_wert: float32 = float32(0.0)
+                area: float32 = float32(0.0)
 
         @dataclasses.dataclass
         class Wall3:
-            u_wert: np.float32 = np.float32(0.0)
-            area: np.float32 = np.float32(0.0)
-            temp_diff: np.float32 = np.float32(0.0)
-            interior_wall_temp: np.float32 = np.float32(0.0)
+            u_wert: float32 = float32(0.0)
+            area: float32 = float32(0.0)
+            temp_diff: float32 = float32(0.0)
+            interior_wall_temp: float32 = float32(0.0)
 
             @dataclasses.dataclass
             class Window1:
-                u_wert: np.float32 = np.float32(0.0)
-                area: np.float32 = np.float32(0.0)
+                u_wert: float32 = float32(0.0)
+                area: float32 = float32(0.0)
 
             @dataclasses.dataclass
             class Window2:
-                u_wert: np.float32 = np.float32(0.0)
-                area: np.float32 = np.float32(0.0)
+                u_wert: float32 = float32(0.0)
+                area: float32 = float32(0.0)
 
             @dataclasses.dataclass
             class Window3:
-                u_wert: np.float32 = np.float32(0.0)
-                area: np.float32 = np.float32(0.0)
+                u_wert: float32 = float32(0.0)
+                area: float32 = float32(0.0)
 
             @dataclasses.dataclass
             class Window4:
-                u_wert: np.float32 = np.float32(0.0)
-                area: np.float32 = np.float32(0.0)
+                u_wert: float32 = float32(0.0)
+                area: float32 = float32(0.0)
 
             @dataclasses.dataclass
             class Door:
-                u_wert: np.float32 = np.float32(0.0)
-                area: np.float32 = np.float32(0.0)
+                u_wert: float32 = float32(0.0)
+                area: float32 = float32(0.0)
 
         @dataclasses.dataclass
         class Wall4:
-            u_wert: np.float32 = np.float32(0.0)
-            area: np.float32 = np.float32(0.0)
-            temp_diff: np.float32 = np.float32(0.0)
-            interior_wall_temp: np.float32 = np.float32(0.0)
+            u_wert: float32 = float32(0.0)
+            area: float32 = float32(0.0)
+            temp_diff: float32 = float32(0.0)
+            interior_wall_temp: float32 = float32(0.0)
 
             @dataclasses.dataclass
             class Window1:
-                u_wert: np.float32 = np.float32(0.0)
-                area: np.float32 = np.float32(0.0)
+                u_wert: float32 = float32(0.0)
+                area: float32 = float32(0.0)
 
             @dataclasses.dataclass
             class Window2:
-                u_wert: np.float32 = np.float32(0.0)
-                area: np.float32 = np.float32(0.0)
+                u_wert: float32 = float32(0.0)
+                area: float32 = float32(0.0)
 
             @dataclasses.dataclass
             class Window3:
-                u_wert: np.float32 = np.float32(0.0)
-                area: np.float32 = np.float32(0.0)
+                u_wert: float32 = float32(0.0)
+                area: float32 = float32(0.0)
 
             @dataclasses.dataclass
             class Window4:
-                u_wert: np.float32 = np.float32(0.0)
-                area: np.float32 = np.float32(0.0)
+                u_wert: float32 = float32(0.0)
+                area: float32 = float32(0.0)
 
             @dataclasses.dataclass
             class Door:
-                u_wert: np.float32 = np.float32(0.0)
-                area: np.float32 = np.float32(0.0)
+                u_wert: float32 = float32(0.0)
+                area: float32 = float32(0.0)
 
         @dataclasses.dataclass
         class Floor:
-            u_wert: np.float32 = np.float32(0.0)
-            area: np.float32 = np.float32(0.0)
-            temp_diff: np.float32 = np.float32(0.0)
+            u_wert: float32 = float32(0.0)
+            area: float32 = float32(0.0)
+            temp_diff: float32 = float32(0.0)
 
         @dataclasses.dataclass
         class Ceiling:
-            u_wert: np.float32 = np.float32(0.0)
-            area: np.float32 = np.float32(0.0)
-            temp_diff: np.float32 = np.float32(0.0)
+            u_wert: float32 = float32(0.0)
+            area: float32 = float32(0.0)
+            temp_diff: float32 = float32(0.0)
 
     def __init__(self) -> None:
         """
@@ -1530,43 +1531,43 @@ class RequiredHeatingPower:
 
         @precision
         @lru_cache(maxsize=1_000)
-        def _calc(wall_obj: room.Wall1 | room.Wall2 | room.Wall3 | room.Wall4) -> (np.float32, np.float32, np.float32,
-                                                                                   np.float32, np.float32, np.float32):
+        def _calc(wall_obj: room.Wall1 | room.Wall2 | room.Wall3 | room.Wall4) -> (float32, float32, float32,
+                                                                                   float32, float32, float32):
             """
 
             :param wall_obj:
             :return:
             """
-            wall: np.float32 = np.float32(
+            wall: float32 = float32(
                 (
                         wall_obj.area - wall_obj.Door.area - wall_obj.Window1.area -
                         wall_obj.Window2.area - wall_obj.Window3.area - wall_obj.Window4.area
                 ) * wall_obj.u_wert * wall_obj.temp_diff
             )
-            window1: np.float32 = np.float32(0)
-            window2: np.float32 = np.float32(0)
-            window3: np.float32 = np.float32(0)
-            window4: np.float32 = np.float32(0)
-            door: np.float32 = np.float32(0)
+            window1: float32 = float32(0)
+            window2: float32 = float32(0)
+            window3: float32 = float32(0)
+            window4: float32 = float32(0)
+            door: float32 = float32(0)
 
             try:
-                window1: np.float32 = (wall_obj.Window1.area * wall_obj.Window1.u_wert * wall_obj.temp_diff)
+                window1: float32 = (wall_obj.Window1.area * wall_obj.Window1.u_wert * wall_obj.temp_diff)
             except TypeError:
                 pass
             try:
-                window2: np.float32 = (wall_obj.Window2.area * wall_obj.Window2.u_wert * wall_obj.temp_diff)
+                window2: float32 = (wall_obj.Window2.area * wall_obj.Window2.u_wert * wall_obj.temp_diff)
             except TypeError:
                 pass
             try:
-                window3: np.float32 = (wall_obj.Window3.area * wall_obj.Window3.u_wert * wall_obj.temp_diff)
+                window3: float32 = (wall_obj.Window3.area * wall_obj.Window3.u_wert * wall_obj.temp_diff)
             except TypeError:
                 pass
             try:
-                window4: np.float32 = (wall_obj.Window4.area * wall_obj.Window4.u_wert * wall_obj.temp_diff)
+                window4: float32 = (wall_obj.Window4.area * wall_obj.Window4.u_wert * wall_obj.temp_diff)
             except TypeError:
                 pass
             try:
-                door: np.float32 = wall_obj.Door.area * wall_obj.Door.u_wert * wall_obj.temp_diff
+                door: float32 = wall_obj.Door.area * wall_obj.Door.u_wert * wall_obj.temp_diff
             except TypeError:
                 pass
 
@@ -1577,9 +1578,9 @@ class RequiredHeatingPower:
         wall_3, wall_3_window_1, wall_3_window_2, wall_3_window_3, wall_3_window_4, wall_3_door = _calc(room.Wall3)
         wall_4, wall_4_window_1, wall_4_window_2, wall_4_window_3, wall_4_window_4, wall_4_door = _calc(room.Wall4)
 
-        floor: np.float32 = room.Floor.area * room.Floor.u_wert * room.Floor.temp_diff
+        floor: float32 = room.Floor.area * room.Floor.u_wert * room.Floor.temp_diff
 
-        ceiling: np.float32 = room.Ceiling.area * room.Ceiling.u_wert * room.Floor.temp_diff
+        ceiling: float32 = room.Ceiling.area * room.Ceiling.u_wert * room.Floor.temp_diff
 
         heating_power: float = (wall_1 + wall_1_window_1 + wall_1_window_2 + wall_1_window_3 + wall_1_window_4 +
                                 wall_1_door +
@@ -1595,26 +1596,26 @@ class RequiredHeatingPower:
 
     @staticmethod
     def adjust_thermal_mass(heizlast: float, v: float, delta_temp: float, time_interval: int,
-                            previous_mass_estimate: float, c_air: np.float32 = np.float32(1005),
-                            rho_air: np.float32 = np.float32(1.225), c_material: np.float32 = np.float32(840),
-                            learning_rate: np.float32 = np.float32(0.1)):
+                            previous_mass_estimate: float, c_air: float32 = float32(1005),
+                            rho_air: float32 = float32(1.225), c_material: float32 = float32(840),
+                            learning_rate: float32 = float32(0.1)):
 
-        thermal_mass_air: np.float32 = np.float32(v * rho_air * c_air)
+        thermal_mass_air: float32 = float32(v * rho_air * c_air)
 
-        thermal_mass_material: np.float32 = np.float32(previous_mass_estimate)
+        thermal_mass_material: float32 = float32(previous_mass_estimate)
 
-        total_thermal_mass: np.float32 = thermal_mass_air + thermal_mass_material
+        total_thermal_mass: float32 = thermal_mass_air + thermal_mass_material
 
-        energy_input: np.float32 = np.float32(heizlast * time_interval)
+        energy_input: float32 = float32(heizlast * time_interval)
 
-        expected_temp_change: np.float32 = energy_input / total_thermal_mass
+        expected_temp_change: float32 = energy_input / total_thermal_mass
 
-        error: np.float32 = np.float32(expected_temp_change - delta_temp)
+        error: float32 = float32(expected_temp_change - delta_temp)
 
-        thermal_mass_material_adjusted: np.float32 = np.float32(thermal_mass_material - learning_rate * error *
-                                                                total_thermal_mass / c_material)
+        thermal_mass_material_adjusted: float32 = float32(thermal_mass_material - learning_rate * error *
+                                                          total_thermal_mass / c_material)
 
-        return np.float32(np.max(thermal_mass_material_adjusted, 0))
+        return float32(np.max(thermal_mass_material_adjusted, 0))
 
 
 class ShellyTRVControl:
