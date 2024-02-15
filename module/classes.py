@@ -956,147 +956,147 @@ class RequiredHeatingPower:
     # https://www.bosch-homecomfort.com/de/de/wohngebaeude/wissen/heizungsratgeber/heizleistung-berechnen/
     @dataclasses.dataclass
     class Room:
-        volume: float = 0.0
+        volume: np.float32 = np.float32(0.0)
 
         @dataclasses.dataclass
         class Wall1:
-            u_wert: float = 0.0
-            area: float = 0.0
-            temp_diff: float = 0.0
-            interior_wall_temp: float = 0.0
+            u_wert: np.float32 = np.float32(0.0)
+            area: np.float32 = np.float32(0.0)
+            temp_diff: np.float32 = np.float32(0.0)
+            interior_wall_temp: np.float32 = np.float32(0.0)
 
             @dataclasses.dataclass
             class Window1:
-                u_wert: float = 0.0
-                area: float = 0.0
+                u_wert: np.float32 = np.float32(0.0)
+                area: np.float32 = np.float32(0.0)
 
             @dataclasses.dataclass
             class Window2:
-                u_wert: float = 0.0
-                area: float = 0.0
+                u_wert: np.float32 = np.float32(0.0)
+                area: np.float32 = np.float32(0.0)
 
             @dataclasses.dataclass
             class Window3:
-                u_wert: float = 0.0
-                area: float = 0.0
+                u_wert: np.float32 = np.float32(0.0)
+                area: np.float32 = np.float32(0.0)
 
             @dataclasses.dataclass
             class Window4:
-                u_wert: float = 0.0
-                area: float = 0.0
+                u_wert: np.float32 = np.float32(0.0)
+                area: np.float32 = np.float32(0.0)
 
             @dataclasses.dataclass
             class Door:
-                u_wert: float = 0.0
-                area: float = 0.0
+                u_wert: np.float32 = np.float32(0.0)
+                area: np.float32 = np.float32(0.0)
 
         @dataclasses.dataclass
         class Wall2:
-            u_wert: float = 0.0
-            area: float = 0.0
-            temp_diff: float = 0.0
-            interior_wall_temp: float = 0.0
+            u_wert: np.float32 = np.float32(0.0)
+            area: np.float32 = np.float32(0.0)
+            temp_diff: np.float32 = np.float32(0.0)
+            interior_wall_temp: np.float32 = np.float32(0.0)
 
             @dataclasses.dataclass
             class Window1:
-                u_wert: float = 0.0
-                area: float = 0.0
+                u_wert: np.float32 = np.float32(0.0)
+                area: np.float32 = np.float32(0.0)
 
             @dataclasses.dataclass
             class Window2:
-                u_wert: float = 0.0
-                area: float = 0.0
+                u_wert: np.float32 = np.float32(0.0)
+                area: np.float32 = np.float32(0.0)
 
             @dataclasses.dataclass
             class Window3:
-                u_wert: float = 0.0
-                area: float = 0.0
+                u_wert: np.float32 = np.float32(0.0)
+                area: np.float32 = np.float32(0.0)
 
             @dataclasses.dataclass
             class Window4:
-                u_wert: float = 0.0
-                area: float = 0.0
+                u_wert: np.float32 = np.float32(0.0)
+                area: np.float32 = np.float32(0.0)
 
             @dataclasses.dataclass
             class Door:
-                u_wert: float = 0.0
-                area: float = 0.0
+                u_wert: np.float32 = np.float32(0.0)
+                area: np.float32 = np.float32(0.0)
 
         @dataclasses.dataclass
         class Wall3:
-            u_wert: float = 0.0
-            area: float = 0.0
-            temp_diff: float = 0.0
-            interior_wall_temp: float = 0.0
+            u_wert: np.float32 = np.float32(0.0)
+            area: np.float32 = np.float32(0.0)
+            temp_diff: np.float32 = np.float32(0.0)
+            interior_wall_temp: np.float32 = np.float32(0.0)
 
             @dataclasses.dataclass
             class Window1:
-                u_wert: float = 0.0
-                area: float = 0.0
+                u_wert: np.float32 = np.float32(0.0)
+                area: np.float32 = np.float32(0.0)
 
             @dataclasses.dataclass
             class Window2:
-                u_wert: float = 0.0
-                area: float = 0.0
+                u_wert: np.float32 = np.float32(0.0)
+                area: np.float32 = np.float32(0.0)
 
             @dataclasses.dataclass
             class Window3:
-                u_wert: float = 0.0
-                area: float = 0.0
+                u_wert: np.float32 = np.float32(0.0)
+                area: np.float32 = np.float32(0.0)
 
             @dataclasses.dataclass
             class Window4:
-                u_wert: float = 0.0
-                area: float = 0.0
+                u_wert: np.float32 = np.float32(0.0)
+                area: np.float32 = np.float32(0.0)
 
             @dataclasses.dataclass
             class Door:
-                u_wert: float = 0.0
-                area: float = 0.0
+                u_wert: np.float32 = np.float32(0.0)
+                area: np.float32 = np.float32(0.0)
 
         @dataclasses.dataclass
         class Wall4:
-            u_wert: float = 0.0
-            area: float = 0.0
-            temp_diff: float = 0.0
-            interior_wall_temp: float = 0.0
+            u_wert: np.float32 = np.float32(0.0)
+            area: np.float32 = np.float32(0.0)
+            temp_diff: np.float32 = np.float32(0.0)
+            interior_wall_temp: np.float32 = np.float32(0.0)
 
             @dataclasses.dataclass
             class Window1:
-                u_wert: float = 0.0
-                area: float = 0.0
+                u_wert: np.float32 = np.float32(0.0)
+                area: np.float32 = np.float32(0.0)
 
             @dataclasses.dataclass
             class Window2:
-                u_wert: float = 0.0
-                area: float = 0.0
+                u_wert: np.float32 = np.float32(0.0)
+                area: np.float32 = np.float32(0.0)
 
             @dataclasses.dataclass
             class Window3:
-                u_wert: float = 0.0
-                area: float = 0.0
+                u_wert: np.float32 = np.float32(0.0)
+                area: np.float32 = np.float32(0.0)
 
             @dataclasses.dataclass
             class Window4:
-                u_wert: float = 0.0
-                area: float = 0.0
+                u_wert: np.float32 = np.float32(0.0)
+                area: np.float32 = np.float32(0.0)
 
             @dataclasses.dataclass
             class Door:
-                u_wert: float = 0.0
-                area: float = 0.0
+                u_wert: np.float32 = np.float32(0.0)
+                area: np.float32 = np.float32(0.0)
 
         @dataclasses.dataclass
         class Floor:
-            u_wert: float = 0.0
-            area: float = 0.0
-            temp_diff: float = 0.0
+            u_wert: np.float32 = np.float32(0.0)
+            area: np.float32 = np.float32(0.0)
+            temp_diff: np.float32 = np.float32(0.0)
 
         @dataclasses.dataclass
         class Ceiling:
-            u_wert: float = 0.0
-            area: float = 0.0
-            temp_diff: float = 0.0
+            u_wert: np.float32 = np.float32(0.0)
+            area: np.float32 = np.float32(0.0)
+            temp_diff: np.float32 = np.float32(0.0)
 
     def __init__(self) -> None:
         """
@@ -1530,43 +1530,43 @@ class RequiredHeatingPower:
 
         @precision
         @lru_cache(maxsize=1_000)
-        def _calc(wall_obj: room.Wall1 | room.Wall2 | room.Wall3 | room.Wall4) -> (float, float, float, float,
-                                                                                   float, float):
+        def _calc(wall_obj: room.Wall1 | room.Wall2 | room.Wall3 | room.Wall4) -> (np.float32, np.float32, np.float32,
+                                                                                   np.float32, np.float32, np.float32):
             """
 
             :param wall_obj:
             :return:
             """
-            wall: float = (
-                    (
-                            wall_obj.area - wall_obj.Door.area - wall_obj.Window1.area -
-                            wall_obj.Window2.area - wall_obj.Window3.area - wall_obj.Window4.area
-                    ) * wall_obj.u_wert * wall_obj.temp_diff
+            wall: np.float32 = np.float32(
+                (
+                        wall_obj.area - wall_obj.Door.area - wall_obj.Window1.area -
+                        wall_obj.Window2.area - wall_obj.Window3.area - wall_obj.Window4.area
+                ) * wall_obj.u_wert * wall_obj.temp_diff
             )
-            window1: float = 0
-            window2: float = 0
-            window3: float = 0
-            window4: float = 0
-            door: float = 0
+            window1: np.float32 = np.float32(0)
+            window2: np.float32 = np.float32(0)
+            window3: np.float32 = np.float32(0)
+            window4: np.float32 = np.float32(0)
+            door: np.float32 = np.float32(0)
 
             try:
-                window1: float = wall_obj.Window1.area * wall_obj.Window1.u_wert * wall_obj.temp_diff
+                window1: np.float32 = (wall_obj.Window1.area * wall_obj.Window1.u_wert * wall_obj.temp_diff)
             except TypeError:
                 pass
             try:
-                window2: float = wall_obj.Window2.area * wall_obj.Window2.u_wert * wall_obj.temp_diff
+                window2: np.float32 = (wall_obj.Window2.area * wall_obj.Window2.u_wert * wall_obj.temp_diff)
             except TypeError:
                 pass
             try:
-                window3: float = wall_obj.Window3.area * wall_obj.Window3.u_wert * wall_obj.temp_diff
+                window3: np.float32 = (wall_obj.Window3.area * wall_obj.Window3.u_wert * wall_obj.temp_diff)
             except TypeError:
                 pass
             try:
-                window4: float = wall_obj.Window4.area * wall_obj.Window4.u_wert * wall_obj.temp_diff
+                window4: np.float32 = (wall_obj.Window4.area * wall_obj.Window4.u_wert * wall_obj.temp_diff)
             except TypeError:
                 pass
             try:
-                door: float = wall_obj.Door.area * wall_obj.Door.u_wert * wall_obj.temp_diff
+                door: np.float32 = wall_obj.Door.area * wall_obj.Door.u_wert * wall_obj.temp_diff
             except TypeError:
                 pass
 
@@ -1577,9 +1577,9 @@ class RequiredHeatingPower:
         wall_3, wall_3_window_1, wall_3_window_2, wall_3_window_3, wall_3_window_4, wall_3_door = _calc(room.Wall3)
         wall_4, wall_4_window_1, wall_4_window_2, wall_4_window_3, wall_4_window_4, wall_4_door = _calc(room.Wall4)
 
-        floor: float = room.Floor.area * room.Floor.u_wert * room.Floor.temp_diff
+        floor: np.float32 = room.Floor.area * room.Floor.u_wert * room.Floor.temp_diff
 
-        ceiling: float = room.Ceiling.area * room.Ceiling.u_wert * room.Floor.temp_diff
+        ceiling: np.float32 = room.Ceiling.area * room.Ceiling.u_wert * room.Floor.temp_diff
 
         heating_power: float = (wall_1 + wall_1_window_1 + wall_1_window_2 + wall_1_window_3 + wall_1_window_4 +
                                 wall_1_door +
@@ -1595,25 +1595,26 @@ class RequiredHeatingPower:
 
     @staticmethod
     def adjust_thermal_mass(heizlast: float, v: float, delta_temp: float, time_interval: int,
-                            previous_mass_estimate: float, c_air: float = 1005, rho_air: float = 1.225,
-                            c_material: float = 840, learning_rate: float = 0.1):
+                            previous_mass_estimate: float, c_air: np.float32 = np.float32(1005),
+                            rho_air: np.float32 = np.float32(1.225), c_material: np.float32 = np.float32(840),
+                            learning_rate: np.float32 = np.float32(0.1)):
 
-        thermal_mass_air: float = v * rho_air * c_air
+        thermal_mass_air: np.float32 = np.float32(v * rho_air * c_air)
 
-        thermal_mass_material: float = previous_mass_estimate
+        thermal_mass_material: np.float32 = np.float32(previous_mass_estimate)
 
-        total_thermal_mass: float = thermal_mass_air + thermal_mass_material
+        total_thermal_mass: np.float32 = thermal_mass_air + thermal_mass_material
 
-        energy_input: float = heizlast * time_interval
+        energy_input: np.float32 = np.float32(heizlast * time_interval)
 
-        expected_temp_change: float = energy_input / total_thermal_mass
+        expected_temp_change: np.float32 = energy_input / total_thermal_mass
 
-        error: float = expected_temp_change - delta_temp
+        error: np.float32 = np.float32(expected_temp_change - delta_temp)
 
-        thermal_mass_material_adjusted: float = (thermal_mass_material - learning_rate * error *
-                                                 total_thermal_mass / c_material)
+        thermal_mass_material_adjusted: np.float32 = np.float32(thermal_mass_material - learning_rate * error *
+                                                                total_thermal_mass / c_material)
 
-        return max(thermal_mass_material_adjusted, 0)
+        return np.float32(np.max(thermal_mass_material_adjusted, 0))
 
 
 class ShellyTRVControl:
