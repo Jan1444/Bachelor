@@ -118,9 +118,9 @@ def analytics():
             heating_power: float = hp[1][indx]
             cop: float = hp[2][indx]
 
-            load_diff: float = power_ghi - load_data
+            load_diff: float = power_ghi - load_data  # Strom überschuss
 
-            diff_energy: float = (load_diff * cop) - heating_power
+            diff_energy: float = load_diff - (heating_power / cop)
 
             energy = diff_energy * 0.25
 
