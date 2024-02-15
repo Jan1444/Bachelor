@@ -3,8 +3,9 @@ import dataclasses
 import datetime
 from functools import lru_cache, wraps
 
+from numpy import float32, sin, cos, arcsin, arccos, deg2rad, rad2deg, round, power, max
 import numpy as np
-from numpy import float32, sin, cos, arcsin, arccos, deg2rad, rad2deg
+
 import requests
 import requests_cache
 
@@ -14,9 +15,9 @@ from module import debug
 def precision(func, precision_: int = 5):
     @wraps(func)
     def wrapped(*args, **kwargs):
-        precision_args = (np.round(arg, precision_) if isinstance(arg, (float, float32)) else arg for arg in args)
+        precision_args = (round(arg, precision_) if isinstance(arg, (float, float32)) else arg for arg in args)
 
-        precision_kwargs = {k: (np.round(v, precision_) if isinstance(v, (float, float32)) else v) for k, v in
+        precision_kwargs = {k: (round(v, precision_) if isinstance(v, (float, float32)) else v) for k, v in
                             kwargs.items()}
 
         return func(*precision_args, **precision_kwargs)
@@ -124,8 +125,8 @@ class MarketData:
             self.data[i]['start_timestamp'], self.data[i]['date'] = self.convert_ms_to_time(old_data.get(
                 'start_timestamp', 0))
             self.data[i]['end_timestamp'] = self.convert_ms_to_time(old_data.get('end_timestamp', 0))[0]
-            self.data[i]['marketprice'] = np.round(old_data.get('marketprice', 0) / 10, 3)
-            self.data[i]['consumerprice'] = np.round(((old_data.get('marketprice', 0) + consumer_costs) * 1.19), 3)
+            self.data[i]['marketprice'] = round(old_data.get('marketprice', 0) / 10, 3)
+            self.data[i]['consumerprice'] = round(((old_data.get('marketprice', 0) + consumer_costs) * 1.19), 3)
             self.data[i]['unit'] = 'ct/kWh'
 
 
@@ -602,10 +603,10 @@ class CalcSunPos:
         :param longitude:longitude
         :param date: Format %d-%m-%Y
         """
-        self.time_last_calc: float | None = None
-        self.hour_angle: float | None = None
-        self.real_local_time: float | None = None
-        self.mid_local_time: float | None = None
+        self.time_last_calc: float32 | None = None
+        self.hour_angle: float32 | None = None
+        self.real_local_time: float32 | None = None
+        self.mid_local_time: float32 | None = None
         self.latitude: float32 = deg2rad(latitude, dtype=float32)
         self.longitude: float32 = deg2rad(longitude, dtype=float32)
         if date is None:
@@ -640,8 +641,8 @@ class CalcSunPos:
         """
         t: float32 = float32(datetime.datetime.now().time().strftime("%H.%M"))
         return (f"Uhrzeit: {str(t)[:2]}:{str(t)[3:]} Uhr\n"
-                f"Die aktuelle Sonnenposition ist: {np.round(self.calc_azimuth(t), 2)}°\n"
-                f"und die aktuelle Sonnenhöhe beträgt {np.round(self.calc_solar_elevation(t), 2)}°")
+                f"Die aktuelle Sonnenposition ist: {round(self.calc_azimuth(t), 2)}°\n"
+                f"und die aktuelle Sonnenhöhe beträgt {round(self.calc_solar_elevation(t), 2)}°")
 
     @precision
     @lru_cache(maxsize=1_000)
@@ -672,7 +673,7 @@ class CalcSunPos:
         :param t: Time as a float.
         :return: The solar elevation in degrees.
         """
-        self.time_last_calc: float32 = float32(np.round((int(t)) + ((t - int(t)) * 100 / 60), 2) - 0.25)
+        self.time_last_calc: np.float16 = np.float16((np.uint8(t)) + ((t - np.uint8(t)) * 100 / 60) - 0.25)
         self.mid_local_time: float32 = self.time_last_calc + self.longitude * deg2rad(4, dtype=float32)
         self.real_local_time: float32 = self.mid_local_time + self.time_equation
         self.hour_angle: float32 = (12.00 - self.real_local_time) * deg2rad(15, dtype=float32)
@@ -819,7 +820,7 @@ class PVProfit:
     def calc_pv_temp(self, temperature: float, radiation: float) -> float32:
         """
         Calcs the temperature of the pv system
-        :param temperature: the surnp.rounding temperature in °C
+        :param temperature: the surrounding temperature in °C
         :param radiation: the current radiation in W/m²
         :return: the temperatur of the pv panel in °C.
         """
@@ -837,7 +838,7 @@ class PVProfit:
     def calc_temp_dependency(self, temperature: float, radiation: float) -> float32:
         """
         Calcs the current efficiency of the pv panel
-        :param temperature: the current surnp.rounding temperatur in °C
+        :param temperature: the current surrounding temperatur in °C
         :param radiation: the current radiation in W/m²
         :return: the current efficiency as float.
         """
@@ -884,8 +885,8 @@ class PVProfit:
         air_mass: float32 = float32(1 / sin(deg2rad(sun_height, dtype=float32), dtype=float32))
         clarity_index: float32 = float32(
             (((diffuse_radiation + direct_radiation * arcsin(sun_height, dtype=float32)) /
-              diffuse_radiation) + kappa * np.power(incidence_angle, 3)) /
-            (1 + kappa * np.power(incidence_angle, 3, dtype=float32)))  # Epsilon
+              diffuse_radiation) + kappa * power(incidence_angle, 3)) /
+            (1 + kappa * power(incidence_angle, 3, dtype=float32)))  # Epsilon
         brightness_index: float32 = float32(air_mass * direct_radiation / 1361)  # Delta
 
         index: int = 0
@@ -915,8 +916,8 @@ class PVProfit:
                                self.diffuse_index_F22[index] * brightness_index +
                                self.diffuse_index_F23[index] * incidence_angle)
 
-        a: float = np.max(0, cos(deg2rad(incidence_angle, dtype=float32), dtype=float32))
-        b: float = np.max(0.087, sin(deg2rad(sun_height, dtype=float32), dtype=float32))
+        a: float = max(0, cos(deg2rad(incidence_angle, dtype=float32), dtype=float32))
+        b: float = max(0.087, sin(deg2rad(sun_height, dtype=float32), dtype=float32))
 
         diffuse_energy: float32 = float32(diffuse_radiation * (
                 0.5 * (
@@ -1615,7 +1616,7 @@ class RequiredHeatingPower:
         thermal_mass_material_adjusted: float32 = float32(thermal_mass_material - learning_rate * error *
                                                           total_thermal_mass / c_material)
 
-        return float32(np.max(thermal_mass_material_adjusted, 0))
+        return float32(max(thermal_mass_material_adjusted, 0))
 
 
 class ShellyTRVControl:
