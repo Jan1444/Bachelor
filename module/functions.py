@@ -6,8 +6,8 @@ import os
 from functools import lru_cache, wraps
 
 import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
+from numpy import float32, linspace
+from pandas import ExcelFile
 
 import requests
 import toml
@@ -37,9 +37,9 @@ def freeze_all(func):
 def precision(func, precision_: int = 5):
     @wraps(func)
     def wrapped(*args, **kwargs):
-        precision_args = (round(arg, precision_) if isinstance(arg, (float, np.float32)) else arg for arg in args)
+        precision_args = (round(arg, precision_) if isinstance(arg, (float, float32)) else arg for arg in args)
 
-        precision_kwargs = {k: (round(v, precision_) if isinstance(v, (float, np.float32)) else v) for k, v in kwargs.items()}
+        precision_kwargs = {k: (round(v, precision_) if isinstance(v, (float, float32)) else v) for k, v in kwargs.items()}
 
         return func(*precision_args, **precision_kwargs)
     return wrapped
@@ -416,7 +416,7 @@ def data_analyzer(config_data: dict, path: None | str = None):
     plt.figure(figsize=(20, 6))
     plt.grid(True)
     plt.step(date_time_data, power_data, '-', linewidth=0.5, alpha=0.5)
-    plt.xticks(np.linspace(0, len(date_time_data), 100), rotation=90, ha='right', fontsize=8)
+    plt.xticks(linspace(0, len(date_time_data), 100), rotation=90, ha='right', fontsize=8)
     plt.tight_layout()
     plt.margins(0.01)
     plt.savefig(f"{consts.DOWNLOADS_FILE_PATH}plot_uploaded_data.png", dpi=300)
@@ -682,23 +682,25 @@ def load_load_profile(path: str | None) -> dict:
     data_extension = path[path.rfind('.'):]
 
     if '.json' in data_extension:
+        print('json File')
         return _create_null_profile()
         # sheet = json.load(open(path, "rb+"))
 
     elif '.xlsx' in data_extension or '.xls' in data_extension:
         try:
-            xl = pd.ExcelFile(path)
+            xl = ExcelFile(path)
         except FileNotFoundError:
+            print('File Not Found')
             return _create_null_profile()
 
         df = xl.parse(xl.sheet_names[0])
         data_dict = {}
-
+        date_str = ''
         for row in df.values:
             try:
                 date_str, load = row[0], row[1]
 
-                if 'timestamp' in str(type(date_str)):
+                if 'datetime' in str(type(date_str)) or 'timestamp' in str(type(date_str)):
                     date_time = date_str
 
                 else:
@@ -711,6 +713,7 @@ def load_load_profile(path: str | None) -> dict:
                     data_dict[date] = {}
                 data_dict[date][time] = float(str(load).replace(",", '.'))  # * 1000
             except Exception as e:
+                print(date_str)
                 print(f'Following error is occurred by loading load_profile: {e}')
                 return _create_null_profile()
 
