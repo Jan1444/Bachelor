@@ -34,6 +34,17 @@ def freeze_all(func):
     return wrapped
 
 
+def precision(func, precision_: int = 5):
+    @wraps(func)
+    def wrapped(*args, **kwargs):
+        precision_args = (round(arg, precision_) if isinstance(arg, (float, np.float32)) else arg for arg in args)
+
+        precision_kwargs = {k: (round(v, precision_) if isinstance(v, (float, np.float32)) else v) for k, v in kwargs.items()}
+
+        return func(*precision_args, **precision_kwargs)
+    return wrapped
+
+
 def read_data_from_file(file_path: str) -> dict | None:
     """
 
@@ -114,7 +125,7 @@ def get_coord(street: str, nr: str, city: str, postalcode: int, country: str) ->
 
 
 @freeze_all
-@lru_cache(maxsize=None)
+@lru_cache(maxsize=1_000)
 def calc_energy(power: list, interval: float = 0.25, kwh: bool = True, round_: None | int = None) -> float:
     """
 
@@ -165,7 +176,9 @@ def init_sun(config_data: dict, date: str | None = None) -> classes.CalcSunPos:
 
 def get_sun_data(sun_class: classes.CalcSunPos, tme: float) -> (float, float):
     az = sun_class.calc_azimuth(tme)
+    print(sun_class.calc_azimuth.cache_info())
     el = sun_class.calc_solar_elevation(tme)
+    print(sun_class.calc_solar_elevation.cache_info())
     return az, el
 
 
@@ -246,7 +259,7 @@ def save_mor_ev_data(config_data: dict) -> dict:
 
 
 @freeze_all
-@lru_cache(maxsize=None)
+@lru_cache(maxsize=1_000)
 def unpack_data(data: dict) -> (list[str], list[float], list[float], list[float]):
     """
 
