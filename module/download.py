@@ -5,8 +5,9 @@ import os
 from functools import lru_cache, wraps
 
 import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
+
+from numpy import arange
+from pandas import DataFrame
 from frozendict import frozendict
 
 from module import consts
@@ -76,7 +77,7 @@ def generate_weather_data(request_data: dict, config_data: dict) -> list[str]:
         os.remove(rf"{consts.DOWNLOADS_FILE_PATH}weather_plot.png")
 
     if request_data.get("excel_weather", "") == "on":
-        df = pd.DataFrame.from_dict(energy_data, orient='index', columns=['energy [kWh]'])
+        df = DataFrame.from_dict(energy_data, orient='index', columns=['energy [kWh]'])
         df.to_excel(f'{consts.DOWNLOADS_FILE_PATH}weather_data.xlsx')
         msg.append("excel_weather")
 
@@ -100,7 +101,7 @@ def generate_weather_data(request_data: dict, config_data: dict) -> list[str]:
         plt.xticks(rotation=90, ha="right", fontsize=18)
 
         _max = (max(energy_data.values()) + (100 if max(energy_data.values()) > 100 else 5))
-        ticks = np.arange(0, _max, step=(len(energy_data.keys()) // 100 * 10 if _max > 100 else 1))
+        ticks = arange(0, _max, step=(len(energy_data.keys()) // 100 * 10 if _max > 100 else 1))
 
         plt.yticks(ticks=ticks, ha="right", fontsize=20)
         plt.legend(loc="upper left", fontsize=20)
@@ -147,7 +148,7 @@ def generate_market_data(request_data: dict, config_data: dict) -> list[str]:
         os.remove(rf"{consts.DOWNLOADS_FILE_PATH}plot_market.png")
 
     if request_data.get("excel_market", "") == "on":
-        df = pd.DataFrame.from_dict(data_dict, orient='index', columns=['price [ct]'])
+        df = DataFrame.from_dict(data_dict, orient='index', columns=['price [ct]'])
         df.to_excel(f'{consts.DOWNLOADS_FILE_PATH}market_data.xlsx')
         msg.append("excel_market")
 
@@ -176,7 +177,7 @@ def generate_market_data(request_data: dict, config_data: dict) -> list[str]:
         plt.xticks(rotation=90, ha="right", fontsize=18)
 
         _max = (max(price_data) + (100 if max(price_data) > 100 else 5))
-        ticks = np.arange(0, _max, step=(len(price_data) // 100 * 10 if _max > 100 else 1))
+        ticks = arange(0, _max, step=(len(price_data) // 100 * 10 if _max > 100 else 1))
 
         plt.yticks(ticks=ticks, ha="right", fontsize=20)
         plt.legend(loc="upper left", fontsize=20)
