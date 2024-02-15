@@ -177,9 +177,7 @@ def init_sun(config_data: dict, date: str | None = None) -> classes.CalcSunPos:
 
 def get_sun_data(sun_class: classes.CalcSunPos, tme: float) -> (float, float):
     az = sun_class.calc_azimuth(tme)
-    print(sun_class._calc_azimuth.cache_info())
     el = sun_class.calc_solar_elevation(tme)
-    #print(sun_class.calc_solar_elevation.cache_info())
     return az, el
 
 
