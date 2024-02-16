@@ -16,6 +16,7 @@ from module import set_vals
 from module import download as download_module
 
 from numpy import array
+import numpy as np
 
 UPLOAD_FOLDER = 'uploads'
 
@@ -58,12 +59,12 @@ def analytics():
     diff_power: list = []
 
     battery_load: list = []
-    min_capacity = battery.get('capacity', 0) * 1_000 * (1 - battery.get('max_deload', 100) / 100)
-    charging_power = battery.get('charging_power', 0) * 0.25
-    battery_capacity = battery.get('capacity', 0) * 1_000
-    state_of_charge: float = min_capacity / battery_capacity * 100
-    min_state_of_charge = min_capacity / battery_capacity * 100
-    load_efficiency: float = battery.get('load_efficiency', 0) / 100
+    min_capacity: np.float32 = np.float32(battery.get('capacity', 0) * 1_000 * (1 - battery.get('max_deload', 100) / 100))
+    charging_power: np.float32 = np.float32(battery.get('charging_power', 0) * 0.25)
+    battery_capacity: np.float32 = np.float32(battery.get('capacity', 0) * 1_000)
+    state_of_charge: np.float32 = np.float32(min_capacity / battery_capacity * 100)
+    min_state_of_charge: np.float32 = np.float32(min_capacity / battery_capacity * 100)
+    load_efficiency: np.float32 = np.float32(battery.get('load_efficiency', 0) / 100)
 
     time_now = datetime.datetime.now()
 
@@ -83,7 +84,7 @@ def analytics():
     load_profile_data: dict = fc.load_load_profile(f'{consts.LOAD_PROFILE_FOLDER}/{load_profile.get("name")}')
 
     hp = fc.heating_power(config_data, weather)
-    indx = 0
+    indx: np.uint8 = np.uint16(0)
 
     for date, weather_today in weather.items():
         weather_today.pop("daily")
@@ -91,13 +92,13 @@ def analytics():
         curr_load: dict = load_profile_data.get(date_load, "")
 
         for (tme_pv, data), (tme_load, load_data) in zip(weather_today.items(), curr_load.items()):
-            time_float = fc.string_time_to_float(tme_pv)
-            temp: float = data.get("temp", 0)
-            radiation_ghi = data.get("ghi_radiation", 0)
+            time_float: np.float16 = fc.string_time_to_float(tme_pv)
+            temp: np.float16 = np.float16(data.get("temp", 0))
+            radiation_ghi: np.float16 = np.float16(data.get("ghi_radiation", 0))
 
             azimuth, elevation = fc.get_sun_data(sun_class, time_float)
 
-            power_ghi: float = fc.get_pv_data(pv_class, temp, radiation_ghi, azimuth, elevation)
+            power_ghi: np.float32 = fc.get_pv_data(pv_class, temp, radiation_ghi, azimuth, elevation)
 
             if config_data['pv']['alignment'] >= 2:
                 power_ghi += fc.get_pv_data(pv_class2, temp, radiation_ghi, azimuth, elevation)
@@ -115,23 +116,23 @@ def analytics():
             if tme_pv != tme_load:
                 continue
 
-            heating_power: float = hp[1][indx]
-            cop: float = hp[2][indx]
+            heating_power: np.float16 = hp[1][indx]
+            cop: np.float16 = hp[2][indx]
 
-            load_diff: float = power_ghi - load_data  # Strom überschuss
+            load_diff: np.float16 = power_ghi - load_data  # Strom überschuss
 
-            diff_energy: float = load_diff - (heating_power / cop)
+            diff_energy: np.float16 = load_diff - (heating_power / cop)
 
-            energy = diff_energy * 0.25
+            energy: float16 = diff_energy * 0.25
 
             if energy < 0:
                 netto_energy = energy * converter.get('efficiency')
             else:
-                energy = min(energy, charging_power)
+                energy = min((energy, charging_power))
                 netto_energy = energy * load_efficiency
 
             state_of_charge += netto_energy / battery_capacity * 100
-            state_of_charge = max(min_state_of_charge, min(state_of_charge, 100))
+            state_of_charge = max((min_state_of_charge, min((state_of_charge, 100))))
             battery_load.append(state_of_charge)
 
             diff_power.append(diff_energy)
@@ -143,15 +144,19 @@ def analytics():
     market_time = [time.get('start_timestamp') for time in market_class.data]
     market_price = [price.get('consumerprice') for price in market_class.data]
 
+    print(hp[1])
+    print(diff_power)
+    print(battery_load)
+
     pv_power_data = [[time, value] for time, value in zip(weather_time, array(pv_data_data, dtype=float))]
 
-    market_data = [[time, value] for time, value in zip(market_time, market_price)]
+    market_data = [[time, value] for time, value in zip(market_time, array(market_price, dtype=float))]
 
-    heating_power_data = [[time, value] for time, value in zip(hp[0], hp[1])]
+    heating_power_data = [[time, value] for time, value in zip(hp[0], array(hp[1], dtype=float))]
 
-    difference_power = [[time, value] for time, value in zip(hp[0], diff_power)]
+    difference_power = [[time, value] for time, value in zip(hp[0], array(diff_power, dtype=float))]
 
-    battery_power = [[time, value] for time, value in zip(hp[0], battery_load)]
+    battery_power = [[time, value] for time, value in zip(hp[0], array(battery_load, dtype=float))]
 
     return render_template('analytics.html', energy_data=energy_today,
                            pv_power_data=pv_power_data, market_data=market_data,
@@ -171,7 +176,7 @@ def download():
     date_now: dict = {}
 
     if request.method == 'POST':
-        date_now = fc.date_time_download()
+        date_now = download_module.date_time_download()
         data: dict = request.form.to_dict()
 
         if "excel_weather" in data.keys() or "plot_png_weather" in data.keys():
@@ -266,7 +271,7 @@ def safe_settings():
 
 @app.route('/file_download')
 def file_download():
-    data = fc.date_time_download()
+    data = download_module.date_time_download()
     return render_template('file_download.html', config=data)
 
 
