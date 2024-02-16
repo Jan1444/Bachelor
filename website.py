@@ -15,7 +15,7 @@ from module import functions as fc
 from module import set_vals
 from module import download as download_module
 
-from numpy import float32, float16, uint16, array
+from numpy import float64, float32, float16, uint16, array
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
@@ -138,18 +138,20 @@ def analytics():
 
     energy_today = fc.calc_energy(pv_data_data[:95], kwh=False, round_=2)
 
+    import json
+
     market_time = [time.get('start_timestamp') for time in market_class.data]
     market_price = [price.get('consumerprice') for price in market_class.data]
 
-    pv_power_data = [[time, value] for time, value in zip(weather_time, array(pv_data_data, dtype=float))]
+    pv_power_data = [[time, value] for time, value in zip(weather_time, array(pv_data_data, dtype=float64))]
 
-    market_data = [[time, value] for time, value in zip(market_time, array(market_price, dtype=float))]
+    market_data = [[time, value] for time, value in zip(market_time, array(market_price, dtype=float64))]
 
-    heating_power_data = [[time, value] for time, value in zip(hp[0], array(hp[1], dtype=float))]
+    heating_power_data = [[time, value] for time, value in zip(hp[0], array(hp[1], dtype=float64))]
 
-    difference_power = [[time, value] for time, value in zip(hp[0], array(diff_power, dtype=float))]
+    difference_power = [[time, value] for time, value in zip(hp[0], array(diff_power, dtype=float64))]
 
-    battery_power = [[time, value] for time, value in zip(hp[0], array(battery_load, dtype=float))]
+    battery_power = [[time, value] for time, value in zip(hp[0], array(battery_load, dtype=float64))]
 
     return render_template('analytics.html', energy_data=energy_today,
                            pv_power_data=pv_power_data, market_data=market_data,
