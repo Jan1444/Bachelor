@@ -5,7 +5,7 @@ from functools import lru_cache, wraps
 
 import requests
 import requests_cache
-from numpy import (float32, float16, uint8, sin, cos, arcsin, arccos, deg2rad, rad2deg, round as np_round, power,
+from numpy import (float32, float16, uint16, sin, cos, arcsin, arccos, deg2rad, rad2deg, round as np_round, power,
                    max as np_max)
 
 from module import debug
@@ -125,7 +125,8 @@ class MarketData:
                 'start_timestamp', 0))
             self.data[i]['end_timestamp'] = self.convert_ms_to_time(old_data.get('end_timestamp', 0))[0]
             self.data[i]['marketprice'] = np_round(old_data.get('marketprice', 0) / 10, 3)
-            self.data[i]['consumerprice'] = np_round(float16((old_data.get('marketprice', 0) + consumer_costs) * 1.19), 3)
+            self.data[i]['consumerprice'] = np_round(float16((old_data.get('marketprice', 0) + consumer_costs) * 1.19),
+                                                     3)
             self.data[i]['unit'] = 'ct/kWh'
 
 
@@ -648,7 +649,7 @@ class CalcSunPos:
         :param t: Time as a float.
         :return: The solar elevation in degrees.
         """
-        self.time_last_calc: float16 = float16((uint8(t)) + ((t - uint8(t)) * 100 / 60) - 0.25)
+        self.time_last_calc: float16 = float16((uint16(t)) + ((t - uint16(t)) * 100 / 60) - 0.25)
         self.mid_local_time: float32 = self.time_last_calc + self.longitude * deg2rad(4, dtype=float32)
         self.real_local_time: float32 = self.mid_local_time + self.time_equation
         self.hour_angle: float32 = (12.00 - self.real_local_time) * deg2rad(15, dtype=float32)
@@ -1498,7 +1499,7 @@ class RequiredHeatingPower:
         }
 
     @staticmethod
-    def calc_heating_power(room: Room) -> float:
+    def calc_heating_power(room: Room) -> float32:
         """
 
         :param room:
@@ -1558,15 +1559,15 @@ class RequiredHeatingPower:
 
         ceiling: float32 = room.Ceiling.area * room.Ceiling.u_wert * room.Floor.temp_diff
 
-        heating_power: float = (wall_1 + wall_1_window_1 + wall_1_window_2 + wall_1_window_3 + wall_1_window_4 +
-                                wall_1_door +
-                                wall_2 + wall_2_window_1 + wall_2_window_2 + wall_2_window_3 + wall_2_window_4 +
-                                wall_2_door +
-                                wall_3 + wall_3_window_1 + wall_3_window_2 + wall_3_window_3 + wall_3_window_4 +
-                                wall_3_door +
-                                wall_4 + wall_4_window_1 + wall_4_window_2 + wall_4_window_3 + wall_4_window_4 +
-                                wall_4_door +
-                                floor + ceiling)
+        heating_power: float32 = (wall_1 + wall_1_window_1 + wall_1_window_2 + wall_1_window_3 + wall_1_window_4 +
+                                  wall_1_door +
+                                  wall_2 + wall_2_window_1 + wall_2_window_2 + wall_2_window_3 + wall_2_window_4 +
+                                  wall_2_door +
+                                  wall_3 + wall_3_window_1 + wall_3_window_2 + wall_3_window_3 + wall_3_window_4 +
+                                  wall_3_door +
+                                  wall_4 + wall_4_window_1 + wall_4_window_2 + wall_4_window_3 + wall_4_window_4 +
+                                  wall_4_door +
+                                  floor + ceiling)
 
         return heating_power
 
