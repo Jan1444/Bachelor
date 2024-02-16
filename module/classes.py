@@ -3,11 +3,10 @@ import dataclasses
 import datetime
 from functools import lru_cache, wraps
 
-from numpy import float32, sin, cos, arcsin, arccos, deg2rad, rad2deg, round, power, max
-import numpy as np
-
 import requests
 import requests_cache
+from numpy import (float32, float16, uint8, sin, cos, arcsin, arccos, deg2rad, rad2deg, round as np_round, power,
+                   max as np_max)
 
 from module import debug
 
@@ -15,9 +14,9 @@ from module import debug
 def precision(func, precision_: int = 5):
     @wraps(func)
     def wrapped(*args, **kwargs):
-        precision_args = (round(arg, precision_) if isinstance(arg, (float, float32)) else arg for arg in args)
+        precision_args = (np_round(arg, precision_) if isinstance(arg, (float, float32)) else arg for arg in args)
 
-        precision_kwargs = {k: (round(v, precision_) if isinstance(v, (float, float32)) else v) for k, v in
+        precision_kwargs = {k: (np_round(v, precision_) if isinstance(v, (float, float32)) else v) for k, v in
                             kwargs.items()}
 
         return func(*precision_args, **precision_kwargs)
@@ -30,7 +29,7 @@ class MarketData:
     Gets the market data to the given time interval
     """
 
-    def __init__(self, consumer_costs, start_time: None | str = None, end_time: None | str = None) -> None:
+    def __init__(self, consumer_costs: float16, start_time: None | str = None, end_time: None | str = None) -> None:
         """
         Initialise the class object.
         :param consumer_costs: The cost of the network.
@@ -116,7 +115,7 @@ class MarketData:
             print('Market data new object')
         return response.json().get('data')
 
-    def convert_dict(self, consumer_costs) -> None:
+    def convert_dict(self, consumer_costs: float16) -> None:
         """
         Converts the millisecond timestamp in the dict to time
         :return: None
@@ -125,8 +124,8 @@ class MarketData:
             self.data[i]['start_timestamp'], self.data[i]['date'] = self.convert_ms_to_time(old_data.get(
                 'start_timestamp', 0))
             self.data[i]['end_timestamp'] = self.convert_ms_to_time(old_data.get('end_timestamp', 0))[0]
-            self.data[i]['marketprice'] = round(old_data.get('marketprice', 0) / 10, 3)
-            self.data[i]['consumerprice'] = round(((old_data.get('marketprice', 0) + consumer_costs) * 1.19), 3)
+            self.data[i]['marketprice'] = np_round(old_data.get('marketprice', 0) / 10, 3)
+            self.data[i]['consumerprice'] = np_round(float16((old_data.get('marketprice', 0) + consumer_costs) * 1.19), 3)
             self.data[i]['unit'] = 'ct/kWh'
 
 
@@ -139,7 +138,7 @@ class Weather:
     # hourly=temperature_2m,cloudcover
 
     def __init__(self, latitude: float, longitude: float, start_date: str | None = None, end_date: str | None = None,
-                 api: str = 'weather') -> None:
+                 ) -> None:
         """
         Initialize the class
         :param latitude:
@@ -152,12 +151,8 @@ class Weather:
         self._expire_time = 1
         self.session = requests_cache.CachedSession(r'cache/weatherdata.cache',
                                                     expire_after=datetime.timedelta(hours=self._expire_time))
-        if api == 'ensemble':
-            weather = False
-        else:
-            weather = True
 
-        weather_data: dict = self.get_weather(start_date, end_date, weather)
+        weather_data: dict = self.get_weather(start_date, end_date)
         self.data: dict = {}
         try:
             self._create_dict(weather_data)
@@ -247,54 +242,34 @@ class Weather:
             date = (datetime.datetime.strptime(date, '%d-%m-%Y') +
                     datetime.timedelta(days=1)).strftime('%d-%m-%Y')
 
-    def get_weather(self, start_date: str | None, end_date: str | None, weather: bool = True) -> dict:
+    def get_weather(self, start_date: str | None, end_date: str | None) -> dict:
         """
         Gets the weather for the given latitude and longitude
         :return: A dict with the following variables: direct radiation, temperatur, cloudcover, temperature max,
                  temperatur min, sunrise, sunset.
         """
-        url: str = ''
         if start_date is None or end_date is None:
-            if weather:
-                url: str = (f"https://api.open-meteo.com/v1/forecast?"
-                            f"latitude={self.latitude}&longitude={self.longitude}&"
-                            "minutely_15=direct_normal_irradiance,direct_radiation,shortwave_radiation"
-                            "&hourly=temperature_2m,cloudcover&"
-                            "models=best_match&"
-                            "daily=temperature_2m_max,temperature_2m_min,sunrise,sunset&"
-                            "timezone=Europe%2FBerlin&forecast_days=3")
-            elif not weather:
-                url: str = (f"https://ensemble-api.open-meteo.com/v1/ensemble?"
-                            f"latitude={self.latitude}&longitude={self.longitude}&"
-                            f"hourly=shortwave_radiation&"
-                            f"timezone=Europe%2FBerlin&"
-                            f"forecast_days=35&"
-                            f"models=gfs05")
+            url: str = (f"https://api.open-meteo.com/v1/forecast?"
+                        f"latitude={self.latitude}&longitude={self.longitude}&"
+                        "minutely_15=direct_normal_irradiance,direct_radiation,shortwave_radiation"
+                        "&hourly=temperature_2m,cloudcover&"
+                        "models=best_match&"
+                        "daily=temperature_2m_max,temperature_2m_min,sunrise,sunset&"
+                        "timezone=Europe%2FBerlin&forecast_days=3")
+
         else:
             start: datetime = datetime.datetime.strptime(start_date, "%d-%m-%Y")
             end: datetime = datetime.datetime.strptime(end_date, "%d-%m-%Y")
 
-            if weather:
-                url: str = (f"https://api.open-meteo.com/v1/forecast?"
-                            f"latitude={self.latitude}&longitude={self.longitude}&"
-                            f"minutely_15=direct_normal_irradiance,direct_radiation,shortwave_radiation"
-                            f"&hourly=temperature_2m,cloudcover&"
-                            f"models=best_match&"
-                            f"daily=temperature_2m_max,temperature_2m_min,sunrise,sunset&"
-                            f"timezone=Europe%2FBerlin&"
-                            f"start_date={start.year}-{str(start.month).zfill(2)}-{str(start.day).zfill(2)}&"
-                            f"end_date={end.year}-{str(end.month).zfill(2)}-{str(end.day).zfill(2)}")
-            elif not weather:
-                url: str = (f"https://ensemble-api.open-meteo.com/v1/ensemble?"
-                            f"latitude={self.latitude}&longitude={self.longitude}&"
-                            f"hourly=weather_code&"
-                            f"timezone=Europe%2FBerlin&"
-                            f"start_date={start.year}-{str(start.month).zfill(2)}-{str(start.day).zfill(2)}&"
-                            f"end_date={end.year}-{str(end.month).zfill(2)}-{str(end.day).zfill(2)}&"
-                            f"models=gfs05")
-
-            else:
-                return {}
+            url: str = (f"https://api.open-meteo.com/v1/forecast?"
+                        f"latitude={self.latitude}&longitude={self.longitude}&"
+                        f"minutely_15=direct_normal_irradiance,direct_radiation,shortwave_radiation"
+                        f"&hourly=temperature_2m,cloudcover&"
+                        f"models=best_match&"
+                        f"daily=temperature_2m_max,temperature_2m_min,sunrise,sunset&"
+                        f"timezone=Europe%2FBerlin&"
+                        f"start_date={start.year}-{str(start.month).zfill(2)}-{str(start.day).zfill(2)}&"
+                        f"end_date={end.year}-{str(end.month).zfill(2)}-{str(end.day).zfill(2)}")
 
         print(url)
         response = self.session.get(url)
@@ -641,8 +616,8 @@ class CalcSunPos:
         """
         t: float32 = float32(datetime.datetime.now().time().strftime("%H.%M"))
         return (f"Uhrzeit: {str(t)[:2]}:{str(t)[3:]} Uhr\n"
-                f"Die aktuelle Sonnenposition ist: {round(self.calc_azimuth(t), 2)}°\n"
-                f"und die aktuelle Sonnenhöhe beträgt {round(self.calc_solar_elevation(t), 2)}°")
+                f"Die aktuelle Sonnenposition ist: {np_round(self.calc_azimuth(t), 2)}°\n"
+                f"und die aktuelle Sonnenhöhe beträgt {np_round(self.calc_solar_elevation(t), 2)}°")
 
     @precision
     @lru_cache(maxsize=1_000)
@@ -673,7 +648,7 @@ class CalcSunPos:
         :param t: Time as a float.
         :return: The solar elevation in degrees.
         """
-        self.time_last_calc: np.float16 = np.float16((np.uint8(t)) + ((t - np.uint8(t)) * 100 / 60) - 0.25)
+        self.time_last_calc: float16 = float16((uint8(t)) + ((t - uint8(t)) * 100 / 60) - 0.25)
         self.mid_local_time: float32 = self.time_last_calc + self.longitude * deg2rad(4, dtype=float32)
         self.real_local_time: float32 = self.mid_local_time + self.time_equation
         self.hour_angle: float32 = (12.00 - self.real_local_time) * deg2rad(15, dtype=float32)
@@ -916,8 +891,8 @@ class PVProfit:
                                self.diffuse_index_F22[index] * brightness_index +
                                self.diffuse_index_F23[index] * incidence_angle)
 
-        a: float = max(0, cos(deg2rad(incidence_angle, dtype=float32), dtype=float32))
-        b: float = max(0.087, sin(deg2rad(sun_height, dtype=float32), dtype=float32))
+        a: float = np_max(0, cos(deg2rad(incidence_angle, dtype=float32), dtype=float32))
+        b: float = np_max(0.087, sin(deg2rad(sun_height, dtype=float32), dtype=float32))
 
         diffuse_energy: float32 = float32(diffuse_radiation * (
                 0.5 * (
@@ -962,143 +937,143 @@ class RequiredHeatingPower:
 
         @dataclasses.dataclass
         class Wall1:
-            u_wert: float32 = float32(0.0)
-            area: float32 = float32(0.0)
-            temp_diff: float32 = float32(0.0)
-            interior_wall_temp: float32 = float32(0.0)
+            u_wert: float16 = float16(0.0)
+            area: float16 = float16(0.0)
+            temp_diff: float16 = float16(0.0)
+            interior_wall_temp: float16 = float16(0.0)
 
             @dataclasses.dataclass
             class Window1:
-                u_wert: float32 = float32(0.0)
-                area: float32 = float32(0.0)
+                u_wert: float16 = float16(0.0)
+                area: float16 = float16(0.0)
 
             @dataclasses.dataclass
             class Window2:
-                u_wert: float32 = float32(0.0)
-                area: float32 = float32(0.0)
+                u_wert: float16 = float16(0.0)
+                area: float16 = float16(0.0)
 
             @dataclasses.dataclass
             class Window3:
-                u_wert: float32 = float32(0.0)
-                area: float32 = float32(0.0)
+                u_wert: float16 = float16(0.0)
+                area: float16 = float16(0.0)
 
             @dataclasses.dataclass
             class Window4:
-                u_wert: float32 = float32(0.0)
-                area: float32 = float32(0.0)
+                u_wert: float16 = float16(0.0)
+                area: float16 = float16(0.0)
 
             @dataclasses.dataclass
             class Door:
-                u_wert: float32 = float32(0.0)
-                area: float32 = float32(0.0)
+                u_wert: float16 = float16(0.0)
+                area: float16 = float16(0.0)
 
         @dataclasses.dataclass
         class Wall2:
-            u_wert: float32 = float32(0.0)
-            area: float32 = float32(0.0)
-            temp_diff: float32 = float32(0.0)
-            interior_wall_temp: float32 = float32(0.0)
+            u_wert: float16 = float16(0.0)
+            area: float16 = float16(0.0)
+            temp_diff: float16 = float16(0.0)
+            interior_wall_temp: float16 = float16(0.0)
 
             @dataclasses.dataclass
             class Window1:
-                u_wert: float32 = float32(0.0)
-                area: float32 = float32(0.0)
+                u_wert: float16 = float16(0.0)
+                area: float16 = float16(0.0)
 
             @dataclasses.dataclass
             class Window2:
-                u_wert: float32 = float32(0.0)
-                area: float32 = float32(0.0)
+                u_wert: float16 = float16(0.0)
+                area: float16 = float16(0.0)
 
             @dataclasses.dataclass
             class Window3:
-                u_wert: float32 = float32(0.0)
-                area: float32 = float32(0.0)
+                u_wert: float16 = float16(0.0)
+                area: float16 = float16(0.0)
 
             @dataclasses.dataclass
             class Window4:
-                u_wert: float32 = float32(0.0)
-                area: float32 = float32(0.0)
+                u_wert: float16 = float16(0.0)
+                area: float16 = float16(0.0)
 
             @dataclasses.dataclass
             class Door:
-                u_wert: float32 = float32(0.0)
-                area: float32 = float32(0.0)
+                u_wert: float16 = float16(0.0)
+                area: float16 = float16(0.0)
 
         @dataclasses.dataclass
         class Wall3:
-            u_wert: float32 = float32(0.0)
-            area: float32 = float32(0.0)
-            temp_diff: float32 = float32(0.0)
-            interior_wall_temp: float32 = float32(0.0)
+            u_wert: float16 = float16(0.0)
+            area: float16 = float16(0.0)
+            temp_diff: float16 = float16(0.0)
+            interior_wall_temp: float16 = float16(0.0)
 
             @dataclasses.dataclass
             class Window1:
-                u_wert: float32 = float32(0.0)
-                area: float32 = float32(0.0)
+                u_wert: float16 = float16(0.0)
+                area: float16 = float16(0.0)
 
             @dataclasses.dataclass
             class Window2:
-                u_wert: float32 = float32(0.0)
-                area: float32 = float32(0.0)
+                u_wert: float16 = float16(0.0)
+                area: float16 = float16(0.0)
 
             @dataclasses.dataclass
             class Window3:
-                u_wert: float32 = float32(0.0)
-                area: float32 = float32(0.0)
+                u_wert: float16 = float16(0.0)
+                area: float16 = float16(0.0)
 
             @dataclasses.dataclass
             class Window4:
-                u_wert: float32 = float32(0.0)
-                area: float32 = float32(0.0)
+                u_wert: float16 = float16(0.0)
+                area: float16 = float16(0.0)
 
             @dataclasses.dataclass
             class Door:
-                u_wert: float32 = float32(0.0)
-                area: float32 = float32(0.0)
+                u_wert: float16 = float16(0.0)
+                area: float16 = float16(0.0)
 
         @dataclasses.dataclass
         class Wall4:
-            u_wert: float32 = float32(0.0)
-            area: float32 = float32(0.0)
-            temp_diff: float32 = float32(0.0)
-            interior_wall_temp: float32 = float32(0.0)
+            u_wert: float16 = float16(0.0)
+            area: float16 = float16(0.0)
+            temp_diff: float16 = float16(0.0)
+            interior_wall_temp: float16 = float16(0.0)
 
             @dataclasses.dataclass
             class Window1:
-                u_wert: float32 = float32(0.0)
-                area: float32 = float32(0.0)
+                u_wert: float16 = float16(0.0)
+                area: float16 = float16(0.0)
 
             @dataclasses.dataclass
             class Window2:
-                u_wert: float32 = float32(0.0)
-                area: float32 = float32(0.0)
+                u_wert: float16 = float16(0.0)
+                area: float16 = float16(0.0)
 
             @dataclasses.dataclass
             class Window3:
-                u_wert: float32 = float32(0.0)
-                area: float32 = float32(0.0)
+                u_wert: float16 = float16(0.0)
+                area: float16 = float16(0.0)
 
             @dataclasses.dataclass
             class Window4:
-                u_wert: float32 = float32(0.0)
-                area: float32 = float32(0.0)
+                u_wert: float16 = float16(0.0)
+                area: float16 = float16(0.0)
 
             @dataclasses.dataclass
             class Door:
-                u_wert: float32 = float32(0.0)
-                area: float32 = float32(0.0)
+                u_wert: float16 = float16(0.0)
+                area: float16 = float16(0.0)
 
         @dataclasses.dataclass
         class Floor:
-            u_wert: float32 = float32(0.0)
-            area: float32 = float32(0.0)
-            temp_diff: float32 = float32(0.0)
+            u_wert: float16 = float16(0.0)
+            area: float16 = float16(0.0)
+            temp_diff: float16 = float16(0.0)
 
         @dataclasses.dataclass
         class Ceiling:
-            u_wert: float32 = float32(0.0)
-            area: float32 = float32(0.0)
-            temp_diff: float32 = float32(0.0)
+            u_wert: float16 = float16(0.0)
+            area: float16 = float16(0.0)
+            temp_diff: float16 = float16(0.0)
 
     def __init__(self) -> None:
         """
@@ -1616,7 +1591,7 @@ class RequiredHeatingPower:
         thermal_mass_material_adjusted: float32 = float32(thermal_mass_material - learning_rate * error *
                                                           total_thermal_mass / c_material)
 
-        return float32(max(thermal_mass_material_adjusted, 0))
+        return float32(np_max(thermal_mass_material_adjusted, 0))
 
 
 class ShellyTRVControl:
