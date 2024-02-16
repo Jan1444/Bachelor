@@ -2,7 +2,7 @@
 reload = true
 
 [write_time]
-time = "16-02-2024 17:29:08"
+time = "16-02-2024 17:54:27"
 format = "%d-%m-%Y %H:%M:%S"
 
 [coordinates]
@@ -54,7 +54,7 @@ load_efficiency = 95.0
 consumer_price = 15.35
 
 [shelly]
-ip_address = "IP"
+ip_address = "192.168.178.95"
 
 [air_conditioner]
 air_conditioner_cop = 3.0

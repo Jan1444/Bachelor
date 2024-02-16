@@ -18,10 +18,7 @@ from module import download as download_module
 from numpy import array
 import numpy as np
 
-UPLOAD_FOLDER = 'uploads'
-
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.secret_key = os.urandom(24)
 
 scheduler = APScheduler()
@@ -59,7 +56,8 @@ def analytics():
     diff_power: list = []
 
     battery_load: list = []
-    min_capacity: np.float32 = np.float32(battery.get('capacity', 0) * 1_000 * (1 - battery.get('max_deload', 100) / 100))
+    min_capacity: np.float32 = np.float32(
+        battery.get('capacity', 0) * 1_000 * (1 - battery.get('max_deload', 100) / 100))
     charging_power: np.float32 = np.float32(battery.get('charging_power', 0) * 0.25)
     battery_capacity: np.float32 = np.float32(battery.get('capacity', 0) * 1_000)
     state_of_charge: np.float32 = np.float32(min_capacity / battery_capacity * 100)
@@ -143,10 +141,6 @@ def analytics():
 
     market_time = [time.get('start_timestamp') for time in market_class.data]
     market_price = [price.get('consumerprice') for price in market_class.data]
-
-    print(hp[1])
-    print(diff_power)
-    print(battery_load)
 
     pv_power_data = [[time, value] for time, value in zip(weather_time, array(pv_data_data, dtype=float))]
 

@@ -588,7 +588,6 @@ def heating_power(config_data: dict, weather: dict) -> (list, list, list):
             tme_data.append(f"{date} {tme}")
 
     # debug.printer(diff_data, hp_data)
-    print(hp_data)
     return tme_data, hp_data, cop_temp
 
 
