@@ -6,7 +6,8 @@ import os
 from functools import lru_cache, wraps
 
 import matplotlib.pyplot as plt
-from numpy import float32, linspace
+import numpy as np
+from numpy import float32, float16, linspace, round as np_round
 from pandas import ExcelFile
 
 import requests
@@ -37,9 +38,11 @@ def freeze_all(func):
 def precision(func, precision_: int = 5):
     @wraps(func)
     def wrapped(*args, **kwargs):
-        precision_args = (round(arg, precision_) if isinstance(arg, (float, float32)) else arg for arg in args)
+        precision_args = (np_round(arg, precision_) if isinstance(arg, (float, float32))
+                          else arg for arg in args)
 
-        precision_kwargs = {k: (round(v, precision_) if isinstance(v, (float, float32)) else v) for k, v in kwargs.items()}
+        precision_kwargs = {k: (np_round(v, precision_) if isinstance(v, (float, float32)) else v)
+                            for k, v in kwargs.items()}
 
         return func(*precision_args, **precision_kwargs)
     return wrapped
@@ -149,20 +152,6 @@ def calc_energy(power: list, interval: float = 0.25, kwh: bool = True, round_: N
     return float(total_energy)
 
 
-def date_time_download() -> dict:
-    """
-
-    :return:
-    """
-    date_today = datetime.datetime.now().strftime("%Y-%m-%d")
-    date_and_time = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M")
-    data: dict = {
-        "date": date_today,
-        "datetime": date_and_time
-    }
-    return data
-
-
 def get_weather_data(config_data: dict, start: str | None = None, end: str | None = None):
     coord = config_data["coordinates"]
     w = classes.Weather(coord["latitude"], coord["longitude"], start, end)
@@ -190,14 +179,13 @@ def init_pv(config_data: dict, number: int = 1) -> classes.PVProfit:
 
 
 def get_pv_data(pv_class: classes.PVProfit, temp: float, radiation: float, azimuth: float, elevation: float,
-                dni: bool = False) -> (
-        float, float):
-    incidence_angle = pv_class.calc_incidence_angle(elevation, azimuth)
+                dni: bool = False) -> float32:
+    incidence_angle: float32 = pv_class.calc_incidence_angle(elevation, azimuth)
     if dni:
-        power: float = pv_class.calc_power_with_dni(radiation, incidence_angle, temp)
+        power: float32 = pv_class.calc_power_with_dni(radiation, incidence_angle, temp)
         return power
-    eff: float = pv_class.calc_temp_dependency(temp, radiation)
-    power: float = pv_class.calc_power(radiation, incidence_angle, elevation, eff)
+    eff: float32 = pv_class.calc_temp_dependency(temp, radiation)
+    power: float32 = pv_class.calc_power(radiation, incidence_angle, elevation, eff)
     return power
 
 
@@ -207,9 +195,9 @@ def init_market(config_data: dict, start_time: int | None = None, end_time: int 
     return m
 
 
-def string_time_to_float(tme: str) -> float:
+def string_time_to_float(tme: str) -> float16:
     tme_list: list = tme.split(":")
-    return int(tme_list[0]) + float(tme_list[1]) / 100
+    return float16(np.uint8(tme_list[0]) + float16(tme_list[1]) / 100)
 
 
 def save_mor_ev_data(config_data: dict) -> dict:
@@ -425,78 +413,82 @@ def data_analyzer(config_data: dict, path: None | str = None):
             max_energy, time_max_energy, average_energy)
 
 
-def heating_power(config_data: dict, weather: dict):
-    def _calc_area(data_house: dict, prefix: str, prefix2: str | None = None):
+def heating_power(config_data: dict, weather: dict) -> (list, list, list):
+    def _calc_area(data_house: dict, prefix: str, prefix2: str | None = None) -> float16:
         try:
             if prefix2 is None:
                 prefix2 = prefix
-            area = data_house.get(f"{prefix}_width", 0) * data_house.get(f"{prefix2}_height", 0)
+            area = float16(data_house.get(f"{prefix}_width", 0) * data_house.get(f"{prefix2}_height", 0))
             return area
 
         except AttributeError as err:
             print(prefix, prefix2)
             print(f"Attribute Missing: {err}")
-            return 0
+            return float16(0)
 
-    def _get_u_value(data_house: dict, u_value: dict, prefix: str):
+    def _get_u_value(data_house: dict, u_value: dict, prefix: str) -> float16:
         try:
             if "wall" in prefix:
 
                 wall_: str = data_house.get(prefix, "")
                 wall_type: str = data_house.get(f"construction_{prefix}", "")
-                year: int = data_house.get(f"house_year", 0) if data_house.get(f"house_year") < 1995 else 1995
+                year: np.uint8 = np.uint8(data_house.get(f"house_year", 0)
+                                          if data_house.get(f"house_year") < 1995 else 1995)
 
                 if wall_ == "ENEV Außenwand" or wall_ == "ENEV Innenwand":
-                    return u_value.get("Wand").get(wall_).get(int(wall_type))
+                    return float16(u_value.get("Wand").get(wall_).get(np.uint8(wall_type)))
                 elif wall_ == "u_value":
-                    return data_house.get(f"{prefix}_u_value", 0)
+                    return float16(data_house.get(f"{prefix}_u_value", 0))
                 else:
-                    return u_value.get("Wand").get(wall_).get(wall_type).get(year)
+                    return float16(u_value.get("Wand").get(wall_).get(wall_type).get(year))
 
             elif "window" in prefix:
                 window_: str = data_house.get(f"{prefix}_frame", "")
                 glazing: str = data_house.get(f"{prefix}_glazing", "")
-                window_year: int = data_house.get(f"{prefix}_year", 0) if data_house.get(
-                    f"{prefix}_year") < 1995 else 1995
+                window_year: np.uint8 = np.uint8(data_house.get(f"{prefix}_year", 0) if data_house.get(
+                    f"{prefix}_year") < 1995 else 1995)
 
                 if window_ == "ENEV":
-                    return u_value.get("Fenster").get(window_).get(int(glazing))
+                    return float16(u_value.get("Fenster").get(window_).get(np.uint8(glazing)))
                 elif window_ == "u_value":
-                    return data_house.get(f"{prefix}_u_value", 0)
+                    return float16(data_house.get(f"{prefix}_u_value", 0))
                 else:
                     return u_value.get("Fenster").get(window_).get(glazing).get(window_year)
 
             elif "door" in prefix:
-                year: int = data_house.get(f"house_year", 0) if data_house.get(f"house_year") < 1995 else 1995
-                return u_value.get("Türen").get("alle").get(year)
+                year: np.uint8 = np.uint8(data_house.get(f"house_year", 0)
+                                          if data_house.get(f"house_year") < 1995 else 1995)
+                return float16(u_value.get("Türen").get("alle").get(year))
 
             elif "floor" in prefix:
                 floor_: str = data_house.get(f"floor", "")
                 floor_type: str = data_house.get(f"construction_floor", "")
-                year: int = data_house.get(f"house_year", 0) if data_house.get(f"house_year") < 1995 else 1995
+                year: np.uint8 = np.uint8(data_house.get(f"house_year", 0)
+                                          if data_house.get(f"house_year") < 1995 else 1995)
                 if floor_ == "ENEV unbeheiztes Geschoss" or floor_ == "ENEV beheiztes Geschoss":
-                    u = u_value.get("Boden").get(floor_).get(int(floor_type))
+                    u: float16 = float16(u_value.get("Boden").get(floor_).get(np.uint8(floor_type)))
                     return u
                 elif floor_ == "u_value":
-                    return data_house.get(f"{prefix}_u_value", 0)
+                    return float16(data_house.get(f"{prefix}_u_value", 0))
                 else:
-                    return u_value.get("Boden").get(floor_).get(floor_type).get(year)
+                    return float16(u_value.get("Boden").get(floor_).get(floor_type).get(year))
 
             elif "ceiling" in prefix:
                 ceiling_: str = data_house.get(f"ceiling", "")
                 ceiling_type: str = data_house.get(f"construction_ceiling", "")
-                year: int = data_house.get(f"house_year", 0) if data_house.get(f"house_year") < 1995 else 1995
+                year: np.uint8 = np.uint8(data_house.get(f"house_year", 0)
+                                          if data_house.get(f"house_year") < 1995 else 1995)
                 if (ceiling_ == "ENEV unbeheiztes Geschoss" or ceiling_ == "ENEV beheiztes Geschoss" or
                         ceiling_ == "ENEV Dach"):
-                    return u_value.get("Decke").get(ceiling_).get(int(ceiling_type))
+                    return float16(u_value.get("Decke").get(ceiling_).get(np.uint8(ceiling_type)))
                 elif ceiling_ == "u_value":
-                    return data_house.get(f"{prefix}_u_value", 0)
+                    return float16(data_house.get(f"{prefix}_u_value", 0))
                 else:
-                    return u_value.get("Decke").get(ceiling_).get(ceiling_type).get(year)
+                    return float16(u_value.get("Decke").get(ceiling_).get(ceiling_type).get(year))
         except AttributeError as err:
             print(prefix)
             print(f"Attribute Missing: {err}")
-            return 0
+            return float16(0.0)
 
     def _interior_wall(data_house: dict, prefix: str):
         try:
@@ -533,7 +525,7 @@ def heating_power(config_data: dict, weather: dict):
     room.volume = data.get("wall1_width", 0) * data.get("wall1_height", 0) * data.get("wall2_width", 0)
 
     for wall_number in range(1, 5):
-        window_number: int = 1
+        window_number: np.uint8 = np.uint8(1)
         wall = getattr(room, f"Wall{wall_number}")
         window = getattr(wall, f"Window{window_number}")
         door = getattr(wall, "Door")
@@ -555,8 +547,7 @@ def heating_power(config_data: dict, weather: dict):
 
     indoor_temp: float = (trv_data.get("tmp").get("value")) if trv_data is not None else 22
     """
-    indoor_temp: float = 22
-    cop: float = config_data.get("air_conditioner", {"air_conditioner_cop": 0}).get("air_conditioner_cop")
+    indoor_temp: float16 = float16(22)
 
     hp_data: list = []
     diff_data: list = []
@@ -580,23 +571,23 @@ def heating_power(config_data: dict, weather: dict):
 
             room.Wall1.temp_diff = diff_temp
             if room.Wall1.interior_wall_temp:
-                room.Wall1.temp_diff = abs(room.Wall1.interior_wall_temp - indoor_temp)
+                room.Wall1.temp_diff = float16(np.absolute(room.Wall1.interior_wall_temp - indoor_temp))
 
             room.Wall2.temp_diff = diff_temp
             if room.Wall2.interior_wall_temp:
-                room.Wall2.temp_diff = abs(room.Wall2.interior_wall_temp - indoor_temp)
+                room.Wall2.temp_diff = float16(np.absolute(room.Wall2.interior_wall_temp - indoor_temp))
 
             room.Wall3.temp_diff = diff_temp
             if room.Wall3.interior_wall_temp:
-                room.Wall3.temp_diff = abs(room.Wall3.interior_wall_temp - indoor_temp)
+                room.Wall3.temp_diff = float16(np.absolute(room.Wall3.interior_wall_temp - indoor_temp))
 
             room.Wall4.temp_diff = diff_temp
             if room.Wall4.interior_wall_temp:
-                room.Wall4.temp_diff = abs(room.Wall4.interior_wall_temp - indoor_temp)
+                room.Wall4.temp_diff = float16(np.absolute(room.Wall4.interior_wall_temp - indoor_temp))
 
             d = hp.calc_heating_power(room)
 
-            cop = ((1/14) * outdoor_temp + 2.5) if outdoor_temp > -20 else 1
+            cop: float16 = float16(((1/14) * outdoor_temp + 2.5) if outdoor_temp > -20 else 1)
 
             cop_temp.append(cop)
             diff_data.append(diff_temp)
