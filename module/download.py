@@ -33,6 +33,20 @@ def freeze_all(func):
     return wrapped
 
 
+def date_time_download() -> dict:
+    """
+
+    :return:
+    """
+    date_today = datetime.datetime.now().strftime("%Y-%m-%d")
+    date_and_time = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M")
+    data: dict = {
+        "date": date_today,
+        "datetime": date_and_time
+    }
+    return data
+
+
 @freeze_all
 @lru_cache(maxsize=None)
 def generate_weather_data(request_data: dict, config_data: dict) -> list[str]:
