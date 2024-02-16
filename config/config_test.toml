@@ -2,7 +2,7 @@
 reload = true
 
 [write_time]
-time = "15-02-2024 18:08:14"
+time = "16-02-2024 17:29:08"
 format = "%d-%m-%Y %H:%M:%S"
 
 [coordinates]
@@ -17,7 +17,7 @@ module_efficiency1 = 20.0
 exposure_angle1 = 0.0
 temperature_coefficient1 = -0.35
 nominal_temperature1 = 25.0
-mounting_type1 = 0.0
+mounting_type1 = 1.0
 tilt_angle2 = 0.0
 area2 = 0.0
 module_efficiency2 = 0.0
