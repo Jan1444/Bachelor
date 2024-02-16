@@ -6,8 +6,7 @@ import os
 from functools import lru_cache, wraps
 
 import matplotlib.pyplot as plt
-import numpy as np
-from numpy import float32, float16, linspace, round as np_round
+from numpy import float32, float16, uint16, linspace, absolute, round as np_round
 from pandas import ExcelFile
 
 import requests
@@ -195,7 +194,7 @@ def init_market(config_data: dict, start_time: int | None = None, end_time: int 
 
 def string_time_to_float(tme: str) -> float16:
     tme_list: list = tme.split(":")
-    return float16(np.uint16(tme_list[0]) + float16(tme_list[1]) / 100)
+    return float16(uint16(tme_list[0]) + float16(tme_list[1]) / 100)
 
 
 def save_mor_ev_data(config_data: dict) -> dict:
@@ -430,11 +429,11 @@ def heating_power(config_data: dict, weather: dict) -> (list, list, list):
 
                 wall_: str = data_house.get(prefix, "")
                 wall_type: str = data_house.get(f"construction_{prefix}", "")
-                year: np.uint16 = np.uint16(data_house.get(f"house_year", 0)
+                year: uint16 = uint16(data_house.get(f"house_year", 0)
                                             if data_house.get(f"house_year") < 1995 else 1995)
 
                 if wall_ == "ENEV Außenwand" or wall_ == "ENEV Innenwand":
-                    return float16(u_value.get("Wand").get(wall_).get(np.uint16(wall_type)))
+                    return float16(u_value.get("Wand").get(wall_).get(uint16(wall_type)))
                 elif wall_ == "u_value":
                     return float16(data_house.get(f"{prefix}_u_value", 0))
                 else:
@@ -443,28 +442,28 @@ def heating_power(config_data: dict, weather: dict) -> (list, list, list):
             elif "window" in prefix:
                 window_: str = data_house.get(f"{prefix}_frame", "")
                 glazing: str = data_house.get(f"{prefix}_glazing", "")
-                window_year: np.uint16 = np.uint16(data_house.get(f"{prefix}_year", 0) if data_house.get(
+                window_year: uint16 = uint16(data_house.get(f"{prefix}_year", 0) if data_house.get(
                     f"{prefix}_year") < 1995 else 1995)
 
                 if window_ == "ENEV":
-                    return float16(u_value.get("Fenster").get(window_).get(np.uint16(glazing)))
+                    return float16(u_value.get("Fenster").get(window_).get(uint16(glazing)))
                 elif window_ == "u_value":
                     return float16(data_house.get(f"{prefix}_u_value", 0))
                 else:
                     return u_value.get("Fenster").get(window_).get(glazing).get(window_year)
 
             elif "door" in prefix:
-                year: np.uint16 = np.uint16(data_house.get(f"house_year", 0)
+                year: uint16 = uint16(data_house.get(f"house_year", 0)
                                             if data_house.get(f"house_year") < 1995 else 1995)
                 return float16(u_value.get("Türen").get("alle").get(year, 0))
 
             elif "floor" in prefix:
                 floor_: str = data_house.get(f"floor", "")
                 floor_type: str = data_house.get(f"construction_floor", "")
-                year: np.uint16 = np.uint16(data_house.get(f"house_year", 0)
+                year: uint16 = uint16(data_house.get(f"house_year", 0)
                                             if data_house.get(f"house_year") < 1995 else 1995)
                 if floor_ == "ENEV unbeheiztes Geschoss" or floor_ == "ENEV beheiztes Geschoss":
-                    u: float16 = float16(u_value.get("Boden").get(floor_).get(np.uint16(floor_type)))
+                    u: float16 = float16(u_value.get("Boden").get(floor_).get(uint16(floor_type)))
                     return u
                 elif floor_ == "u_value":
                     return float16(data_house.get(f"{prefix}_u_value", 0))
@@ -474,11 +473,11 @@ def heating_power(config_data: dict, weather: dict) -> (list, list, list):
             elif "ceiling" in prefix:
                 ceiling_: str = data_house.get(f"ceiling", "")
                 ceiling_type: str = data_house.get(f"construction_ceiling", "")
-                year: np.uint16 = np.uint16(data_house.get(f"house_year", 0)
+                year: uint16 = uint16(data_house.get(f"house_year", 0)
                                             if data_house.get(f"house_year") < 1995 else 1995)
                 if (ceiling_ == "ENEV unbeheiztes Geschoss" or ceiling_ == "ENEV beheiztes Geschoss" or
                         ceiling_ == "ENEV Dach"):
-                    return float16(u_value.get("Decke").get(ceiling_).get(np.uint16(ceiling_type)))
+                    return float16(u_value.get("Decke").get(ceiling_).get(uint16(ceiling_type)))
                 elif ceiling_ == "u_value":
                     return float16(data_house.get(f"{prefix}_u_value", 0))
                 else:
@@ -521,7 +520,7 @@ def heating_power(config_data: dict, weather: dict) -> (list, list, list):
     room.volume = data.get("wall1_width", 0) * data.get("wall1_height", 0) * data.get("wall2_width", 0)
 
     for wall_number in range(1, 5):
-        window_number: np.uint16 = np.uint16(1)
+        window_number: uint16 = uint16(1)
         wall = getattr(room, f"Wall{wall_number}")
         window = getattr(wall, f"Window{window_number}")
         door = getattr(wall, "Door")
@@ -564,19 +563,19 @@ def heating_power(config_data: dict, weather: dict) -> (list, list, list):
 
             room.Wall1.temp_diff = diff_temp
             if room.Wall1.interior_wall_temp:
-                room.Wall1.temp_diff = float16(np.absolute(room.Wall1.interior_wall_temp - indoor_temp))
+                room.Wall1.temp_diff = float16(absolute(room.Wall1.interior_wall_temp - indoor_temp))
 
             room.Wall2.temp_diff = diff_temp
             if room.Wall2.interior_wall_temp:
-                room.Wall2.temp_diff = float16(np.absolute(room.Wall2.interior_wall_temp - indoor_temp))
+                room.Wall2.temp_diff = float16(absolute(room.Wall2.interior_wall_temp - indoor_temp))
 
             room.Wall3.temp_diff = diff_temp
             if room.Wall3.interior_wall_temp:
-                room.Wall3.temp_diff = float16(np.absolute(room.Wall3.interior_wall_temp - indoor_temp))
+                room.Wall3.temp_diff = float16(absolute(room.Wall3.interior_wall_temp - indoor_temp))
 
             room.Wall4.temp_diff = diff_temp
             if room.Wall4.interior_wall_temp:
-                room.Wall4.temp_diff = float16(np.absolute(room.Wall4.interior_wall_temp - indoor_temp))
+                room.Wall4.temp_diff = float16(absolute(room.Wall4.interior_wall_temp - indoor_temp))
 
             d = hp.calc_heating_power(room)
 

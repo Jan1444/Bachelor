@@ -15,8 +15,7 @@ from module import functions as fc
 from module import set_vals
 from module import download as download_module
 
-from numpy import array
-import numpy as np
+from numpy import float32, float16, uint16, array
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
@@ -56,13 +55,13 @@ def analytics():
     diff_power: list = []
 
     battery_load: list = []
-    min_capacity: np.float32 = np.float32(
+    min_capacity: float32 = float32(
         battery.get('capacity', 0) * 1_000 * (1 - battery.get('max_deload', 100) / 100))
-    charging_power: np.float32 = np.float32(battery.get('charging_power', 0) * 0.25)
-    battery_capacity: np.float32 = np.float32(battery.get('capacity', 0) * 1_000)
-    state_of_charge: np.float32 = np.float32(min_capacity / battery_capacity * 100)
-    min_state_of_charge: np.float32 = np.float32(min_capacity / battery_capacity * 100)
-    load_efficiency: np.float32 = np.float32(battery.get('load_efficiency', 0) / 100)
+    charging_power: float32 = float32(battery.get('charging_power', 0) * 0.25)
+    battery_capacity: float32 = float32(battery.get('capacity', 0) * 1_000)
+    state_of_charge: float32 = float32(min_capacity / battery_capacity * 100)
+    min_state_of_charge: float32 = float32(min_capacity / battery_capacity * 100)
+    load_efficiency: float32 = float32(battery.get('load_efficiency', 0) / 100)
 
     time_now = datetime.datetime.now()
 
@@ -82,7 +81,7 @@ def analytics():
     load_profile_data: dict = fc.load_load_profile(f'{consts.LOAD_PROFILE_FOLDER}/{load_profile.get("name")}')
 
     hp = fc.heating_power(config_data, weather)
-    indx: np.uint8 = np.uint16(0)
+    indx: uint16 = uint16(0)
 
     for date, weather_today in weather.items():
         weather_today.pop("daily")
@@ -90,13 +89,13 @@ def analytics():
         curr_load: dict = load_profile_data.get(date_load, "")
 
         for (tme_pv, data), (tme_load, load_data) in zip(weather_today.items(), curr_load.items()):
-            time_float: np.float16 = fc.string_time_to_float(tme_pv)
-            temp: np.float16 = np.float16(data.get("temp", 0))
-            radiation_ghi: np.float16 = np.float16(data.get("ghi_radiation", 0))
+            time_float: float16 = fc.string_time_to_float(tme_pv)
+            temp: float16 = float16(data.get("temp", 0))
+            radiation_ghi: float16 = float16(data.get("ghi_radiation", 0))
 
             azimuth, elevation = fc.get_sun_data(sun_class, time_float)
 
-            power_ghi: np.float32 = fc.get_pv_data(pv_class, temp, radiation_ghi, azimuth, elevation)
+            power_ghi: float32 = fc.get_pv_data(pv_class, temp, radiation_ghi, azimuth, elevation)
 
             if config_data['pv']['alignment'] >= 2:
                 power_ghi += fc.get_pv_data(pv_class2, temp, radiation_ghi, azimuth, elevation)
@@ -114,12 +113,12 @@ def analytics():
             if tme_pv != tme_load:
                 continue
 
-            heating_power: np.float16 = hp[1][indx]
-            cop: np.float16 = hp[2][indx]
+            heating_power: float16 = hp[1][indx]
+            cop: float16 = hp[2][indx]
 
-            load_diff: np.float16 = power_ghi - load_data  # Strom überschuss
+            load_diff: float16 = power_ghi - load_data  # Strom überschuss
 
-            diff_energy: np.float16 = load_diff - (heating_power / cop)
+            diff_energy: float16 = load_diff - (heating_power / cop)
 
             energy: float16 = diff_energy * 0.25
 
