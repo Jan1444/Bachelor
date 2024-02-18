@@ -149,9 +149,9 @@ def calc_energy(power: list, interval: float = 0.25, kwh: bool = True, round_: N
     return float(total_energy)
 
 
-def get_weather_data(config_data: dict, start: str | None = None, end: str | None = None):
+def get_weather_data(config_data: dict, start: str | None = None, end: str | None = None, days: int | None = None):
     coord = config_data["coordinates"]
-    w = classes.Weather(coord["latitude"], coord["longitude"], start, end)
+    w = classes.Weather(coord["latitude"], coord["longitude"], start, end, days)
     return w.data
 
 
@@ -204,7 +204,6 @@ def save_mor_ev_data(config_data: dict) -> dict:
     weather_data: dict = get_weather_data(config_data)
     today_data = list(weather_data.keys())[0]
     weather_data_today = weather_data[today_data]
-    weather_data_today.pop("daily")
 
     sun_class = init_sun(config_data)
     pv_class = init_pv(config_data)
@@ -551,8 +550,6 @@ def heating_power(config_data: dict, weather: dict) -> (list, list, list):
     old_temp: float16 = float16(16)
     for date, weather_today in weather.items():
         for tme, data in weather_today.items():
-            if tme == 'daily':
-                continue
 
             outdoor_temp: float16 = float16(data.get("temp", old_temp))
             old_temp = outdoor_temp

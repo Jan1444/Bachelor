@@ -139,7 +139,7 @@ class Weather:
     # hourly=temperature_2m,cloudcover
 
     def __init__(self, latitude: float, longitude: float, start_date: str | None = None, end_date: str | None = None,
-                 ) -> None:
+                 days: int | None = None) -> None:
         """
         Initialize the class
         :param latitude:
@@ -153,7 +153,7 @@ class Weather:
         self.session = requests_cache.CachedSession(r'cache/weatherdata.cache',
                                                     expire_after=datetime.timedelta(hours=self._expire_time))
 
-        weather_data: dict = self.get_weather(start_date, end_date)
+        weather_data: dict = self.get_weather(start_date, end_date, days)
         self.data: dict = {}
         try:
             self._create_dict(weather_data)
@@ -188,12 +188,12 @@ class Weather:
 
         for day in days:
             self.data[str(day)] = {}
-            self.data[str(day)]["daily"] = {
+            '''self.data[str(day)]["daily"] = {
                 "temp_max": "",
                 "temp_min": "",
                 "sunrise": "",
                 "sunset": ""
-            }
+            }'''
             for t in times:
                 self.data[day][t] = {
                     "temp": "",
@@ -235,15 +235,15 @@ class Weather:
 
         date = datetime.datetime.strptime(min15["time"][0], '%Y-%m-%dT%H:%M').strftime('%d-%m-%Y')
 
-        for indx, d in enumerate(unsorted_data["daily"]["time"]):
+        '''for indx, d in enumerate(unsorted_data["daily"]["time"]):
             self.data[date]["daily"]["temp_max"] = daily["temperature_2m_max"][indx]
             self.data[date]["daily"]["temp_min"] = daily["temperature_2m_min"][indx]
             self.data[date]["daily"]["sunrise"] = daily["sunrise"][indx][11:]
             self.data[date]["daily"]["sunset"] = daily["sunset"][indx][11:]
             date = (datetime.datetime.strptime(date, '%d-%m-%Y') +
-                    datetime.timedelta(days=1)).strftime('%d-%m-%Y')
+                    datetime.timedelta(days=1)).strftime('%d-%m-%Y')'''
 
-    def get_weather(self, start_date: str | None, end_date: str | None) -> dict:
+    def get_weather(self, start_date: str | None, end_date: str | None, days: int | None = None) -> dict:
         """
         Gets the weather for the given latitude and longitude
         :return: A dict with the following variables: direct radiation, temperatur, cloudcover, temperature max,
@@ -252,11 +252,20 @@ class Weather:
         if start_date is None or end_date is None:
             url: str = (f"https://api.open-meteo.com/v1/forecast?"
                         f"latitude={self.latitude}&longitude={self.longitude}&"
-                        "minutely_15=direct_normal_irradiance,direct_radiation,shortwave_radiation"
-                        "&hourly=temperature_2m,cloudcover&"
-                        "models=best_match&"
-                        "daily=temperature_2m_max,temperature_2m_min,sunrise,sunset&"
-                        "timezone=Europe%2FBerlin&forecast_days=3")
+                        f"minutely_15=direct_normal_irradiance,direct_radiation,shortwave_radiation"
+                        f"&hourly=temperature_2m,cloudcover&"
+                        f"models=best_match&"
+                        f"daily=temperature_2m_max,temperature_2m_min,sunrise,sunset&"
+                        f"timezone=Europe%2FBerlin&forecast_days=3")
+
+        elif days == 1 or days == 3 or days == 7 or days == 14 or days == 16:
+            url: str = (f"https://api.open-meteo.com/v1/forecast?"
+                        f"latitude={self.latitude}&longitude={self.longitude}&"
+                        f"minutely_15=direct_normal_irradiance,direct_radiation,shortwave_radiation"
+                        f"&hourly=temperature_2m,cloudcover&"
+                        f"models=best_match&"
+                        f"daily=temperature_2m_max,temperature_2m_min,sunrise,sunset&"
+                        f"timezone=Europe%2FBerlin&forecast_days={days}")
 
         else:
             start: datetime = datetime.datetime.strptime(start_date, "%d-%m-%Y")

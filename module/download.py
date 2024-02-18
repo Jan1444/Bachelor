@@ -67,8 +67,6 @@ def generate_weather_data(request_data: dict, config_data: dict) -> list[str]:
     for date, day in weather_date.items():
         sun_class = functions.init_sun(config_data, date)
 
-        day.pop("daily")
-
         power_data[date]: dict = {}
         energy_data_list: list[float] = []
 
