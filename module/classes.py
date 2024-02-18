@@ -37,7 +37,8 @@ class MarketData:
         :param end_time: End time, start time must be given.
         """
         time_start: str = "00:00:00,00"
-        self.session = requests_cache.CachedSession(r'cache/marketdata.cache', expire_after=datetime.timedelta(hours=1))
+        self.session = requests_cache.CachedSession(r'./module/cache/marketdata.cache',
+                                                    expire_after=datetime.timedelta(hours=1))
 
         if start_time is None and end_time is None:
             date_today: str = datetime.datetime.today().strftime("%Y-%m-%d")
@@ -150,7 +151,7 @@ class Weather:
         self.latitude: float = latitude
         self.longitude: float = longitude
         self._expire_time = 1
-        self.session = requests_cache.CachedSession(r'cache/weatherdata.cache',
+        self.session = requests_cache.CachedSession(r'./module/cache/weatherdata.cache',
                                                     expire_after=datetime.timedelta(hours=self._expire_time))
 
         weather_data: dict = self.get_weather(start_date, end_date, days)
@@ -210,7 +211,7 @@ class Weather:
         """
         min15 = unsorted_data["minutely_15"]
         hour = unsorted_data["hourly"]
-        daily = unsorted_data["daily"]
+        #daily = unsorted_data["daily"]
 
         date = datetime.datetime.strptime(min15["time"][0], '%Y-%m-%dT%H:%M').strftime('%d-%m-%Y')
         for indx, tme in enumerate(min15["time"]):
@@ -233,7 +234,7 @@ class Weather:
                 date = (datetime.datetime.strptime(date, '%d-%m-%Y') +
                         datetime.timedelta(days=1)).strftime('%d-%m-%Y')
 
-        date = datetime.datetime.strptime(min15["time"][0], '%Y-%m-%dT%H:%M').strftime('%d-%m-%Y')
+        #date = datetime.datetime.strptime(min15["time"][0], '%Y-%m-%dT%H:%M').strftime('%d-%m-%Y')
 
         '''for indx, d in enumerate(unsorted_data["daily"]["time"]):
             self.data[date]["daily"]["temp_max"] = daily["temperature_2m_max"][indx]

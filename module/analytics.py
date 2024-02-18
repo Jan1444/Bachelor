@@ -106,7 +106,7 @@ def analyze_data(config_data: dict, weather_data: dict):
     return _analyze_data(config_data, weather_data)
 
 
-@lru_cache(maxsize=1_000)
+@lru_cache(maxsize=1)
 def _analyze_data(config_data: dict, weather_data: dict):
     converter = config_data["converter"]
     load_profile = config_data["load_profile"]
