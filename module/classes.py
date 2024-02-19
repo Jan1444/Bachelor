@@ -244,22 +244,13 @@ class Weather:
             date = (datetime.datetime.strptime(date, '%d-%m-%Y') +
                     datetime.timedelta(days=1)).strftime('%d-%m-%Y')'''
 
-    def get_weather(self, start_date: str | None, end_date: str | None, days: int | None = None) -> dict:
+    def get_weather(self, start_date: str | None, end_date: str | None, days: int = 3) -> dict:
         """
         Gets the weather for the given latitude and longitude
         :return: A dict with the following variables: direct radiation, temperatur, cloudcover, temperature max,
                  temperatur min, sunrise, sunset.
         """
-        if start_date is None or end_date is None:
-            url: str = (f"https://api.open-meteo.com/v1/forecast?"
-                        f"latitude={self.latitude}&longitude={self.longitude}&"
-                        f"minutely_15=direct_normal_irradiance,direct_radiation,shortwave_radiation"
-                        f"&hourly=temperature_2m,cloudcover&"
-                        f"models=best_match&"
-                        f"daily=temperature_2m_max,temperature_2m_min,sunrise,sunset&"
-                        f"timezone=Europe%2FBerlin&forecast_days=3")
-
-        elif days == 1 or days == 3 or days == 7 or days == 14 or days == 16:
+        if (start_date is None or end_date is None) and days is not None:
             url: str = (f"https://api.open-meteo.com/v1/forecast?"
                         f"latitude={self.latitude}&longitude={self.longitude}&"
                         f"minutely_15=direct_normal_irradiance,direct_radiation,shortwave_radiation"
