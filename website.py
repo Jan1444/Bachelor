@@ -309,16 +309,34 @@ def compare_data():
     err = fc.comp_mor_ev_data(energy_data_morning, energy_data_evening)
     print(err)
 
-    if err.get("average_dni_difference", 21) > 20 or err.get("energy_difference", 1) > (200 / 1_000):
+    if err.get("average_dni_difference", 21) > 20 or err.get("energy_difference", 1) > (20 / 100):
         print("Big error")
 
 
-'''@scheduler.task("interval", id="steering", seconds=900)
+@scheduler.task("interval", id="steering", seconds=3601)
 def steering():
+    config_data: dict = config_manager.config_data
+
+    weather_data = fc.get_weather_data(config_data, days=1)
+
+    energy_today, pv_power_data, market_data, heating_power_data, difference_power, battery_power = (
+        analytics_module.analyze_data(config_data, weather_data))
+
+    heating_cost = []
+    i = 0
+    for _, dp in difference_power:
+        heating_cost.append(abs((dp * 0.25 / 1000 * market_data[i][1]) if dp < 0 else 0))
+
+        if i % 4 and i != 0:
+            i += 1
+
+    d_cost = sum(heating_cost * 0.25 for heating_cost in heating_cost)
+
+    print(d_cost)
+
     print(datetime.datetime.now())
     print("steering")
 
-'''
 
 if __name__ == '__main__':
     scheduler.init_app(app)
