@@ -580,20 +580,17 @@ class CalcSunPos:
         :param longitude:longitude
         :param date: Format %d-%m-%Y
         """
-        self.time_last_calc: float32 | None = None
-        self.hour_angle: float32 | None = None
         self.real_local_time: float32 | None = None
-        self.mid_local_time: float32 | None = None
         self.latitude: float32 = deg2rad(latitude, dtype=float32)
         self.longitude: float32 = deg2rad(longitude, dtype=float32)
         if date is None:
-            self.current_date: datetime.datetime.time = datetime.datetime.now()
+            current_date: datetime.datetime.time = datetime.datetime.now()
         else:
-            self.current_date: datetime.datetime.time = datetime.datetime.strptime(date, "%d-%m-%Y")
-        self.left_days: int = (self.current_date - datetime.datetime(self.current_date.year, 1, 1)).days
-        self.days_per_year: int = (datetime.datetime(self.current_date.year, 12, 31) -
-                                   datetime.datetime(self.current_date.year, 1, 1)).days + 1
-        self.day_angle: float = deg2rad(360.0, dtype=float32) * self.left_days / self.days_per_year
+            current_date: datetime.datetime.time = datetime.datetime.strptime(date, "%d-%m-%Y")
+        left_days: int = (current_date - datetime.datetime(current_date.year, 1, 1)).days
+        days_per_year: int = (datetime.datetime(current_date.year, 12, 31) -
+                                   datetime.datetime(current_date.year, 1, 1)).days + 1
+        self.day_angle: float = deg2rad(360.0, dtype=float32) * left_days / days_per_year
 
         self.sun_declination: float32 = (
                 deg2rad(0.3948, dtype=float32) - deg2rad(23.2559, dtype=float32) *
@@ -650,11 +647,11 @@ class CalcSunPos:
         :param t: Time as a float.
         :return: The solar elevation in degrees.
         """
-        self.time_last_calc: float16 = float16((uint16(t)) + ((t - uint16(t)) * 100 / 60) - 0.25)
-        self.mid_local_time: float32 = self.time_last_calc + self.longitude * deg2rad(4, dtype=float32)
-        self.real_local_time: float32 = self.mid_local_time + self.time_equation
-        self.hour_angle: float32 = (12.00 - self.real_local_time) * deg2rad(15, dtype=float32)
-        sun_height: float32 = arcsin(cos(self.hour_angle, dtype=float32) *
+        time_last_calc: float16 = float16((uint16(t)) + ((t - uint16(t)) * 100 / 60) - 0.25)
+        mid_local_time: float32 = time_last_calc + self.longitude * deg2rad(4, dtype=float32)
+        self.real_local_time: float32 = mid_local_time + self.time_equation
+        hour_angle: float32 = (12.00 - self.real_local_time) * deg2rad(15, dtype=float32)
+        sun_height: float32 = arcsin(cos(hour_angle, dtype=float32) *
                                      cos(self.latitude, dtype=float32) *
                                      cos(self.sun_declination, dtype=float32)
                                      + sin(self.latitude, dtype=float32) *
