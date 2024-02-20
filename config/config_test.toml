@@ -2,7 +2,7 @@
 reload = true
 
 [write_time]
-time = "16-02-2024 17:54:27"
+time = "20-02-2024 23:23:30"
 format = "%d-%m-%Y %H:%M:%S"
 
 [coordinates]
@@ -64,7 +64,7 @@ ip_address_cloud = ""
 ir_remote = ""
 
 [load_profile]
-name = "lastprofil_nsi_2023.xls"
+name = "None"
 
 [house]
 house_year = 0

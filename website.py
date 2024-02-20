@@ -325,12 +325,12 @@ def steering():
     heating_cost = []
     i = 0
     for _, dp in difference_power:
-        heating_cost.append(abs((dp * 0.25 / 1000 * market_data[i][1]) if dp < 0 else 0))
+        heating_cost.append(abs((dp / 1000 * market_data[i][1] * 0.25) if dp < 0 else 0))
 
         if i % 4 and i != 0:
             i += 1
-
-    d_cost = sum(heating_cost * 0.25 for heating_cost in heating_cost)
+    print(heating_cost)
+    d_cost = sum(heating_cost)
 
     print(d_cost)
 
