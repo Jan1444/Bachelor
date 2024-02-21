@@ -34,16 +34,19 @@ def freeze_all(func):
     return wrapped
 
 
-def precision(func, precision_: int = 5):
-    @wraps(func)
-    def wrapped(*args, **kwargs):
-        precision_args = (np_round(arg, precision_) if isinstance(arg, (float, float32))
-                          else arg for arg in args)
-        precision_kwargs = {k: (np_round(v, precision_) if isinstance(v, (float, float32)) else v)
-                            for k, v in kwargs.items()}
-        return func(*precision_args, **precision_kwargs)
+def precision(precision_: int = 5):
+    def _precision(func):
+        @wraps(func)
+        def wrapped(*args, **kwargs):
+            precision_args = (np_round(arg, precision_) if isinstance(arg, (float, float32))
+                              else arg for arg in args)
+            precision_kwargs = {k: (np_round(v, precision_) if isinstance(v, (float, float32)) else v)
+                                for k, v in kwargs.items()}
+            return func(*precision_args, **precision_kwargs)
 
-    return wrapped
+        return wrapped
+
+    return _precision
 
 
 def formatter(func):
@@ -136,7 +139,7 @@ def get_coord(street: str, nr: str, city: str, postalcode: int, country: str) ->
     return lat, lon
 
 
-@precision
+@precision()
 @freeze_all
 @lru_cache(maxsize=1_000)
 def calc_energy(power: list, interval: float = 0.25, kwh: bool = True, round_: None | int = None) -> float:
@@ -550,9 +553,9 @@ def heating_power(config_data: dict, weather: dict) -> (list, list, list):
     if trv_data is None:
         trv_data: dict = trv.get_thermostat(timeout=10)
 
-    indoor_temp: float16 = float16((trv_data.get("tmp").get("value")) if trv_data is not None else 22)
+    # indoor_temp: float16 = float16((trv_data.get("tmp").get("value")) if trv_data is not None else 22)
 
-    # indoor_temp: float16 = float16(22)
+    indoor_temp: float16 = float16(22)
 
     hp_data: list = []
     diff_data: list = []
@@ -728,7 +731,7 @@ def calc_fuel_consumption(heating: float32, efficiency: float32, energy_density:
 @precision
 @formatter
 @lru_cache(maxsize=100)
-def calc_gas_consumption(heating: float, efficiency: float) -> float32:
+def calc_gas_consumption(heating: float32, efficiency: float32) -> float32:
     heating = float32(heating / 1000.0)
 
     required_energy: float32 = heating / (efficiency / 100.0)
