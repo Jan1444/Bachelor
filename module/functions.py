@@ -42,6 +42,7 @@ def precision(func, precision_: int = 5):
         precision_kwargs = {k: (np_round(v, precision_) if isinstance(v, (float, float32)) else v)
                             for k, v in kwargs.items()}
         return func(*precision_args, **precision_kwargs)
+
     return wrapped
 
 
@@ -429,7 +430,7 @@ def heating_power(config_data: dict, weather: dict) -> (list, list, list):
                 wall_: str = data_house.get(prefix, "")
                 wall_type: str = data_house.get(f"construction_{prefix}", "")
                 year: uint16 = uint16(data_house.get(f"house_year", 0)
-                                            if data_house.get(f"house_year") < 1995 else 1995)
+                                      if data_house.get(f"house_year") < 1995 else 1995)
 
                 if wall_ == "ENEV Außenwand" or wall_ == "ENEV Innenwand":
                     return float16(u_value.get("Wand").get(wall_).get(uint16(wall_type)))
@@ -453,14 +454,14 @@ def heating_power(config_data: dict, weather: dict) -> (list, list, list):
 
             elif "door" in prefix:
                 year: uint16 = uint16(data_house.get(f"house_year", 0)
-                                            if data_house.get(f"house_year") < 1995 else 1995)
+                                      if data_house.get(f"house_year") < 1995 else 1995)
                 return float16(u_value.get("Türen").get("alle").get(year, 0))
 
             elif "floor" in prefix:
                 floor_: str = data_house.get(f"floor", "")
                 floor_type: str = data_house.get(f"construction_floor", "")
                 year: uint16 = uint16(data_house.get(f"house_year", 0)
-                                            if data_house.get(f"house_year") < 1995 else 1995)
+                                      if data_house.get(f"house_year") < 1995 else 1995)
                 if floor_ == "ENEV unbeheiztes Geschoss" or floor_ == "ENEV beheiztes Geschoss":
                     u: float16 = float16(u_value.get("Boden").get(floor_).get(uint16(floor_type)))
                     return u
@@ -473,7 +474,7 @@ def heating_power(config_data: dict, weather: dict) -> (list, list, list):
                 ceiling_: str = data_house.get(f"ceiling", "")
                 ceiling_type: str = data_house.get(f"construction_ceiling", "")
                 year: uint16 = uint16(data_house.get(f"house_year", 0)
-                                            if data_house.get(f"house_year") < 1995 else 1995)
+                                      if data_house.get(f"house_year") < 1995 else 1995)
                 if (ceiling_ == "ENEV unbeheiztes Geschoss" or ceiling_ == "ENEV beheiztes Geschoss" or
                         ceiling_ == "ENEV Dach"):
                     return float16(u_value.get("Decke").get(ceiling_).get(uint16(ceiling_type)))
@@ -695,3 +696,26 @@ def load_load_profile(path: str | None) -> dict:
                 return _create_null_profile()
 
         return data_dict
+
+
+def calc_fuel_consumption(heating: float, efficiency: float, energy_density: float = 11.8,
+                          density: float = 0.85) -> (float, float):
+
+    heating = heating / 1000.0
+
+    required_energy = heating / (efficiency / 100.0)
+
+    fuel_mass = required_energy / energy_density
+
+    fuel_volume = fuel_mass / density
+
+    return fuel_mass, fuel_volume
+
+
+def calc_gas_consumption(heating: float, efficiency: float, energy_density: float = 10.0) -> float:
+
+    heating = heating / 1000.0
+
+    required_energy = heating / (efficiency / 100.0)
+
+    return required_energy / energy_density
