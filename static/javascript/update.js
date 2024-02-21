@@ -171,6 +171,21 @@ function toggleFieldset(selectId, FieldSetId, TrueValue) {
     }
 }
 
+function toggleFieldset_heater(selectId, FieldSetId1, FieldSetId2, TrueValue) {
+    const selectValue = document.getElementById(selectId).value;
+    const fieldSet1 = document.getElementById(FieldSetId1);
+    const fieldSet2 = document.getElementById(FieldSetId2);
+    console.log(selectValue);
+    if (selectValue === TrueValue) {
+        fieldSet1.style.display = "block";
+        fieldSet2.style.display = "none";
+    } else {
+        fieldSet1.style.display = "none";
+        fieldSet2.style.display = "block";
+    }
+}
+
+
 function toggleFieldset2(selectId, FieldSetId) {
     const selectValue = document.getElementById(selectId).value;
     const fieldSet = document.getElementById(FieldSetId);
