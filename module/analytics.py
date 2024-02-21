@@ -102,12 +102,12 @@ def prepare_data_to_write(time, power: list[float], market_price: list[float], e
 
 
 @freeze_all
-def analyze_data(config_data: dict, weather_data: dict):
-    return _analyze_data(config_data, weather_data)
+def analyze_data(config_data: dict, weather_data: dict, consumption_data: bool = True):
+    return _analyze_data(config_data, weather_data, consumption_data)
 
 
 @lru_cache(maxsize=1)
-def _analyze_data(config_data: dict, weather_data: dict):
+def _analyze_data(config_data: dict, weather_data: dict, consumption_data: bool = True):
     converter = config_data["converter"]
     load_profile = config_data["load_profile"]
     battery = config_data.get('battery')
@@ -138,6 +138,8 @@ def _analyze_data(config_data: dict, weather_data: dict):
 
     hp = functions.heating_power(config_data, weather_data)
     indx: uint16 = uint16(0)
+
+    state_of_charge_old = -1
 
     for date, weather_today in weather_data.items():
         date_load: str = date.rsplit('-', 1)[0]
@@ -170,7 +172,8 @@ def _analyze_data(config_data: dict, weather_data: dict):
 
             heating_power: float16 = hp[1][indx]
             cop: float16 = hp[2][indx]
-
+            if not consumption_data:
+                load_data = float16(0)
             load_diff: float16 = power_ghi - load_data  # Strom überschuss
 
             diff_energy: float16 = load_diff - (heating_power / cop)
@@ -186,8 +189,13 @@ def _analyze_data(config_data: dict, weather_data: dict):
             state_of_charge += netto_energy / battery_capacity * 100
             state_of_charge = max((min_state_of_charge, min((state_of_charge, 100))))
             battery_load.append(state_of_charge)
+            discharge = 0
+            if state_of_charge_old > state_of_charge:
+                discharge = abs(diff_energy)
 
-            diff_power.append(diff_energy)
+            state_of_charge_old = state_of_charge
+
+            diff_power.append(diff_energy + discharge)
 
             indx += 1
 
