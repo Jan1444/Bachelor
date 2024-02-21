@@ -28,6 +28,7 @@ def write_data_to_config(config_data: dict, data: dict) -> dict | int:
         battery = config_data.get('battery')
         shelly = config_data.get('shelly')
         air_conditioner = config_data.get('air_conditioner')
+        heater = config_data.get('heater')
 
         house = config_data.get('house')
 
@@ -66,6 +67,10 @@ def write_data_to_config(config_data: dict, data: dict) -> dict | int:
 
         for key in battery:
             battery[key] = float(data.get(f'battery_{key}', 0))
+
+        heater['heater_type'] = str(data.get('heater_type', ''))
+        heater['heater_efficiency'] = float(data.get('heater_efficiency', 0))
+        heater['heater_price'] = float(data.get('heater_price', 0))
 
         market['consumer_price'] = float(data.get('consumer_price', 0))
 

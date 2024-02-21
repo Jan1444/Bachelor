@@ -2,7 +2,7 @@
 reload = true
 
 [write_time]
-time = "20-02-2024 23:23:30"
+time = "21-02-2024 10:50:11"
 format = "%d-%m-%Y %H:%M:%S"
 
 [coordinates]
@@ -53,6 +53,11 @@ load_efficiency = 95.0
 [market]
 consumer_price = 15.35
 
+[heater]
+heater_type = "fuel"
+heater_efficiency = 85.0
+heater_price = 1.6
+
 [shelly]
 ip_address = "192.168.178.95"
 
@@ -68,19 +73,19 @@ name = "None"
 
 [house]
 house_year = 0
-window1_frame = "ENEV"
+window1_frame = ""
 window1_glazing = "2016"
 window1_year = 0
 window1_width = 0.8
 window1_height = 1.0
 window1_u_value = 0.0
-wall1 = "ENEV Außenwand"
+wall1 = ""
 construction_wall1 = "2016"
 wall1_type = 0
 wall1_width = 2.0
 wall1_height = 2.4
 wall1_diff_temp = 0.0
-door_wall1 = 0
+door_wall1 = 1
 door_wall1_width = 0.0
 door_wall1_height = 0.0
 window4_frame = ""
@@ -88,24 +93,24 @@ window4_glazing = ""
 window4_year = 0
 window4_width = 0.0
 window4_height = 0.0
-ceiling = "ENEV Dach"
-construction_ceiling = "2016"
+ceiling = ""
+construction_ceiling = ""
 window2_frame = ""
 window2_glazing = ""
 window2_year = 0
 window2_width = 0.0
 window2_height = 0.0
-wall4 = "ENEV Innenwand"
+wall4 = ""
 construction_wall4 = "2016"
-wall2 = "ENEV Außenwand"
+wall2 = ""
 construction_wall2 = "2016"
 wall2_width = 2.4
-door_wall4 = 2
+door_wall4 = 1
 door_wall4_width = 1.5
 door_wall4_height = 2.0
-floor = "ENEV unbeheiztes Geschoss"
-construction_floor = "2016"
-door_wall2 = 0
+floor = ""
+construction_floor = ""
+door_wall2 = 1
 door_wall2_width = 0.0
 door_wall2_height = 0.0
 window3_frame = ""
@@ -113,9 +118,9 @@ window3_glazing = ""
 window3_year = 0
 window3_width = 0.0
 window3_height = 0.0
-wall3 = "ENEV Außenwand"
+wall3 = ""
 construction_wall3 = "2016"
-door_wall3 = 0
+door_wall3 = 1
 door_wall3_width = 0.0
 door_wall3_height = 0.0
 wall1_u_value = 0.0

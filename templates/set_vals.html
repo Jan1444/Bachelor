@@ -501,6 +501,39 @@
             </div>
         </section>
         <nav class="Box1">
+            <b>Heizung</b>
+        </nav>
+        <section>
+            <div class="input-group">
+                <label for="heater_type">Heizungs Typ:</label>
+                <select name="heater_type" id="heater_type"
+                        onchange="toggleFieldset_heater('heater_type', 'heater_price_fuel', 'heater_price_gas', 'fuel')">
+                    <option value="">Heizungstyp wählen</option>
+                    <option {% if config['heater']['heater_type'] == "fuel" %}
+                        selected="selected"
+                    {% endif %}
+                        value="fuel">Diesel
+                    </option>
+                    <option {% if config['heater']['heater_type'] == "gas" %}
+                        selected="selected"
+                    {% endif %}
+                        value="gas">Gas
+                    </option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="heater_efficiency" >Heizungs-Effizienz [%]:</label>
+                <input id="heater_efficiency" minlength="1" name="heater_efficiency"
+                       type="text" value="{{ config['heater']['heater_efficiency'] }}">
+            </div>
+            <div class="input-group">
+                <label for="heater_price" id="heater_price_fuel" class="visible">Preis [€/l]:</label>
+                <label for="heater_price" id="heater_price_gas" class="invisible">Preis [€/kWh]:</label>
+                <input id="heater_price" minlength="1" name="heater_price"
+                       type="text" value="{{ config['heater']['heater_price'] }}">
+            </div>
+        </section>
+        <nav class="Box1">
             <b>Split-Klimagerät:</b>
         </nav>
         <section>
