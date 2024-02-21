@@ -2,7 +2,7 @@
 reload = true
 
 [write_time]
-time = "21-02-2024 14:50:28"
+time = "21-02-2024 23:18:38"
 format = "%d-%m-%Y %H:%M:%S"
 
 [coordinates]
@@ -54,12 +54,12 @@ load_efficiency = 95.0
 consumer_price = 15.35
 
 [heater]
-heater_type = "gas"
+heater_type = "fuel"
 heater_efficiency = 85.0
-heater_price = 0.09
+heater_price = 1.4
 
 [shelly]
-ip_address = "i111111111111"
+ip_address = "192.168.178.95"
 
 [air_conditioner]
 air_conditioner_cop = 3.0
@@ -69,7 +69,7 @@ ip_address_cloud = ""
 ir_remote = ""
 
 [load_profile]
-name = "None"
+name = "lastprofil_nsi_2023.xls"
 
 [house]
 house_year = 0

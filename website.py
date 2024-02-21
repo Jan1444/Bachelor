@@ -321,32 +321,33 @@ def steering():
     weather_data = fc.get_weather_data(config_data, days=1)
 
     energy_today, pv_power_data, market_data, heating_power_data, difference_power, battery_power = (
-        analytics_module.analyze_data(config_data, weather_data))
+        analytics_module.analyze_data(config_data, weather_data, False)
+    )
 
     heating_cost: list = []
     heating_cost_other: list = []
-    i = 0
+    idx = 0
+
     for _, dp in difference_power:
-        heating_cost.append(abs((dp / 1000 * market_data[i][1] * 0.25) if dp < 0 else 0))
+        electricity_costs: float = market_data[idx][1] * 0.25
+        dp_kw: float = abs(dp / 1000)
+        heater_efficiency: float = heater.get('heater_efficiency')
+        heater_type: str = heater.get('heater_type')
+        fuel_price: float = heater.get('heater_price', 0) * 100
 
-        heating_cost_other.append(
-            fc.calc_fuel_gas_consumption(abs(dp), heater.get('heater_efficiency'), heater.get('heater_type'))
-            * heater.get('heater_price', 0) * 100
-        )
+        heating_cost.append((dp_kw * electricity_costs) if dp < 0 else 0)
+        fuel_gas_price = fc.calc_fuel_gas_consumption(dp_kw, heater_efficiency, heater_type) * fuel_price
 
-        if i % 4 == 0 and i != 0:
-            i += 1
+        heating_cost_other.append(fuel_gas_price)
 
-    print(f'{'Time':20} {'Hk Wärmepumpe':^10} {'Hk Gas':^10} {'Heizlast':^10}')
-    for a, b, (t, c) in zip(heating_cost, heating_cost_other, heating_power_data):
-        print(f'{t:20} {a:^10.5f} {b:^10.5f} {abs(c):^10.5f}')
+        if idx % 4 == 0 and idx != 0:
+            idx += 1
 
-    print(heating_cost, heating_cost_other)
-    d_cost = sum(heating_cost)
-    c_cost = sum(heating_cost_other)
+    daily_cost = sum(heating_cost)
+    daily_cost_other = sum(heating_cost_other)
 
-    print(d_cost)
-    print(c_cost)
+    print(daily_cost)
+    print(daily_cost_other)
 
 
 if __name__ == '__main__':

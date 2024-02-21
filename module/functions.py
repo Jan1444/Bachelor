@@ -739,21 +739,20 @@ def calc_gas_consumption(heating: float32, efficiency: float32) -> float32:
     return required_energy
 
 
-@precision
+@precision()
 @formatter
 @lru_cache(maxsize=100)
 def calc_fuel_gas_consumption(heating: float32, efficiency: float32, fuel: str):
     if fuel == 'gas':
-        heating = float32(heating / 1000.0)
         required_energy: float32 = heating / (efficiency / 100.0)
         return required_energy
 
     elif fuel == 'fuel':
-        energy_density: float32 = float32(11.8),
+        energy_density: float32 = float32(11.8)
         density: float32 = float32(0.85)
 
-        heating: float32 = float32(heating / 1000.0)
         required_energy: float32 = heating / (efficiency / 100.0)
+        print(required_energy)
         fuel_mass: float32 = required_energy / energy_density
         fuel_volume: float32 = fuel_mass / density
         return fuel_volume
