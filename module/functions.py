@@ -46,6 +46,17 @@ def precision(func, precision_: int = 5):
     return wrapped
 
 
+def formatter(func):
+    @wraps(func)
+    def wrapped(*args, **kwargs):
+        np_args = (float32(arg) if isinstance(arg, float)
+                   else (uint16(arg) if isinstance(arg, int) else arg) for arg in args)
+
+        return func(*np_args, **kwargs)
+
+    return wrapped
+
+
 def read_data_from_file(file_path: str) -> dict | None:
     """
 
@@ -698,24 +709,49 @@ def load_load_profile(path: str | None) -> dict:
         return data_dict
 
 
-def calc_fuel_consumption(heating: float, efficiency: float, energy_density: float = 11.8,
-                          density: float = 0.85) -> (float, float):
+@precision
+@formatter
+@lru_cache(maxsize=100)
+def calc_fuel_consumption(heating: float32, efficiency: float32, energy_density: float32 = float32(11.8),
+                          density: float32 = float32(0.85)) -> float32:
+    heating: float32 = float32(heating / 1000.0)
 
-    heating = heating / 1000.0
+    required_energy: float32 = heating / (efficiency / 100.0)
 
-    required_energy = heating / (efficiency / 100.0)
+    fuel_mass: float32 = required_energy / energy_density
 
-    fuel_mass = required_energy / energy_density
+    fuel_volume: float32 = fuel_mass / density
 
-    fuel_volume = fuel_mass / density
-
-    return fuel_mass, fuel_volume
+    return fuel_volume
 
 
-def calc_gas_consumption(heating: float, efficiency: float, energy_density: float = 10.0) -> float:
+@precision
+@formatter
+@lru_cache(maxsize=100)
+def calc_gas_consumption(heating: float, efficiency: float) -> float32:
+    heating = float32(heating / 1000.0)
 
-    heating = heating / 1000.0
+    required_energy: float32 = heating / (efficiency / 100.0)
 
-    required_energy = heating / (efficiency / 100.0)
+    return required_energy
 
-    return required_energy / energy_density
+
+@precision
+@formatter
+@lru_cache(maxsize=100)
+def calc_fuel_gas_consumption(heating: float32, efficiency: float32, fuel: str):
+    if fuel == 'gas':
+        heating = float32(heating / 1000.0)
+        required_energy: float32 = heating / (efficiency / 100.0)
+        return required_energy
+
+    elif fuel == 'fuel':
+        energy_density: float32 = float32(11.8),
+        density: float32 = float32(0.85)
+
+        heating: float32 = float32(heating / 1000.0)
+        required_energy: float32 = heating / (efficiency / 100.0)
+        fuel_mass: float32 = required_energy / energy_density
+        fuel_volume: float32 = fuel_mass / density
+        return fuel_volume
+    return 1

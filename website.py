@@ -316,26 +316,37 @@ def compare_data():
 @scheduler.task("interval", id="steering", seconds=3601)
 def steering():
     config_data: dict = config_manager.config_data
+    heater = config_data.get('heater')
 
     weather_data = fc.get_weather_data(config_data, days=1)
 
     energy_today, pv_power_data, market_data, heating_power_data, difference_power, battery_power = (
         analytics_module.analyze_data(config_data, weather_data))
 
-    heating_cost = []
+    heating_cost: list = []
+    heating_cost_other: list = []
     i = 0
     for _, dp in difference_power:
         heating_cost.append(abs((dp / 1000 * market_data[i][1] * 0.25) if dp < 0 else 0))
 
-        if i % 4 and i != 0:
+        heating_cost_other.append(
+            fc.calc_fuel_gas_consumption(abs(dp), heater.get('heater_efficiency'), heater.get('heater_type'))
+            * heater.get('heater_price', 0) * 100
+        )
+
+        if i % 4 == 0 and i != 0:
             i += 1
-    print(heating_cost)
+
+    print(f'{'Time':20} {'Hk Wärmepumpe':^10} {'Hk Gas':^10} {'Heizlast':^10}')
+    for a, b, (t, c) in zip(heating_cost, heating_cost_other, heating_power_data):
+        print(f'{t:20} {a:^10.5f} {b:^10.5f} {abs(c):^10.5f}')
+
+    print(heating_cost, heating_cost_other)
     d_cost = sum(heating_cost)
+    c_cost = sum(heating_cost_other)
 
     print(d_cost)
-
-    print(datetime.datetime.now())
-    print("steering")
+    print(c_cost)
 
 
 if __name__ == '__main__':

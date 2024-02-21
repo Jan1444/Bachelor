@@ -2,7 +2,7 @@
 reload = true
 
 [write_time]
-time = "21-02-2024 09:39:11"
+time = "21-02-2024 14:50:28"
 format = "%d-%m-%Y %H:%M:%S"
 
 [coordinates]
@@ -54,12 +54,12 @@ load_efficiency = 95.0
 consumer_price = 15.35
 
 [heater]
-heater_type = "fuel"
+heater_type = "gas"
 heater_efficiency = 85.0
-heater_price = 1.6
+heater_price = 0.09
 
 [shelly]
-ip_address = "192.168.178.95"
+ip_address = "i111111111111"
 
 [air_conditioner]
 air_conditioner_cop = 3.0

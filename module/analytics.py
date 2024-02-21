@@ -132,8 +132,6 @@ def _analyze_data(config_data: dict, weather_data: dict):
     pv_class3 = functions.init_pv(config_data, number=3)
     pv_class4 = functions.init_pv(config_data, number=4)
 
-    # weather_data = functions.get_weather_data(config_data, days=14)
-
     market_class = functions.init_market(config_data)
 
     load_profile_data: dict = functions.load_load_profile(f'{consts.LOAD_PROFILE_FOLDER}/{load_profile.get("name")}')
