@@ -336,7 +336,8 @@ def steering():
         heater_type: str = heater.get('heater_type')
         fuel_price: float = heater.get('heater_price', 0) * 100
 
-        heating_cost.append((dp_kw * electricity_costs) if dp < 0 else 0)
+        heating_cost.append((dp_kw * electricity_costs) if dp < 0 else dp_kw * 0.08 * 0.25)
+
         fuel_gas_price = fc.calc_fuel_gas_consumption(dp_kw, heater_efficiency, heater_type) * fuel_price
 
         heating_cost_other.append(fuel_gas_price)
@@ -344,13 +345,18 @@ def steering():
         if idx % 4 == 0 and idx != 0:
             idx += 1
 
+    z = []
+
+    for _, hp in heating_power_data:
+        z.append(hp)
+
+    print(fc.calc_energy(z))
+
     daily_cost = sum(heating_cost)
     daily_cost_other = sum(heating_cost_other)
 
     print(daily_cost)
     print(daily_cost_other)
-
-    print(heating_cost)
 
 
 if __name__ == '__main__':

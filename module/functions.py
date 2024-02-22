@@ -407,7 +407,6 @@ def calc_fuel_gas_consumption(heating: float32, efficiency: float32, fuel: str):
         density: float32 = float32(0.85)
 
         required_energy: float32 = heating / (efficiency / 100.0)
-        print(required_energy)
         fuel_mass: float32 = required_energy / energy_density
         fuel_volume: float32 = fuel_mass / density
         return fuel_volume

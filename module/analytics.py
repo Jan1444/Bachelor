@@ -342,7 +342,7 @@ def _analyze_data(config_data: dict, weather_data: dict, consumption_data: bool 
             energy: float16 = diff_energy * 0.25
 
             if energy < 0:
-                netto_energy = energy * converter.get('efficiency')
+                netto_energy = energy / (converter.get('efficiency') / 100)
             else:
                 energy = min((energy, charging_power))
                 netto_energy = energy * load_efficiency
