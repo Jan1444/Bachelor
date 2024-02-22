@@ -17,8 +17,6 @@ from module import download as download_module
 from module import analytics as analytics_module
 from module import upload as upload_module
 
-from numpy import float64, float32, float16, uint16, array
-
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
@@ -51,7 +49,7 @@ def analytics():
     energy_today, pv_power_data, market_data, heating_power_data, difference_power, battery_power = (
         analytics_module.analyze_data(config_data, weather_data))
 
-    print(analytics_module._analyze_data.cache_info())
+    #print(analytics_module._analyze_data.cache_info())
 
     return render_template('analytics.html', energy_data=energy_today,
                            pv_power_data=pv_power_data, market_data=market_data,
@@ -329,16 +327,18 @@ def steering():
     heating_cost_other: list = []
     idx = 0
 
-    for _, dp in difference_power:
+    for (_, dp), (_, hp) in zip(difference_power, heating_power_data):
         electricity_costs: float = market_data[idx][1] * 0.25
-        dp_kw: float = abs(dp / 1000)
+        dp_kw: float = abs(dp / 1_000)
+        hp_kw = abs(hp / 1_000)
         heater_efficiency: float = heater.get('heater_efficiency')
         heater_type: str = heater.get('heater_type')
-        fuel_price: float = heater.get('heater_price', 0) * 100
+        fuel_price: float = heater.get('heater_price', 0) * 100 * 0.25
 
         heating_cost.append((dp_kw * electricity_costs) if dp < 0 else dp_kw * 0.08 * 0.25)
 
-        fuel_gas_price = fc.calc_fuel_gas_consumption(dp_kw, heater_efficiency, heater_type) * fuel_price
+        fuel_gas_price = fc.calc_fuel_gas_consumption(hp_kw, heater_efficiency, heater_type) * fuel_price
+        print(hp_kw)
 
         heating_cost_other.append(fuel_gas_price)
 
@@ -346,7 +346,7 @@ def steering():
             idx += 1
 
     z = []
-
+    print(heating_power_data)
     for _, hp in heating_power_data:
         z.append(hp)
 

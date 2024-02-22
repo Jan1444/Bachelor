@@ -2,7 +2,7 @@
 reload = true
 
 [write_time]
-time = "22-02-2024 16:50:38"
+time = "22-02-2024 18:23:41"
 format = "%d-%m-%Y %H:%M:%S"
 
 [coordinates]
@@ -12,7 +12,7 @@ longitude = 11.29489
 [pv]
 alignment = 1
 tilt_angle1 = 35.0
-area1 = 5.14
+area1 = 0.0
 module_efficiency1 = 20.0
 exposure_angle1 = 0.0
 temperature_coefficient1 = -0.35

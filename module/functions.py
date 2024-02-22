@@ -1,14 +1,12 @@
 #  -*- coding: utf-8 -*-
 
 import datetime
-
 from functools import lru_cache
-
-from numpy import float32, float16, uint16
-from pandas import ExcelFile
 
 import requests
 import toml
+from numpy import float32, float16, uint16
+from pandas import ExcelFile
 
 from module import classes, debug, own_wrapper as wrap
 
@@ -404,10 +402,8 @@ def calc_fuel_gas_consumption(heating: float32, efficiency: float32, fuel: str):
 
     elif fuel == 'fuel':
         energy_density: float32 = float32(11.8)
-        density: float32 = float32(0.85)
 
         required_energy: float32 = heating / (efficiency / 100.0)
-        fuel_mass: float32 = required_energy / energy_density
-        fuel_volume: float32 = fuel_mass / density
+        fuel_volume: float32 = required_energy / energy_density
         return fuel_volume
     return 1
