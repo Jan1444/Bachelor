@@ -15,6 +15,7 @@ from module import functions as fc
 from module import set_vals
 from module import download as download_module
 from module import analytics as analytics_module
+from module import upload as upload_module
 
 from numpy import float64, float32, float16, uint16, array
 
@@ -229,7 +230,7 @@ def upload_file(extensions: set, folder: str, delete_file=True):
 def analyze_file():
     config_data = config_manager.config_data
 
-    ret = fc.data_analyzer(config_data)
+    ret = upload_module.data_analyzer(config_data)
     if ret == -1:
         return render_template('file_upload.html', error="Bitte wählen Sie 'Einstrahlungskomponenten' aus")
 
@@ -348,6 +349,8 @@ def steering():
 
     print(daily_cost)
     print(daily_cost_other)
+
+    print(heating_cost)
 
 
 if __name__ == '__main__':

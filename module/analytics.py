@@ -1,31 +1,13 @@
 #  -*- coding: utf-8 -*-
 
 import datetime
-from functools import lru_cache, wraps
-from frozendict import frozendict
+from functools import lru_cache
 
-from module import functions
-from module import consts
+from numpy import float64, float32, float16, uint16, array, absolute
 
-from numpy import float64, float32, float16, uint16, array
+from module import functions, analytics
 
-
-def freeze_all(func):
-    @wraps(func)
-    def wrapped(*args, **kwargs):
-        def freeze(obj):
-            if isinstance(obj, dict):
-                return frozendict({k: freeze(v) for k, v in obj.items()})
-            elif isinstance(obj, list):
-                return tuple(freeze(v) for v in obj)
-            return obj
-
-        frozen_args = tuple(freeze(arg) for arg in args)
-        frozen_kwargs = {k: freeze(v) for k, v in kwargs.items()}
-
-        return func(*frozen_args, **frozen_kwargs)
-
-    return wrapped
+from module import classes, consts, own_wrapper as wrap
 
 
 def prepare_data_to_write(time, power: list[float], market_price: list[float], energy: float,
@@ -45,12 +27,12 @@ def prepare_data_to_write(time, power: list[float], market_price: list[float], e
             h = -1
             for i, k in enumerate(time):
                 data.update({
-                        k: {
-                            "direct_radiation": radiation[i],
-                            "power": round(power[i], 3),
-                            "market_price": market_price[h]
-                        }
-                    })
+                    k: {
+                        "direct_radiation": radiation[i],
+                        "power": round(power[i], 3),
+                        "market_price": market_price[h]
+                    }
+                })
 
                 if (i - 4) % 4 == 0:
                     h += 1
@@ -76,11 +58,11 @@ def prepare_data_to_write(time, power: list[float], market_price: list[float], e
             h = -1
             for i, k in enumerate(time):
                 data.update({
-                        k: {"dni_radiation": radiation_dni[i],
-                            "power": round(power[i], 3),
-                            "market_price": market_price[h]
-                            }
-                    })
+                    k: {"dni_radiation": radiation_dni[i],
+                        "power": round(power[i], 3),
+                        "market_price": market_price[h]
+                        }
+                })
 
                 if (i - 4) % 4 == 0:
                     h += 1
@@ -101,7 +83,185 @@ def prepare_data_to_write(time, power: list[float], market_price: list[float], e
         return -1
 
 
-@freeze_all
+def heating_power(config_data: dict, weather: dict) -> (list, list, list):
+    def _calc_area(data_house: dict, prefix: str, prefix2: str | None = None) -> float16:
+        try:
+            if prefix2 is None:
+                prefix2 = prefix
+            area = float16(data_house.get(f"{prefix}_width", 0) * data_house.get(f"{prefix2}_height", 0))
+            return area
+
+        except AttributeError as err:
+            print(prefix, prefix2)
+            print(f"Attribute Missing: {err}")
+            return float16(0)
+
+    def _get_u_value(data_house: dict, u_value: dict, prefix: str) -> float16:
+        try:
+            if "wall" in prefix:
+
+                wall_: str = data_house.get(prefix, "")
+                wall_type: str = data_house.get(f"construction_{prefix}", "")
+                year: uint16 = uint16(data_house.get(f"house_year", 0)
+                                      if data_house.get(f"house_year") < 1995 else 1995)
+
+                if wall_ == "ENEV Außenwand" or wall_ == "ENEV Innenwand":
+                    return float16(u_value.get("Wand").get(wall_).get(uint16(wall_type)))
+                elif wall_ == "u_value":
+                    return float16(data_house.get(f"{prefix}_u_value", 0))
+                else:
+                    return float16(u_value.get("Wand").get(wall_).get(wall_type).get(year))
+
+            elif "window" in prefix:
+                window_: str = data_house.get(f"{prefix}_frame", "")
+                glazing: str = data_house.get(f"{prefix}_glazing", "")
+                window_year: uint16 = uint16(data_house.get(f"{prefix}_year", 0) if data_house.get(
+                    f"{prefix}_year") < 1995 else 1995)
+
+                if window_ == "ENEV":
+                    return float16(u_value.get("Fenster").get(window_).get(uint16(glazing)))
+                elif window_ == "u_value":
+                    return float16(data_house.get(f"{prefix}_u_value", 0))
+                else:
+                    return u_value.get("Fenster").get(window_).get(glazing).get(window_year)
+
+            elif "door" in prefix:
+                year: uint16 = uint16(data_house.get(f"house_year", 0)
+                                      if data_house.get(f"house_year") < 1995 else 1995)
+                return float16(u_value.get("Türen").get("alle").get(year, 0))
+
+            elif "floor" in prefix:
+                floor_: str = data_house.get(f"floor", "")
+                floor_type: str = data_house.get(f"construction_floor", "")
+                year: uint16 = uint16(data_house.get(f"house_year", 0)
+                                      if data_house.get(f"house_year") < 1995 else 1995)
+                if floor_ == "ENEV unbeheiztes Geschoss" or floor_ == "ENEV beheiztes Geschoss":
+                    u: float16 = float16(u_value.get("Boden").get(floor_).get(uint16(floor_type)))
+                    return u
+                elif floor_ == "u_value":
+                    return float16(data_house.get(f"{prefix}_u_value", 0))
+                else:
+                    return float16(u_value.get("Boden").get(floor_).get(floor_type).get(year))
+
+            elif "ceiling" in prefix:
+                ceiling_: str = data_house.get(f"ceiling", "")
+                ceiling_type: str = data_house.get(f"construction_ceiling", "")
+                year: uint16 = uint16(data_house.get(f"house_year", 0)
+                                      if data_house.get(f"house_year") < 1995 else 1995)
+                if (ceiling_ == "ENEV unbeheiztes Geschoss" or ceiling_ == "ENEV beheiztes Geschoss" or
+                        ceiling_ == "ENEV Dach"):
+                    return float16(u_value.get("Decke").get(ceiling_).get(uint16(ceiling_type)))
+                elif ceiling_ == "u_value":
+                    return float16(data_house.get(f"{prefix}_u_value", 0))
+                else:
+                    return float16(u_value.get("Decke").get(ceiling_).get(ceiling_type).get(year))
+        except AttributeError as err:
+            print(prefix)
+            print(f"Attribute Missing: {err}")
+            return float16(0.0)
+
+    def _interior_wall(data_house: dict, prefix: str):
+        try:
+            if data_house.get(f"{prefix}", "") == "ENEV Innenwand":
+                temp = data_house.get(f"{prefix}_diff_temp", "")
+                return temp
+            else:
+                return 0
+
+        except AttributeError as err:
+            print(prefix)
+            print(f"Attribute Missing: {err}")
+            return 0
+
+    data: dict = config_data["house"]
+    shelly_data = config_data["shelly"]
+
+    hp: classes.RequiredHeatingPower = classes.RequiredHeatingPower()
+    trv: classes.ShellyTRVControl = classes.ShellyTRVControl(shelly_data["ip_address"])
+
+    room = hp.Room
+
+    floor = room.Floor
+    ceiling = room.Ceiling
+
+    floor.area = _calc_area(data, f"wall1", f"wall2")
+    ceiling.area = _calc_area(data, f"wall1", f"wall2")
+
+    floor.u_wert = _get_u_value(data, hp.u_value, "floor")
+    ceiling.u_wert = _get_u_value(data, hp.u_value, "ceiling")
+
+    room.volume = data.get("wall1_width", 0) * data.get("wall1_height", 0) * data.get("wall2_width", 0)
+
+    for wall_number in range(1, 5):
+        window_number: uint16 = uint16(1)
+        wall = getattr(room, f"Wall{wall_number}")
+        window = getattr(wall, f"Window{window_number}")
+        door = getattr(wall, "Door")
+
+        wall.area = _calc_area(data, f"wall{wall_number}")
+        wall.interior_wall_temp = _interior_wall(data, f"wall{wall_number}")
+
+        window.area = _calc_area(data, f"window{window_number}")
+        door.area = _calc_area(data, f"door_wall{wall_number}")
+
+        wall.u_wert = _get_u_value(data, hp.u_value, f"wall{wall_number}")
+        window.u_wert = _get_u_value(data, hp.u_value, f"window{window_number}")
+        door.u_wert = _get_u_value(data, hp.u_value, f"door")
+
+    # trv_data: dict = trv.get_thermostat()
+    # if trv_data is None:
+    #    trv_data: dict = trv.get_thermostat(timeout=10)
+
+    # indoor_temp: float16 = float16((trv_data.get("tmp").get("value")) if trv_data is not None else 22)
+
+    indoor_temp: float16 = float16(22)
+
+    hp_data: list = []
+    diff_data: list = []
+    tme_data: list = []
+    cop_temp: list = []
+
+    old_temp: float16 = float16(16)
+    for date, weather_today in weather.items():
+        for tme, data in weather_today.items():
+
+            outdoor_temp: float16 = float16(data.get("temp", old_temp))
+            old_temp = outdoor_temp
+            diff_temp: float16 = indoor_temp - outdoor_temp
+
+            room.Floor.temp_diff = diff_temp
+            room.Ceiling.temp_diff = diff_temp
+
+            room.Wall1.temp_diff = diff_temp
+            if room.Wall1.interior_wall_temp:
+                room.Wall1.temp_diff = float16(absolute(room.Wall1.interior_wall_temp - indoor_temp))
+
+            room.Wall2.temp_diff = diff_temp
+            if room.Wall2.interior_wall_temp:
+                room.Wall2.temp_diff = float16(absolute(room.Wall2.interior_wall_temp - indoor_temp))
+
+            room.Wall3.temp_diff = diff_temp
+            if room.Wall3.interior_wall_temp:
+                room.Wall3.temp_diff = float16(absolute(room.Wall3.interior_wall_temp - indoor_temp))
+
+            room.Wall4.temp_diff = diff_temp
+            if room.Wall4.interior_wall_temp:
+                room.Wall4.temp_diff = float16(absolute(room.Wall4.interior_wall_temp - indoor_temp))
+
+            d = hp.calc_heating_power(room)
+
+            cop: float16 = float16(((1 / 14) * outdoor_temp + 2.5) if outdoor_temp > -20 else 1)
+
+            cop_temp.append(cop)
+            diff_data.append(diff_temp)
+            hp_data.append(d)
+            tme_data.append(f"{date} {tme}")
+
+    # debug.printer(diff_data, hp_data)
+    return tme_data, hp_data, cop_temp
+
+
+@wrap.freeze_all
 def analyze_data(config_data: dict, weather_data: dict, consumption_data: bool = True):
     return _analyze_data(config_data, weather_data, consumption_data)
 
@@ -136,7 +296,8 @@ def _analyze_data(config_data: dict, weather_data: dict, consumption_data: bool 
 
     load_profile_data: dict = functions.load_load_profile(f'{consts.LOAD_PROFILE_FOLDER}/{load_profile.get("name")}')
 
-    hp = functions.heating_power(config_data, weather_data)
+    hp = analytics.heating_power(config_data, weather_data)
+
     indx: uint16 = uint16(0)
 
     state_of_charge_old = -1
@@ -189,6 +350,7 @@ def _analyze_data(config_data: dict, weather_data: dict, consumption_data: bool 
             state_of_charge += netto_energy / battery_capacity * 100
             state_of_charge = max((min_state_of_charge, min((state_of_charge, 100))))
             battery_load.append(state_of_charge)
+
             discharge = 0
             if state_of_charge_old > state_of_charge:
                 discharge = abs(diff_energy)
