@@ -4,17 +4,16 @@ import datetime
 import os
 
 from flask import Flask, render_template, request, send_from_directory, redirect, flash, jsonify
-from werkzeug.utils import secure_filename
 from flask_apscheduler import APScheduler
+from werkzeug.utils import secure_filename
 
 from config import ConfigManager
 from data import EnergyManager
-
+from module import analytics as analytics_module
 from module import consts, debug
+from module import download as download_module
 from module import functions as fc
 from module import set_vals
-from module import download as download_module
-from module import analytics as analytics_module
 from module import upload as upload_module
 
 app = Flask(__name__)
@@ -27,6 +26,9 @@ config_manager = ConfigManager("config_test.toml")
 energy_manager_data = EnergyManager("data.toml")
 energy_manager_morning_data = EnergyManager("mor_data.toml")
 energy_manager_evening_data = EnergyManager("ev_data.toml")
+
+
+
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -48,8 +50,6 @@ def analytics():
 
     energy_today, pv_power_data, market_data, heating_power_data, difference_power, battery_power = (
         analytics_module.analyze_data(config_data, weather_data))
-
-    #print(analytics_module._analyze_data.cache_info())
 
     return render_template('analytics.html', energy_data=energy_today,
                            pv_power_data=pv_power_data, market_data=market_data,
@@ -338,7 +338,6 @@ def steering():
         heating_cost.append((dp_kw * electricity_costs) if dp < 0 else dp_kw * 0.08 * 0.25)
 
         fuel_gas_price = fc.calc_fuel_gas_consumption(hp_kw, heater_efficiency, heater_type) * fuel_price
-        print(hp_kw)
 
         heating_cost_other.append(fuel_gas_price)
 
@@ -346,7 +345,6 @@ def steering():
             idx += 1
 
     z = []
-    print(heating_power_data)
     for _, hp in heating_power_data:
         z.append(hp)
 
@@ -355,8 +353,8 @@ def steering():
     daily_cost = sum(heating_cost)
     daily_cost_other = sum(heating_cost_other)
 
-    print(daily_cost)
-    print(daily_cost_other)
+    print(daily_cost, 'ct')
+    print(daily_cost_other, 'ct')
 
 
 if __name__ == '__main__':
