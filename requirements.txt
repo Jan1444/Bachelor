@@ -12,3 +12,4 @@ pymelcloud
 daikinapi
 toml
 xlrd
+smbus

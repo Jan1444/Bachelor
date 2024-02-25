@@ -2,7 +2,7 @@
 reload = true
 
 [write_time]
-time = "22-02-2024 18:23:41"
+time = "23-02-2024 16:11:22"
 format = "%d-%m-%Y %H:%M:%S"
 
 [coordinates]
@@ -12,7 +12,7 @@ longitude = 11.29489
 [pv]
 alignment = 1
 tilt_angle1 = 35.0
-area1 = 0.0
+area1 = 5.16
 module_efficiency1 = 20.0
 exposure_angle1 = 0.0
 temperature_coefficient1 = -0.35
@@ -56,7 +56,7 @@ consumer_price = 15.35
 [heater]
 heater_type = "fuel"
 heater_efficiency = 85.0
-heater_price = 1.04
+heater_price = 0.8
 
 [shelly]
 ip_address = "192.168.178.95"
@@ -69,7 +69,7 @@ ip_address_cloud = ""
 ir_remote = ""
 
 [load_profile]
-name = "None"
+name = "lastprofil_nsi_2023.xls"
 
 [house]
 house_year = 0
