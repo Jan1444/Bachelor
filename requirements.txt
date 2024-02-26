@@ -1,0 +1,15 @@
+Flask
+frozendict
+matplotlib
+numpy
+pandas
+Requests
+requests_cache
+openpyxl
+Flask-APScheduler
+Werkzeug
+pymelcloud
+daikinapi
+toml
+xlrd
+smbus

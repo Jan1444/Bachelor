@@ -1,0 +1,148 @@
+[data]
+reload = true
+
+[write_time]
+time = "23-02-2024 16:11:22"
+format = "%d-%m-%Y %H:%M:%S"
+
+[coordinates]
+latitude = 49.51981
+longitude = 11.29489
+
+[pv]
+alignment = 1
+tilt_angle1 = 35.0
+area1 = 5.16
+module_efficiency1 = 20.0
+exposure_angle1 = 0.0
+temperature_coefficient1 = -0.35
+nominal_temperature1 = 25.0
+mounting_type1 = 1.0
+tilt_angle2 = 0.0
+area2 = 0.0
+module_efficiency2 = 0.0
+exposure_angle2 = 0.0
+temperature_coefficient2 = 0.0
+nominal_temperature2 = 0.0
+mounting_type2 = 0.0
+tilt_angle3 = 0.0
+area3 = 0.0
+module_efficiency3 = 0.0
+exposure_angle3 = 0.0
+temperature_coefficient3 = 0.0
+nominal_temperature3 = 0.0
+mounting_type3 = 0.0
+tilt_angle4 = 0.0
+area4 = 0.0
+module_efficiency4 = 0.0
+exposure_angle4 = 0.0
+temperature_coefficient4 = 0.0
+nominal_temperature4 = 0.0
+mounting_type4 = 0.0
+
+[converter]
+max_power = 600.0
+efficiency = 96.0
+
+[battery]
+capacity = 6.0
+charging_power = 1000.0
+max_deload = 90.0
+load_efficiency = 95.0
+
+[market]
+consumer_price = 15.35
+
+[heater]
+heater_type = "fuel"
+heater_efficiency = 85.0
+heater_price = 0.8
+
+[shelly]
+ip_address = "192.168.178.95"
+
+[air_conditioner]
+air_conditioner_cop = 3.0
+type = ""
+air_conditioner_steering = ""
+ip_address_cloud = ""
+ir_remote = ""
+
+[load_profile]
+name = "lastprofil_nsi_2023.xls"
+
+[house]
+house_year = 0
+window1_frame = "ENEV"
+window1_glazing = "2016"
+window1_year = 0
+window1_width = 0.8
+window1_height = 1.0
+window1_u_value = 0.0
+wall1 = "ENEV Außenwand"
+construction_wall1 = "2016"
+wall1_type = 0
+wall1_width = 5.0
+wall1_height = 2.4
+wall1_diff_temp = 0.0
+door_wall1 = 0
+door_wall1_width = 0.0
+door_wall1_height = 0.0
+window4_frame = ""
+window4_glazing = ""
+window4_year = 0
+window4_width = 0.0
+window4_height = 0.0
+ceiling = "ENEV Dach"
+construction_ceiling = "2016"
+window2_frame = ""
+window2_glazing = ""
+window2_year = 0
+window2_width = 0.0
+window2_height = 0.0
+wall4 = "ENEV Innenwand"
+construction_wall4 = "2016"
+wall2 = "ENEV Außenwand"
+construction_wall2 = "2016"
+wall2_width = 4.0
+door_wall4 = 2
+door_wall4_width = 1.5
+door_wall4_height = 2.0
+floor = "ENEV unbeheiztes Geschoss"
+construction_floor = "2016"
+door_wall2 = 0
+door_wall2_width = 0.0
+door_wall2_height = 0.0
+window3_frame = ""
+window3_glazing = ""
+window3_year = 0
+window3_width = 0.0
+window3_height = 0.0
+wall3 = "ENEV Außenwand"
+construction_wall3 = "2016"
+door_wall3 = 0
+door_wall3_width = 0.0
+door_wall3_height = 0.0
+wall1_u_value = 0.0
+door_enev_wall1 = ""
+door_wall1_enev = ""
+window2_u_value = 0.0
+wall2_height = 2.4
+wall2_type = 0
+wall2_u_value = 0.0
+wall2_diff_temp = 0.0
+door_wall2_enev = ""
+window3_u_value = 0.0
+wall3_width = 5.0
+wall3_height = 2.4
+wall3_type = 0
+wall3_u_value = 0.0
+wall3_diff_temp = 0.0
+door_wall3_enev = ""
+window4_u_value = 0.0
+wall4_width = 4.0
+wall4_height = 2.6
+wall4_type = 0
+wall4_u_value = 0.0
+wall4_diff_temp = 22.0
+door_wall4_enev = "2016"

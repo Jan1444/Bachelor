@@ -1,0 +1,164 @@
+@charset "UTF-8";
+
+:root {
+    --font_family: Arial, SansSerif, serif;
+    --font_size: 18px;
+    --standard_font: Arial;
+}
+
+button {
+    font-size: var(--font_size);
+    font-family: var(--standard_font);
+    margin: 10px 10px 10px 100px;
+}
+
+h1 {
+    font-size: calc(var(--font_size) + 18px);
+    font-family: var(--standard_font);
+    margin-bottom: 30px;
+}
+
+hr {
+    border: 1px solid darkcyan;
+    margin-top: 5px;
+    margin-left: 25px;
+    margin-right: calc(100% - 150px - 300px - 10px);
+}
+
+.error_class {
+    border-color: red;
+    border-width: 3px;
+}
+
+.Box1 {
+    background-color: darkcyan;
+    height: calc(var(--font_height) + 5px);
+    padding-left: 20px;
+    margin-top: 5px;
+}
+
+.Box1 b {
+    font-family: var(--font_family);
+    font-size: var(--font_height);
+    color: white;
+}
+
+.input-group {
+    display: flex;
+    align-items: center;
+    margin-top: 5px;
+}
+
+.input-group label {
+    color: white;
+    margin-right: 10px;
+    font-size: calc(var(--font_height) - 3px);
+    font-family: var(--font_family);
+    width: 300px;
+    padding-left: 25px;
+}
+
+.input-group select, .input-group input {
+    font-family: var(--font_family);
+    font-size: calc(var(--font_height) - 3px);
+    width: 150px;
+}
+
+.visible {
+    display: block;
+}
+
+.invisible {
+    display: none;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+}
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+
+.cell {
+    flex: 1;
+    padding: 3px;
+    box-sizing: border-box;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.cell input, .cell select {
+    width: 100%; /* Passt die Breite an den Container an */
+    font-family: var(--font_family);
+    font-size: calc(var(--font_height) - 3px);
+}
+
+.cell label {
+    display: block; /* Macht das Label block-level, sodass es über dem Eingabefeld steht */
+    color: white;
+    margin-bottom: 5px;
+    font-size: calc(var(--font_height) - 3px);
+    font-family: var(--font_family);
+    width: 200px;
+    margin-top: 5px;
+}
+
+
+.cell2 {
+    flex: 1;
+    padding: 3px;
+    box-sizing: border-box;
+}
+
+
+
+
+@media screen and (max-width: 768px) {
+    .input-group label {
+        width: 200px; /* Angepasste Breite für Tablets */
+    }
+
+    .row {
+        flex-direction: column;
+    }
+}
+
+/* Media Query für Mobilgeräte */
+@media screen and (max-width: 480px) {
+    .input-group label {
+        width: 100%; /* Volle Breite auf Mobilgeräten */
+        font-size: calc(var(--font_height) / 1.5);
+    }
+
+    .input-group {
+        flex-direction: column; /* Stapelt Label und Input vertikal */
+    }
+
+    .input-group input, .input-group select {
+        font-size: calc(var(--font_height) / 1.5);
+        margin-left: 2px;
+        margin-right: 2px;
+        padding-left: 2px;
+        padding-right: 2px;
+        flex-direction: column; /* Stapelt Label und Input vertikal */
+        width: 100%;
+        margin-bottom: 5px;
+    }
+
+    .Box1 {
+        background-color: darkcyan;
+        height: calc(var(--font_height) / 1.5 + 5px);
+        padding-left: 5px;
+        margin-top: 1px;
+    }
+
+    .Box1 b {
+        font-family: var(--font_family);
+        font-size: calc(var(--font_height) / 1.5);
+        color: white;
+    }
+}
