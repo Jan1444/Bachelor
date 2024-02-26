@@ -28,9 +28,6 @@ energy_manager_morning_data = EnergyManager("mor_data.toml")
 energy_manager_evening_data = EnergyManager("ev_data.toml")
 
 
-
-
-
 @app.route('/', methods=['GET', 'POST'])
 def index():
     config_data = config_manager.config_data
