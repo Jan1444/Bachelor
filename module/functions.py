@@ -3,13 +3,13 @@
 import datetime
 from functools import lru_cache
 
-import ADS1x15
+# import ADS1x15
 import requests
 import toml
 from numpy import float32, float16, uint16
 from pandas import ExcelFile
 
-from module import GP8403
+# from module import GP8403
 from module import classes, debug, own_wrapper as wrap
 
 
