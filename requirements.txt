@@ -13,3 +13,4 @@ daikinapi
 toml
 xlrd
 smbus
+RPi.GPIO
