@@ -245,6 +245,13 @@ def analyze_file():
     return render_template('analyzed_data.html', data=return_data, power_time_data=zipped_data)
 
 
+@app.route('/test_index', methods=['GET', 'POST'])
+def test_index():
+    return render_template('test_index.html', ausgewaehlte_option="Option 2")
+
+
+
+
 @app.route('/get_window/<frame>')
 def get_window(frame):
     return jsonify(consts.WINDOW_DATA.get(frame, []))
