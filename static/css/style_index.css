@@ -2,21 +2,15 @@
 
 :root {
     --font_family: Arial, SansSerif, serif;
-    --font_height: 23px;
-    --pic_width: 150px;
+    --font_size: 18px;
+    --standard_font: Arial;
 }
 
-input {
-    font-family: var(--font_family);
-    font-size: calc(var(--font_height) - 3px);
-}
 
-table {
-    font-size: var(--font_height);
-    font-family: var(--font_family);
-    table-layout: fixed;
-    width: 100%;
-    padding-left: 25px;
+h1 {
+    font-size: calc(var(--font_size) + 18px);
+    font-family: var(--standard_font);
+    margin-bottom: 30px;
 }
 
 .BoxContent {
@@ -30,11 +24,13 @@ table {
 .Box1 {
     background-color: darkcyan;
     height: calc(var(--font_height) + 5px);
+    margin-top: 5px;
     padding-left: 20px;
 }
 
-
-
-tr td:nth-child(1) {
-    width: 100px;
+.Box1 b {
+    font-family: var(--font_family);
+    font-size: var(--font_height);
+    color: white;
 }
+

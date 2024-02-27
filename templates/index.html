@@ -39,46 +39,17 @@
         </ul>
     </div>
 
-    <table class="BoxHeader">
-        <tr>
-            <td>
-                <img class="HeaderImage" alt="" src="../static/favicon/android-chrome-512x512.png">
-                <h1 class="Headerh1">Übersicht</h1>
-            </td>
-        </tr>
-    </table>
+    <header class="BoxHeader">
+        <img class="HeaderImage" src="../static/favicon/android-chrome-512x512.png" alt="">
+        <h1 class="Headerh1">Übersicht</h1>
+    </header>
 
-    <table class="BoxContent">
-        <tr>
-            <td class="Box1" colspan="2">
-                <a>Heute Übersicht:</a>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <a>Berechnete Photovoltaik Leistung:</a>
-            </td>
-            <td>
-                <a>{{ config['coordinates']['longitude'] }}</a>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <a>Gewählte Heizmethode:</a>
-            </td>
-            <td>
-                <a>{{ config['coordinates']['longitude'] }}</a>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <a>Geschätzte Energie:</a>
-            </td>
-            <td>
-                <a>{{ config['coordinates']['longitude'] }} kWh</a>
-            </td>
-        </tr>
-    </table>
+    <div class="BoxContent">
+        <nav class="Box1">
+            <b>Heute</b>
+        </nav>
+    </div>
+
 </div>
 </body>
 </html>
