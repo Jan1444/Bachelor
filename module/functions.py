@@ -4,6 +4,7 @@ import datetime
 from functools import lru_cache
 
 # import ADS1x15
+# import RPi.GPIO as GPIO
 import requests
 import toml
 from numpy import float32, float16, uint16
@@ -284,7 +285,7 @@ def comp_mor_ev_data(morning_data, evening_data):
             total_dni_difference += abs(evening_values.get('ghi_radiation', 0) - morning_values.get('ghi_radiation', 0))
             count += 1
 
-    energy_difference = abs(evening_data.get("energy", 0) - morning_data.get("energy", 0))
+    # energy_difference = abs(evening_data.get("energy", 0) - morning_data.get("energy", 0))
     energy_difference = abs(evening_data.get("energy", 0) / morning_data.get("energy", 0)) * 100
 
     if count > 0:
@@ -431,3 +432,21 @@ def write_val_to_dac(channel: int, val: float32, address: hex = 0x58):
 
     dac.set_dac_outrange(GP8403.OUTPUT_RANGE_10V)
     dac.set_dac_out_voltage(val, channel)
+
+
+def relay(channel: int, val: bool):
+    if channel == 1:
+        pin = 4
+    elif channel == 2:
+        pin = 18
+    elif channel == 3:
+        pin = 27
+    elif channel == 4:
+        pin = 23
+    else:
+        return
+
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(pin, GPIO.OUT)
+    GPIO.output(pin, val)
+    GPIO.cleanup()
