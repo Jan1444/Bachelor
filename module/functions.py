@@ -411,24 +411,23 @@ def calc_fuel_gas_consumption(heating: float32, efficiency: float32, fuel: str):
     return 1
 
 
-def read_val_from_adc(channel: int) -> float32:
+def read_val_from_adc(channel: int, address: hex = 0x48) -> float32:
     # https://github.com/chandrawi/ADS1x15-ADC/blob/main/README.md
     r1: float32 = float32(1_000)
     r2: float32 = float32(1_000)
 
-    ads = ADS1x15.ADS1115(1, 0x48)
+    ads = ADS1x15.ADS1115(1, address)
     ads.setGain(ads.PGA_6_144V)
 
     vol: float32 = float32(ads.toVoltage(channel))
     return (vol * (r1 + r2)) / r2
 
 
-def write_val_to_dac(channel: int, val: float32):
+def write_val_to_dac(channel: int, val: float32, address: hex = 0x58):
     # https://github.com/DFRobot/DFRobot_GP8403/blob/master/python/raspberryPi/README.md
-    dac = GP8403.DFRobot_GP8403(0x58)
+    dac = GP8403.DFRobot_GP8403(address)
     while dac.begin() != 0:
         print("init error")
-        time.sleep(1)
 
     dac.set_dac_outrange(GP8403.OUTPUT_RANGE_10V)
     dac.set_dac_out_voltage(val, channel)
