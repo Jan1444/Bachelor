@@ -29,13 +29,15 @@
         .option {
             padding: 20px;
             margin: 10px 0 0 20px;
-            border: 1px solid #000000;
+            border: 2px solid #9d9c9c;
             border-radius: 5px;
             transition: all 0.3s ease;
+            width: 300px;
         }
 
         .option.selected {
-            border-color: #ffffff;
+            border-color: #8c8c8c;
+            border-width: 2px;
             background-color: rgba(56, 140, 112, 0.57);
         }
 
@@ -43,6 +45,13 @@
             margin-right: 10px;
             color: #74C0FC;
         }
+
+        .option b {
+            color: #ffffff;
+            font-family: Arial, serif;
+
+        }
+
     </style>
 </head>
 <body>
@@ -73,14 +82,14 @@
             <!-- Option 1 -->
             <div class="option {{ 'selected' if ausgewaehlte_option == 'Option 1' else '' }}">
                 <i class="far {{ 'fa-check-circle' if ausgewaehlte_option == 'Option 1' else 'fa-circle' }}"></i>
-                Option 1
+                <b>Option 1</b>
             </div>
 
             <!-- Option 2 -->
             <div class="option {{ 'selected' if ausgewaehlte_option == 'Option 2' else '' }}">
                 <i class="far {{ 'fa-check-circle' if ausgewaehlte_option == 'Option 2' else 'fa-circle' }}"></i>
                 <i class="fa-regular fa-circle-check"></i>
-                Option 2
+                <b>Option 2</b>
             </div>
 
         </div>
