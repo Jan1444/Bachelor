@@ -333,8 +333,10 @@ def _analyze_data(config_data: dict, weather_data: dict, consumption_data: bool 
 
             heating_power: float16 = hp[1][indx]
             cop: float16 = hp[2][indx]
+
             if not consumption_data:
                 load_data = float16(0)
+
             load_diff: float16 = power_ghi - load_data  # Strom überschuss
 
             diff_energy: float16 = load_diff - (heating_power / cop)

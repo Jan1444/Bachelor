@@ -93,7 +93,7 @@
             <!-- Option 1 -->
             <div class="option {{ 'selected' if choosen_heater[0] == 1 else '' }}">
                 <i class="far {{ 'fa-check-circle' if choosen_heater[0] == 1 else 'fa-circle' }}"></i>
-                <b>Strom</b><br><u>{{ price[1]['strom'] }} ct</u>
+                <b>Strom</b><br><u>{{ price['1']['strom'] }} ct</u>
             </div>
 
             <!-- Option 2 -->
@@ -104,14 +104,14 @@
                 {% else %}
                     Gas
                 {% endif %}</b>
-                <br><u>{{ price[1]['heater'] }} ct</u>
+                <br><u>{{ price['1']['heater'] }} ct</u>
             </div>
         </section>
         <section class="container">
             <div class="option">
                 <i class="fa fa-car-battery"></i>
-                <b>aktuell: {{ vals[1]['battery'] }}%</b>
-                <progress value="{{ vals[1]['battery'] }}" max="100" min="0"
+                <b>aktuell: {{ vals['1']['battery'] }}%</b>
+                <progress value="{{ vals['1']['battery'] }}" max="100" min="0"
                           style="width: 175px; height: 20px; margin-left: 20px; margin-top: 10px; appearance: none; border: 0; border-radius: 20px"></progress>
             </div>
         </section>
@@ -119,15 +119,15 @@
         <section class="container">
             <div class="option">
                 <i class="fa fa-solar-panel"></i>
-                <b>aktuell: {{ vals[1]['pv'] }}Wh</b>
-                <progress value="{{ vals[1]['pv'] }}" max="1000" min="0"
+                <b>aktuell: {{ vals['1']['pv'] }}W</b>
+                <progress value="{{ vals['1']['pv'] }}" max="1000" min="0"
                           style="width: 175px; height: 20px; margin-left: 20px; margin-top: 10px; appearance: none; border: 0; border-radius: 20px"></progress>
             </div>
         </section>
         <section class="container">
             <div class="option">
                 <i class="fa fa-bolt"></i>
-                <b>{{ vals[1]['energy'] }}Wh</b>
+                <b>{{ vals['1']['energy'] }}Wh</b>
             </div>
         </section>
 
@@ -140,7 +140,7 @@
             <!-- Option 1 -->
             <div class="option {{ 'selected' if choosen_heater[1] == 1 else '' }}">
                 <i class="far {{ 'fa-check-circle' if choosen_heater[1] == 1 else 'fa-circle' }}"></i>
-                <b>Strom</b><br><u>{{ price[2]['strom'] }} ct</u>
+                <b>Strom</b><br><u>{{ price['2']['strom'] }} ct</u>
             </div>
 
             <!-- Option 2 -->
@@ -151,14 +151,14 @@
                 {% else %}
                     Gas
                 {% endif %}</b>
-                <br><u>{{ price[2]['heater'] }} ct</u>
+                <br><u>{{ price['2']['heater'] }} ct</u>
             </div>
         </section>
         <section class="container">
             <div class="option">
                 <i class="fa fa-car-battery"></i>
-                <b>max. {{ vals[2]['battery'] }}%</b>
-                <progress value="{{ vals[2]['battery'] }}" max="100" min="0"
+                <b>max. {{ vals['2']['battery'] }}%</b>
+                <progress value="{{ vals['2']['battery'] }}" max="100" min="0"
                           style="width: 175px; height: 20px; margin-left: 20px; margin-top: 10px; appearance: none; border: 0; border-radius: 20px"></progress>
             </div>
         </section>
@@ -166,15 +166,15 @@
         <section class="container">
             <div class="option">
                 <i class="fa fa-solar-panel"></i>
-                <b>max. {{ vals[2]['pv'] }}Wh</b>
-                <progress value="{{ vals[2]['pv'] }}" max="1000" min="0"
+                <b>max. {{ vals['2']['pv'] }}W</b>
+                <progress value="{{ vals['2']['pv'] }}" max="1000" min="0"
                           style="width: 175px; height: 20px; margin-left: 20px; margin-top: 10px; appearance: none; border: 0; border-radius: 20px"></progress>
             </div>
         </section>
         <section class="container">
             <div class="option">
                 <i class="fa fa-bolt"></i>
-                <b>{{ vals[2]['energy'] }}Wh</b>
+                <b>{{ vals['2']['energy'] }}Wh</b>
             </div>
         </section>
 
@@ -188,7 +188,7 @@
                 <!-- Option 1 -->
                 <div class="option {{ 'selected' if choosen_heater[day] == 1 else '' }}">
                     <i class="far {{ 'fa-check-circle' if choosen_heater[day] == 1 else 'fa-circle' }}"></i>
-                    <b>Strom</b><br><u>{{ price[day]['strom'] }} ct</u>
+                    <b>Strom</b><br><u>{{ price[day|string]['strom'] }} ct</u>
                 </div>
 
                 <!-- Option 2 -->
@@ -199,14 +199,14 @@
                     {% else %}
                         Gas
                     {% endif %}</b>
-                    <br><u>{{ price[day]['heater'] }} ct</u>
+                    <br><u>{{ price[day|string]['heater'] }} ct</u>
                 </div>
             </section>
             <section class="container">
                 <div class="option">
                     <i class="fa fa-car-battery"></i>
-                    <b>max. {{ vals[day]['battery'] }}%</b>
-                    <progress value="{{ vals[day]['battery'] }}" max="100" min="0"
+                    <b>max. {{ vals[day|string]['battery'] }}%</b>
+                    <progress value="{{ vals[day|string]['battery'] }}" max="100" min="0"
                               style="width: 175px; height: 20px; margin-left: 20px; margin-top: 10px; appearance: none; border: 0; border-radius: 20px"></progress>
                 </div>
             </section>
@@ -214,15 +214,15 @@
             <section class="container">
                 <div class="option">
                     <i class="fa fa-solar-panel"></i>
-                    <b>max. {{ vals[day]['pv'] }}Wh</b>
-                    <progress value="{{ vals[day]['pv'] }}" max="1000" min="0"
+                    <b>max. {{ vals[day|string]['pv'] }}W</b>
+                    <progress value="{{ vals[day|string]['pv'] }}" max="1000" min="0"
                               style="width: 175px; height: 20px; margin-left: 20px; margin-top: 10px; appearance: none; border: 0; border-radius: 20px"></progress>
                 </div>
             </section>
             <section class="container">
                 <div class="option">
                     <i class="fa fa-bolt"></i>
-                    <b>{{ vals[day]['energy'] }}Wh</b>
+                    <b>{{ vals[day|string]['energy'] }}Wh</b>
                 </div>
             </section>
 

@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 
 import datetime
+import json
 import os
 
+import toml
 from flask import Flask, render_template, request, send_from_directory, redirect, flash, jsonify
 from flask_apscheduler import APScheduler
 from werkzeug.utils import secure_filename
@@ -260,8 +262,13 @@ def test_index():
                      'energy': random.randrange(0, 1000)}
 
     print(option)
+
+    data = json.load(open('./data/index_data.json', mode='r'))
+
+    print(data.get('vals'))
+    print(vals)
     return render_template('test_index.html', config_data=config_data,
-                           price=price, choosen_heater=option, vals=vals)
+                           price=data.get('price'), choosen_heater=data.get('option'), vals=data.get('vals'))
 
 
 @app.route('/get_window/<frame>')
@@ -343,13 +350,14 @@ def steering():
     heating_cost_other: list = []
     idx = 0
 
+    heater_efficiency: float = heater.get('heater_efficiency')
+    heater_type: str = heater.get('heater_type')
+    fuel_price: float = heater.get('heater_price', 0) * 100 * 0.25
+
     for (_, dp), (_, hp) in zip(difference_power, heating_power_data):
         electricity_costs: float = market_data[idx][1] * 0.25
         dp_kw: float = abs(dp / 1_000)
         hp_kw = abs(hp / 1_000)
-        heater_efficiency: float = heater.get('heater_efficiency')
-        heater_type: str = heater.get('heater_type')
-        fuel_price: float = heater.get('heater_price', 0) * 100 * 0.25
 
         heating_cost.append((dp_kw * electricity_costs) if dp < 0 else dp_kw * 0.08 * 0.25)
 
@@ -371,6 +379,76 @@ def steering():
 
     print(daily_cost, 'ct')
     print(daily_cost_other, 'ct')
+
+
+def save_index_data():
+    config_data: dict = config_manager.config_data
+    heater = config_data.get('heater')
+
+    heater_efficiency: float = heater.get('heater_efficiency')
+    heater_type: str = heater.get('heater_type')
+    fuel_price: float = heater.get('heater_price', 0) * 100 * 0.25
+
+    weather_data = fc.get_weather_data(config_data, days=16)
+
+    energy_today, pv_power_data, market_data, heating_power_data, difference_power, battery_power = (
+        analytics_module.analyze_data(config_data, weather_data, False)
+    )
+
+    vals: dict = {}
+    price: dict = {}
+    option: list = []
+
+    heating_cost: list = []
+    heating_cost_other: list = []
+
+    idx = 0
+
+    md: list = []
+    for i in range(0, 24):
+        for _ in range(0, 4):
+            md.append(market_data[i][1])
+
+    for day in range(1, 17):
+        battery: list = []
+        pv: list = []
+        for (_, dp), (_, hp), (_, bp), (_, pp) in zip(difference_power, heating_power_data, battery_power,
+                                                      pv_power_data):
+            battery.append(bp)
+            pv.append(pp)
+
+            if idx < 96:
+                electricity_costs: float = md[idx] * 0.25
+            else:
+                electricity_costs: float = max(md) * 0.25
+
+            dp_kw: float = abs(dp / 1_000)
+            hp_kw = abs(hp / 1_000)
+
+            heating_cost.append((dp_kw * electricity_costs) if dp < 0 else dp_kw * 0.08 * 0.25)
+
+            fuel_gas_price = fc.calc_fuel_gas_consumption(hp_kw, heater_efficiency, heater_type) * fuel_price
+
+            heating_cost_other.append(fuel_gas_price)
+            idx += 1
+
+            if idx % 96 == 0:
+                if sum(heating_cost_other) < sum(heating_cost):
+                    option.append(2)
+                else:
+                    option.append(1)
+
+                price[day] = {'heater': round(sum(heating_cost_other), 2), 'strom': round(sum(heating_cost), 2)}
+
+        en = fc.calc_energy(pv[((-1 + day) * 96):(96 * day)], kwh=False, round_=2)
+
+        vals[day] = {'battery': round(max(battery[((-1 + day) * 96):(96 * day)]), 2),
+                     'pv': round(max(pv[((-1 + day) * 96):(96 * day)]), 2),
+                     'energy': en}
+
+    data = {'vals': vals, 'price': price, 'option': option}
+
+    json.dump(data, open('./data/index_data.json', mode='w'))
 
 
 if __name__ == '__main__':
