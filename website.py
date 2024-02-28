@@ -247,9 +247,21 @@ def analyze_file():
 
 @app.route('/test_index', methods=['GET', 'POST'])
 def test_index():
-    return render_template('test_index.html', ausgewaehlte_option="Option 2")
+    config_data: dict = config_manager.config_data
 
+    price = {}
+    option = []
+    vals = {}
+    import random
+    for day in range(1, 18):
+        price[day] = {'heater': random.randrange(1, 100), 'strom': random.randrange(1, 100)}
+        option.append(random.randrange(1, 3))
+        vals[day] = {'battery': random.randrange(0, 100), 'pv': random.randrange(0, 1000),
+                     'energy': random.randrange(0, 1000)}
 
+    print(option)
+    return render_template('test_index.html', config_data=config_data,
+                           price=price, choosen_heater=option, vals=vals)
 
 
 @app.route('/get_window/<frame>')

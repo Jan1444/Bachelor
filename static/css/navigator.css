@@ -19,7 +19,7 @@
     width: 100%;
     background: linear-gradient(to right, rgb(52, 80, 109), #092638 7.14%);
     display: grid;
-    grid-template-columns: minmax(100px, auto) 1fr;
+    grid-template-columns: minmax(100px, auto) minmax(100px, auto) 1fr;
     align-items: start;
     justify-content: start;
     overflow: hidden;
@@ -98,7 +98,7 @@ a {
     grid-row-start: 1;
     grid-row-end: 1;
     grid-column-start: 2;
-    grid-column-end: 2;
+    grid-column-end: 30;
     width: 100%;
     height: var(--pic_width);
 }
