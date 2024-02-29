@@ -250,23 +250,8 @@ def analyze_file():
 @app.route('/test_index', methods=['GET', 'POST'])
 def test_index():
     config_data: dict = config_manager.config_data
-
-    price = {}
-    option = []
-    vals = {}
-    import random
-    for day in range(1, 18):
-        price[day] = {'heater': random.randrange(1, 100), 'strom': random.randrange(1, 100)}
-        option.append(random.randrange(1, 3))
-        vals[day] = {'battery': random.randrange(0, 100), 'pv': random.randrange(0, 1000),
-                     'energy': random.randrange(0, 1000)}
-
-    print(option)
-
     data = json.load(open('./data/index_data.json', mode='r'))
 
-    print(data.get('vals'))
-    print(vals)
     return render_template('test_index.html', config_data=config_data,
                            price=data.get('price'), choosen_heater=data.get('option'), vals=data.get('vals'))
 
@@ -399,52 +384,57 @@ def save_index_data():
     price: dict = {}
     option: list = []
 
-    heating_cost: list = []
-    heating_cost_other: list = []
-
     idx = 0
+    day = 1
 
     md: list = []
     for i in range(0, 24):
         for _ in range(0, 4):
             md.append(market_data[i][1])
 
-    for day in range(1, 17):
-        battery: list = []
-        pv: list = []
-        for (_, dp), (_, hp), (_, bp), (_, pp) in zip(difference_power, heating_power_data, battery_power,
-                                                      pv_power_data):
-            battery.append(bp)
-            pv.append(pp)
+    battery: list = []
+    pv: list = []
+    heating_cost: list = []
+    heating_cost_other: list = []
+    for (_, dp), (_, hp), (_, bp), (_, pp) in zip(difference_power, heating_power_data, battery_power,
+                                                  pv_power_data):
+        battery.append(bp)
+        pv.append(pp)
 
-            if idx < 96:
-                electricity_costs: float = md[idx] * 0.25
+        if idx < 96:
+            electricity_costs: float = md[idx] * 0.25
+        else:
+            electricity_costs: float = max(md) * 0.25
+
+        dp_kw: float = abs(dp / 1_000)
+        hp_kw = abs(hp / 1_000)
+
+        heating_cost.append((dp_kw * electricity_costs) if dp < 0 else dp_kw * 0.08 * 0.25)
+
+        fuel_gas_price = fc.calc_fuel_gas_consumption(hp_kw, heater_efficiency, heater_type) * fuel_price
+
+        heating_cost_other.append(fuel_gas_price)
+        idx += 1
+
+        if idx % 96 == 0:
+
+            heating_cost_other_sum = sum(heating_cost_other[((-1 + day) * 96):(96 * day)])
+            heating_cost_sum = sum(heating_cost[((-1 + day) * 96):(96 * day)])
+
+            if heating_cost_other_sum < heating_cost_sum:
+                option.append(2)
             else:
-                electricity_costs: float = max(md) * 0.25
+                option.append(1)
 
-            dp_kw: float = abs(dp / 1_000)
-            hp_kw = abs(hp / 1_000)
+            en = fc.calc_energy(pv[((-1 + day) * 96):(96 * day)], kwh=False, round_=2)
 
-            heating_cost.append((dp_kw * electricity_costs) if dp < 0 else dp_kw * 0.08 * 0.25)
+            price[day] = {'heater': round(heating_cost_other_sum, 2), 'strom': round(heating_cost_sum, 2)}
 
-            fuel_gas_price = fc.calc_fuel_gas_consumption(hp_kw, heater_efficiency, heater_type) * fuel_price
+            vals[day] = {'battery': round(max(battery[((-1 + day) * 96):(96 * day)]), 2),
+                         'pv': round(max(pv[((-1 + day) * 96):(96 * day)]), 2),
+                         'energy': en}
 
-            heating_cost_other.append(fuel_gas_price)
-            idx += 1
-
-            if idx % 96 == 0:
-                if sum(heating_cost_other) < sum(heating_cost):
-                    option.append(2)
-                else:
-                    option.append(1)
-
-                price[day] = {'heater': round(sum(heating_cost_other), 2), 'strom': round(sum(heating_cost), 2)}
-
-        en = fc.calc_energy(pv[((-1 + day) * 96):(96 * day)], kwh=False, round_=2)
-
-        vals[day] = {'battery': round(max(battery[((-1 + day) * 96):(96 * day)]), 2),
-                     'pv': round(max(pv[((-1 + day) * 96):(96 * day)]), 2),
-                     'energy': en}
+            day += 1
 
     data = {'vals': vals, 'price': price, 'option': option}
 
