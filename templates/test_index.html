@@ -23,44 +23,6 @@
 
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
-
-
-
-    <style>
-        .option {
-            padding: 20px;
-            margin: 10px 0 0 20px;
-            border: 2px solid #9d9c9c;
-            border-radius: 5px;
-            transition: all 0.3s ease;
-            width: 250px;
-        }
-
-        .option.selected {
-            border-color: #8c8c8c;
-            border-width: 2px;
-            background-color: rgba(56, 140, 112, 0.57);
-        }
-
-        .option i {
-            margin-right: 10px;
-            color: #74C0FC;
-        }
-
-        .option b {
-            color: #ffffff;
-            font-family: Arial, serif;
-
-        }
-
-        .option u {
-            color: #ffffff;
-            font-family: Arial, serif;
-            font-size: 13px;
-            padding-left: 30px;
-        }
-
-    </style>
 </head>
 <body>
 <div id="main-container">
@@ -93,7 +55,8 @@
             <!-- Option 1 -->
             <div class="option {{ 'selected' if choosen_heater[0] == 1 else '' }}">
                 <i class="far {{ 'fa-check-circle' if choosen_heater[0] == 1 else 'fa-circle' }}"></i>
-                <b>Strom</b><br><u>{{ price['1']['strom'] }} ct</u>
+                <b>Strom</b><br>
+                <u>{{ price['1']['strom'] }} ct</u>
             </div>
 
             <!-- Option 2 -->
@@ -103,16 +66,15 @@
                     Diesel
                 {% else %}
                     Gas
-                {% endif %}</b>
-                <br><u>{{ price['1']['heater'] }} ct</u>
+                {% endif %}</b><br>
+                <u>{{ price['1']['heater'] }} ct</u>
             </div>
         </section>
         <section class="container">
             <div class="option">
                 <i class="fa fa-car-battery"></i>
                 <b>aktuell: {{ vals['1']['battery'] }}%</b>
-                <progress value="{{ vals['1']['battery'] }}" max="100" min="0"
-                          style="width: 175px; height: 20px; margin-left: 20px; margin-top: 10px; appearance: none; border: 0; border-radius: 20px"></progress>
+                <progress value="{{ vals['1']['battery'] }}" max="100" min="0"></progress>
             </div>
         </section>
 
@@ -120,8 +82,7 @@
             <div class="option">
                 <i class="fa fa-solar-panel"></i>
                 <b>aktuell: {{ vals['1']['pv'] }}W</b>
-                <progress value="{{ vals['1']['pv'] }}" max="1000" min="0"
-                          style="width: 175px; height: 20px; margin-left: 20px; margin-top: 10px; appearance: none; border: 0; border-radius: 20px"></progress>
+                <progress value="{{ vals['1']['pv'] }}" max="1000" min="0"></progress>
             </div>
         </section>
         <section class="container">
@@ -158,8 +119,7 @@
             <div class="option">
                 <i class="fa fa-car-battery"></i>
                 <b>max. {{ vals['2']['battery'] }}%</b>
-                <progress value="{{ vals['2']['battery'] }}" max="100" min="0"
-                          style="width: 175px; height: 20px; margin-left: 20px; margin-top: 10px; appearance: none; border: 0; border-radius: 20px"></progress>
+                <progress value="{{ vals['2']['battery'] }}" max="100" min="0"></progress>
             </div>
         </section>
 
@@ -167,8 +127,7 @@
             <div class="option">
                 <i class="fa fa-solar-panel"></i>
                 <b>max. {{ vals['2']['pv'] }}W</b>
-                <progress value="{{ vals['2']['pv'] }}" max="1000" min="0"
-                          style="width: 175px; height: 20px; margin-left: 20px; margin-top: 10px; appearance: none; border: 0; border-radius: 20px"></progress>
+                <progress value="{{ vals['2']['pv'] }}" max="1000" min="0"></progress>
             </div>
         </section>
         <section class="container">
@@ -206,8 +165,7 @@
                 <div class="option">
                     <i class="fa fa-car-battery"></i>
                     <b>max. {{ vals[day|string]['battery'] }}%</b>
-                    <progress value="{{ vals[day|string]['battery'] }}" max="100" min="0"
-                              style="width: 175px; height: 20px; margin-left: 20px; margin-top: 10px; appearance: none; border: 0; border-radius: 20px"></progress>
+                    <progress value="{{ vals[day|string]['battery'] }}" max="100" min="0"></progress>
                 </div>
             </section>
 
@@ -215,8 +173,7 @@
                 <div class="option">
                     <i class="fa fa-solar-panel"></i>
                     <b>max. {{ vals[day|string]['pv'] }}W</b>
-                    <progress value="{{ vals[day|string]['pv'] }}" max="1000" min="0"
-                              style="width: 175px; height: 20px; margin-left: 20px; margin-top: 10px; appearance: none; border: 0; border-radius: 20px"></progress>
+                    <progress value="{{ vals[day|string]['pv'] }}" max="1000" min="0"></progress>
                 </div>
             </section>
             <section class="container">

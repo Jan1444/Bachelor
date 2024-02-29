@@ -32,8 +32,19 @@ energy_manager_evening_data = EnergyManager("ev_data.toml")
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    config_data = config_manager.config_data
-    return render_template('index.html', config=config_data)
+    config_data: dict = config_manager.config_data
+    data = json.load(open('./data/index_data.json', mode='r'))
+    return render_template('index.html', config_data=config_data,
+                           price=data.get('price'), choosen_heater=data.get('option'), vals=data.get('vals'))
+
+
+@app.route('/test_index', methods=['GET', 'POST'])
+def test_index():
+    config_data: dict = config_manager.config_data
+    data = json.load(open('./data/index_data.json', mode='r'))
+
+    return render_template('test_index.html', config_data=config_data,
+                           price=data.get('price'), choosen_heater=data.get('option'), vals=data.get('vals'))
 
 
 @app.route('/dashboard')
@@ -46,9 +57,17 @@ def dashboard():
 def analytics():
     config_data = config_manager.config_data
     weather_data = fc.get_weather_data(config_data, days=14)
+    analytics_data = toml.load(open('./data/data.toml', mode='r')).get('analytics')
+
+    state_of_charge = 0
+    if (datetime.datetime.strptime(analytics_data.get('datum'), '%d-%m-%Y').date() -
+        datetime.datetime.today().date()).days == -1:
+        state_of_charge = analytics_data.get('state_of_charge')
+
+    print(state_of_charge)
 
     energy_today, pv_power_data, market_data, heating_power_data, difference_power, battery_power = (
-        analytics_module.analyze_data(config_data, weather_data))
+        analytics_module.analyze_data(config_data, weather_data, init_battery_charge=state_of_charge))
 
     return render_template('analytics.html', energy_data=energy_today,
                            pv_power_data=pv_power_data, market_data=market_data,
@@ -151,6 +170,7 @@ def safe_settings():
 
             write_data = set_vals.write_data_to_config(config_data, data)
             config_manager.write_config_data(write_data)
+            save_index_data()
 
             return redirect('/')
         else:
@@ -245,15 +265,6 @@ def analyze_file():
     zipped_data = zip(ret[7], ret[8])
 
     return render_template('analyzed_data.html', data=return_data, power_time_data=zipped_data)
-
-
-@app.route('/test_index', methods=['GET', 'POST'])
-def test_index():
-    config_data: dict = config_manager.config_data
-    data = json.load(open('./data/index_data.json', mode='r'))
-
-    return render_template('test_index.html', config_data=config_data,
-                           price=data.get('price'), choosen_heater=data.get('option'), vals=data.get('vals'))
 
 
 @app.route('/get_window/<frame>')

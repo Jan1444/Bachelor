@@ -170,3 +170,46 @@ h1 {
     color: white;
 }
 
+
+.option {
+    padding: 20px;
+    margin: 10px 0 0 20px;
+    border: 2px solid #9d9c9c;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    width: 250px;
+}
+
+.option.selected {
+    border-color: #8c8c8c;
+    border-width: 2px;
+    background-color: rgba(56, 140, 112, 0.57);
+}
+
+.option i {
+    margin-right: 10px;
+    color: #74C0FC;
+}
+
+.option b {
+    color: #ffffff;
+    font-family: Arial, serif;
+
+}
+
+.option u {
+    color: #ffffff;
+    font-family: Arial, serif;
+    font-size: 13px;
+    padding-left: 30px;
+}
+
+progress {
+    width: 175px;
+    height: 20px;
+    margin-left: 20px;
+    margin-top: 10px;
+    appearance: none;
+    border: 0;
+    border-radius: 20px
+}

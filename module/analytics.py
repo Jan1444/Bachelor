@@ -3,6 +3,7 @@
 import datetime
 from functools import lru_cache
 
+import toml
 from numpy import float64, float32, float16, uint16, array, absolute
 
 from module import functions, analytics
@@ -262,12 +263,12 @@ def heating_power(config_data: dict, weather: dict) -> (list, list, list):
 
 
 @wrap.freeze_all
-def analyze_data(config_data: dict, weather_data: dict, consumption_data: bool = True):
-    return _analyze_data(config_data, weather_data, consumption_data)
+def analyze_data(config_data: dict, weather_data: dict, consumption_data: bool = True, init_battery_charge: float = 0):
+    return _analyze_data(config_data, weather_data, consumption_data, init_battery_charge)
 
 
 @lru_cache(maxsize=1)
-def _analyze_data(config_data: dict, weather_data: dict, consumption_data: bool = True):
+def _analyze_data(config_data: dict, weather_data: dict, consumption_data: bool = True, init_battery_charge: float = 0):
     converter = config_data["converter"]
     load_profile = config_data["load_profile"]
     battery = config_data.get('battery')
@@ -282,11 +283,12 @@ def _analyze_data(config_data: dict, weather_data: dict, consumption_data: bool 
         battery.get('capacity', 0) * 1_000 * (1 - battery.get('max_deload', 100) / 100))
     charging_power: float32 = float32(battery.get('charging_power', 0) * 0.25)
     battery_capacity: float32 = float32(battery.get('capacity', 0) * 1_000)
-    state_of_charge: float32 = float32(min_capacity / battery_capacity * 100)
+    state_of_charge: float32 = float32(init_battery_charge)
     min_state_of_charge: float32 = float32(min_capacity / battery_capacity * 100)
     load_efficiency: float32 = float32(battery.get('load_efficiency', 0) / 100)
 
     sun_class = functions.init_sun(config_data)
+
     pv_class = functions.init_pv(config_data, number=1)
     pv_class2 = functions.init_pv(config_data, number=2)
     pv_class3 = functions.init_pv(config_data, number=3)
@@ -361,6 +363,13 @@ def _analyze_data(config_data: dict, weather_data: dict, consumption_data: bool 
 
             diff_power.append(diff_energy + discharge)
 
+            if indx == 96:
+                toml.dump({'analytics': {
+                    'datum': date_old,
+                    'state_of_charge': float(state_of_charge)
+                }
+                }, open('./data/data.toml', mode='w'))
+            date_old = date
             indx += 1
 
     market_time = [time.get('start_timestamp') for time in market_class.data]
