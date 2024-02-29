@@ -281,7 +281,7 @@ def get_door(door):
     return jsonify(consts.DOOR_DATA.get(door, []))
 
 
-@scheduler.task("cron", id="morning_saver", hour=6)
+# @scheduler.task("cron", id="morning_saver", hour=6)
 def save_morning():
     print("save_data morning")
     print(datetime.datetime.now())
@@ -293,7 +293,7 @@ def save_morning():
     energy_manager_morning_data.write_energy_data(write_dict)
 
 
-@scheduler.task("cron", id="evening_saver", hour=20)
+# @scheduler.task("cron", id="evening_saver", hour=20)
 def save_evening():
     print("save_data evening")
     print(datetime.datetime.now())
@@ -305,7 +305,7 @@ def save_evening():
     energy_manager_evening_data.write_energy_data(write_dict)
 
 
-@scheduler.task("cron", id="data_compare", hour=21)
+# @scheduler.task("cron", id="data_compare", hour=21)
 def compare_data():
     print("compare data")
     print(datetime.datetime.now())
@@ -320,7 +320,6 @@ def compare_data():
         print("Big error")
 
 
-@scheduler.task("interval", id="steering", seconds=3601)
 def steering():
     config_data: dict = config_manager.config_data
     heater = config_data.get('heater')
@@ -366,6 +365,7 @@ def steering():
     print(daily_cost_other, 'ct')
 
 
+@scheduler.task("interval", id="save_index_data", seconds=3601)
 def save_index_data():
     config_data: dict = config_manager.config_data
     heater = config_data.get('heater')
