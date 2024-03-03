@@ -2,7 +2,7 @@
 reload = true
 
 [write_time]
-time = "29-02-2024 12:20:01"
+time = "03-03-2024 13:54:37"
 format = "%d-%m-%Y %H:%M:%S"
 
 [coordinates]
@@ -11,6 +11,9 @@ longitude = 11.29489
 
 [pv]
 alignment = 1
+pv_lifetime = 25.0
+pv_peak_power = 1080.0
+pv_cost = 750.0
 tilt_angle1 = 35.0
 area1 = 5.16
 module_efficiency1 = 20.0
@@ -49,6 +52,8 @@ capacity = 6.0
 charging_power = 1000.0
 max_deload = 90.0
 load_efficiency = 95.0
+load_cycle = 6000.0
+price = 1038.0
 
 [market]
 consumer_price = 15.35
@@ -69,7 +74,7 @@ ip_address_cloud = ""
 ir_remote = ""
 
 [load_profile]
-name = "lastprofil_nsi_2023.xls"
+name = "None"
 
 [house]
 house_year = 0
