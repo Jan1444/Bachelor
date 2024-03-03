@@ -159,6 +159,21 @@
                                 <input id="nominal_temperature{{ number }}" minlength="1" name="nominal_temperature{{ number }}"
                                        type="text" value="{{ config['pv']['nominal_temperature' + number] }}">
                             </div>
+                            <div class="input-group">
+                                <label for="pv_lifetime">Lebensdauer [J.]:</label>
+                                <input id="pv_lifetime" minlength="1" name="pv_lifetime"
+                                       type="text" value="{{ config['pv']['pv_lifetime'] }}">
+                            </div>
+                            <div class="input-group">
+                                <label for="pv_peak_power">Peak-Leistung [kWp]:</label>
+                                <input id="pv_peak_power" minlength="1" name="pv_peak_power"
+                                       type="text" value="{{ config['pv']['pv_peak_power'] }}">
+                            </div>
+                            <div class="input-group">
+                                <label for="pv_cost">Kosten [€]:</label>
+                                <input id="pv_cost" minlength="1" name="pv_cost"
+                                       type="text" value="{{ config['pv']['pv_cost'] }}">
+                            </div>
                         </div>
                     </div>
                     <div class="cell2">
@@ -459,6 +474,16 @@
                 <label for="battery_load_efficiency">Akku Ladeeffizienz [%]:</label>
                 <input id="battery_load_efficiency" minlength="1" name="battery_load_efficiency"
                        type="text" value="{{ config['battery']['load_efficiency'] }}">
+            </div>
+            <div class="input-group">
+                <label for="battery_load_cycle">Akku Ladezyklen:</label>
+                <input id="battery_load_cycle" minlength="1" name="battery_load_cycle"
+                       type="text" value="{{ config['battery']['load_cycle'] }}">
+            </div>
+            <div class="input-group">
+                <label for="battery_price">Akku Preis [€]:</label>
+                <input id="battery_price" minlength="1" name="battery_price"
+                       type="text" value="{{ config['battery']['price'] }}">
             </div>
         </section>
         <nav class="Box1">
