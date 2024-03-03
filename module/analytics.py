@@ -276,6 +276,7 @@ def _analyze_data(config_data: dict, weather_data: dict, consumption_data: bool 
     pv_data_data: list = []
     weather_time: list = []
 
+    diff_energy_data: list = []
     diff_power: list = []
 
     battery_load: list = []
@@ -362,13 +363,19 @@ def _analyze_data(config_data: dict, weather_data: dict, consumption_data: bool 
             state_of_charge_old = state_of_charge
 
             diff_power.append(diff_energy + discharge)
+            diff_energy_data.append(abs(diff_energy))
 
             if indx == 96:
-                toml.dump({'analytics': {
-                    'datum': date_old,
+                path = r'./data/data.toml'
+
+                data = toml.load(open(path, 'r'))
+
+                data.update({date_old: {
                     'state_of_charge': float(state_of_charge)
                 }
-                }, open('./data/data.toml', mode='w'))
+                })
+
+                toml.dump(data, open(path, mode='w'))
             date_old = date
             indx += 1
 
@@ -387,4 +394,5 @@ def _analyze_data(config_data: dict, weather_data: dict, consumption_data: bool 
 
     battery_power = [[time, value] for time, value in zip(hp[0], array(battery_load, dtype=float64))]
 
-    return energy_today, pv_power_data, market_data, heating_power_data, difference_power, battery_power
+    return (energy_today, pv_power_data, market_data, heating_power_data, difference_power, battery_power,
+            diff_energy_data)
