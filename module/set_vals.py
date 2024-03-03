@@ -35,8 +35,9 @@ def write_data_to_config(config_data: dict, data: dict) -> dict | int:
         for key in pv:
             alignment = int(data.get('alignment'))
             pv['alignment'] = alignment
-
-            print(key)
+            pv['pv_lifetime'] = float(data.get('pv_lifetime', 0))
+            pv['pv_peak_power'] = float(data.get('pv_peak_power', 0))
+            pv['pv_cost'] = float(data.get('pv_cost', 0))
 
             if '1' in key:
                 if alignment >= 1:
@@ -57,7 +58,7 @@ def write_data_to_config(config_data: dict, data: dict) -> dict | int:
                     pv[key] = 0.0
 
             if '4' in key:
-                if alignment >= 4:
+                if alignment == 4:
                     pv[key] = float(data.get(key, 0))
                 else:
                     pv[key] = 0.0
