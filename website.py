@@ -422,7 +422,7 @@ def save_index_data():
         if idx < 96:
             electricity_costs: float = md[idx] * 0.25
         else:
-            electricity_costs: float = max(md) * 0.25
+            electricity_costs: float = max(md) * 0.25 * 1.1
 
         dp_kw: float = abs(dp / 1_000)
         hp_kw = abs(hp / 1_000)
