@@ -337,7 +337,7 @@ def steering():
 
     weather_data = fc.get_weather_data(config_data, days=1)
 
-    energy_today, pv_power_data, market_data, heating_power_data, difference_power, battery_power = (
+    energy_today, pv_power_data, market_data, heating_power_data, difference_power, battery_power, _ = (
         analytics_module.analyze_data(config_data, weather_data, False)
     )
 

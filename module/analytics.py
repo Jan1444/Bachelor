@@ -1,6 +1,7 @@
 #  -*- coding: utf-8 -*-
 
 import datetime
+import math
 from functools import lru_cache
 
 import toml
@@ -263,12 +264,14 @@ def heating_power(config_data: dict, weather: dict) -> (list, list, list):
 
 
 @wrap.freeze_all
-def analyze_data(config_data: dict, weather_data: dict, consumption_data: bool = True, init_battery_charge: float = 0):
-    return _analyze_data(config_data, weather_data, consumption_data, init_battery_charge)
+def analyze_data(config_data: dict, weather_data: dict, consumption_data: bool = True, init_battery_charge: float = 0,
+                 calc_cost: bool = True):
+    return _analyze_data(config_data, weather_data, consumption_data, init_battery_charge, calc_cost)
 
 
 @lru_cache(maxsize=1)
-def _analyze_data(config_data: dict, weather_data: dict, consumption_data: bool = True, init_battery_charge: float = 0):
+def _analyze_data(config_data: dict, weather_data: dict, consumption_data: bool = True, init_battery_charge: float = 0,
+                  calc_cost: bool = False):
     converter = config_data["converter"]
     load_profile = config_data["load_profile"]
     battery = config_data.get('battery')
@@ -288,6 +291,8 @@ def _analyze_data(config_data: dict, weather_data: dict, consumption_data: bool 
     min_state_of_charge: float32 = float32(min_capacity / battery_capacity * 100)
     load_efficiency: float32 = float32(battery.get('load_efficiency', 0) / 100)
 
+    state_of_charge_end: float32 = float32(0)
+
     sun_class = functions.init_sun(config_data)
 
     pv_class = functions.init_pv(config_data, number=1)
@@ -296,6 +301,9 @@ def _analyze_data(config_data: dict, weather_data: dict, consumption_data: bool 
     pv_class4 = functions.init_pv(config_data, number=4)
 
     market_class = functions.init_market(config_data)
+
+    market_time = [time.get('start_timestamp') for time in market_class.data]
+    market_price = [price.get('consumerprice') for price in market_class.data]
 
     load_profile_data: dict = functions.load_load_profile(f'{consts.LOAD_PROFILE_FOLDER}/{load_profile.get("name")}')
 
@@ -308,7 +316,7 @@ def _analyze_data(config_data: dict, weather_data: dict, consumption_data: bool 
     for date, weather_today in weather_data.items():
         date_load: str = date.rsplit('-', 1)[0]
         curr_load: dict = load_profile_data.get(date_load, "")
-
+        print(state_of_charge)
         for (tme_pv, data), (tme_load, load_data) in zip(weather_today.items(), curr_load.items()):
             time_float: float16 = functions.string_time_to_float(tme_pv)
             temp: float16 = float16(data.get("temp", 0))
@@ -334,7 +342,7 @@ def _analyze_data(config_data: dict, weather_data: dict, consumption_data: bool 
             if tme_pv != tme_load:
                 continue
 
-            heating_power: float16 = hp[1][indx]
+            heating_pwr: float16 = hp[1][indx]
             cop: float16 = hp[2][indx]
 
             if not consumption_data:
@@ -342,7 +350,7 @@ def _analyze_data(config_data: dict, weather_data: dict, consumption_data: bool 
 
             load_diff: float16 = power_ghi - load_data  # Strom überschuss
 
-            diff_energy: float16 = load_diff - (heating_power / cop)
+            diff_energy: float16 = load_diff - (heating_pwr / cop)
 
             energy: float16 = diff_energy * 0.25
 
@@ -359,6 +367,8 @@ def _analyze_data(config_data: dict, weather_data: dict, consumption_data: bool 
             discharge = 0
             if state_of_charge_old > state_of_charge:
                 discharge = abs(diff_energy)
+            elif state_of_charge > state_of_charge_end:
+                state_of_charge_end = state_of_charge
 
             state_of_charge_old = state_of_charge
 
@@ -379,8 +389,22 @@ def _analyze_data(config_data: dict, weather_data: dict, consumption_data: bool 
             date_old = date
             indx += 1
 
-    market_time = [time.get('start_timestamp') for time in market_class.data]
-    market_price = [price.get('consumerprice') for price in market_class.data]
+        if calc_cost:
+            slicer: slice = slice(indx - 96, indx)
+
+            if indx > 96:
+                market_price_calc: list = []
+                max_market_price = max(market_price) * 1.1
+                for _ in market_price:
+                    market_price_calc.append(max_market_price)
+            else:
+                market_price_calc = market_price
+
+            ret = calc_heating_cost(config_data, diff_power[slicer], hp[1][slicer],
+                                    market_price_calc, diff_energy_data)
+
+            if ret == 1:
+                state_of_charge = state_of_charge_end
 
     energy_today = functions.calc_energy(pv_data_data[:95], kwh=False, round_=2)
 
@@ -396,3 +420,48 @@ def _analyze_data(config_data: dict, weather_data: dict, consumption_data: bool 
 
     return (energy_today, pv_power_data, market_data, heating_power_data, difference_power, battery_power,
             diff_energy_data)
+
+
+def calc_heating_cost(config_data: dict, difference_power: list, heating_power_data: list, market_data: list,
+                      diff_energy_battery: list):
+    heater: dict = config_data.get('heater')
+    pv: dict = config_data.get('pv')
+    battery: dict = config_data.get('battery')
+
+    heater_efficiency: float = heater.get('heater_efficiency')
+    heater_type: str = heater.get('heater_type')
+    fuel_price: float = heater.get('heater_price', 0) * 100 * 0.25
+
+    battery_energy_price: float = (battery.get('price', 0) /
+                                   (battery.get('capacity', 0.0001) * battery.get('load_cycle', 0.0001)))
+    pv_energy_price: float = (pv.get('pv_cost', 0) /
+                              (pv.get('pv_peak_power', 0.0001) * pv.get('pv_lifetime') * 1100))
+
+    heating_cost_pv: list = []
+    heating_cost_other: list = []
+
+    for dp, hp, md, bat_en in zip(difference_power, heating_power_data, market_data, diff_energy_battery):
+        electricity_costs: float = md * 0.25
+        dp_kw: float = abs(dp / 1_000)
+        hp_kw = abs(hp / 1_000)
+
+        if dp < 0:
+            heating_cost_pv.append(dp_kw * electricity_costs)
+        elif dp > 0:
+            heating_cost_pv.append(dp_kw * electricity_costs * pv_energy_price * 0.25)
+        elif dp == 0:
+            heating_cost_pv.append((bat_en / 1_000) * electricity_costs * battery_energy_price * 0.25)
+
+        fuel_gas_price = functions.calc_fuel_gas_consumption(hp_kw, heater_efficiency, heater_type) * fuel_price
+        heating_cost_other.append(fuel_gas_price)
+
+    heating_cost_other_sum = sum(heating_cost_other)
+    heating_cost_sum = sum(heating_cost_pv)
+
+    print('oil', heating_cost_other_sum)
+    print('hvac', heating_cost_sum)
+
+    if heating_cost_other_sum < heating_cost_sum:
+        return 1
+    else:
+        return 2
