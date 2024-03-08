@@ -310,13 +310,15 @@ def _analyze_data(config_data: dict, weather_data: dict, consumption_data: bool 
     hp = analytics.heating_power(config_data, weather_data)
 
     indx: uint16 = uint16(0)
+    day_indx: uint16 = uint16(0)
 
     state_of_charge_old = -1
 
     for date, weather_today in weather_data.items():
+        day_indx += 1
         date_load: str = date.rsplit('-', 1)[0]
         curr_load: dict = load_profile_data.get(date_load, "")
-        print(state_of_charge)
+        state_of_charge_end = 0
         for (tme_pv, data), (tme_load, load_data) in zip(weather_today.items(), curr_load.items()):
             time_float: float16 = functions.string_time_to_float(tme_pv)
             temp: float16 = float16(data.get("temp", 0))
@@ -367,8 +369,13 @@ def _analyze_data(config_data: dict, weather_data: dict, consumption_data: bool 
             discharge = 0
             if state_of_charge_old > state_of_charge:
                 discharge = abs(diff_energy)
-            elif state_of_charge > state_of_charge_end:
+
+            elif state_of_charge >= state_of_charge_end:
                 state_of_charge_end = state_of_charge
+                indx_state_of_charge_end = indx
+
+            elif state_of_charge_old < state_of_charge:
+                indx_charge = indx
 
             state_of_charge_old = state_of_charge
 
@@ -390,7 +397,7 @@ def _analyze_data(config_data: dict, weather_data: dict, consumption_data: bool 
             indx += 1
 
         if calc_cost:
-            slicer: slice = slice(indx - 96, indx)
+            slicer: slice = slice(indx - 96, indx - 1)
 
             if indx > 96:
                 market_price_calc: list = []
@@ -405,6 +412,12 @@ def _analyze_data(config_data: dict, weather_data: dict, consumption_data: bool 
 
             if ret == 1:
                 state_of_charge = state_of_charge_end
+
+                # Wenn state of charge steigt dann adden aber nicht den cod
+                #
+
+                for i in range(indx_state_of_charge_end, 96 * day_indx):
+                    battery_load[i] = state_of_charge_end
 
     energy_today = functions.calc_energy(pv_data_data[:95], kwh=False, round_=2)
 
@@ -458,8 +471,8 @@ def calc_heating_cost(config_data: dict, difference_power: list, heating_power_d
     heating_cost_other_sum = sum(heating_cost_other)
     heating_cost_sum = sum(heating_cost_pv)
 
-    print('oil', heating_cost_other_sum)
-    print('hvac', heating_cost_sum)
+    # print('oil', heating_cost_other_sum)
+    # print('hvac', heating_cost_sum)
 
     if heating_cost_other_sum < heating_cost_sum:
         return 1

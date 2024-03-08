@@ -2,7 +2,7 @@
 reload = true
 
 [write_time]
-time = "07-03-2024 21:52:01"
+time = "08-03-2024 09:03:46"
 format = "%d-%m-%Y %H:%M:%S"
 
 [coordinates]
@@ -44,7 +44,7 @@ nominal_temperature4 = 0.0
 mounting_type4 = 0.0
 
 [converter]
-max_power = 600.0
+max_power = 800.0
 efficiency = 96.0
 
 [battery]
@@ -78,14 +78,14 @@ name = "None"
 
 [house]
 house_year = 1979
-window1_frame = "ENEV"
-window1_glazing = "2016"
+window1_frame = "Holzrahmen"
+window1_glazing = "Einfachverglasung"
 window1_year = 1979
 window1_width = 0.8
 window1_height = 1.0
 window1_u_value = 0.0
-wall1 = "ENEV Außenwand"
-construction_wall1 = "2016"
+wall1 = "Außenwand"
+construction_wall1 = "Massivbauweise"
 wall1_type = 0
 wall1_width = 6.0
 wall1_height = 2.4
@@ -105,12 +105,12 @@ window2_glazing = ""
 window2_year = 0
 window2_width = 0.0
 window2_height = 0.0
-wall4 = "ENEV Außenwand"
-construction_wall4 = "2016"
-wall2 = "ENEV Außenwand"
-construction_wall2 = "2016"
+wall4 = "Außenwand"
+construction_wall4 = "Massivbauweise"
+wall2 = "Außenwand"
+construction_wall2 = "Massivbauweise"
 wall2_width = 5.0
-door_wall4 = 2
+door_wall4 = 1
 door_wall4_width = 1.5
 door_wall4_height = 2.0
 floor = "ENEV unbeheiztes Geschoss"
@@ -123,8 +123,8 @@ window3_glazing = ""
 window3_year = 0
 window3_width = 0.0
 window3_height = 0.0
-wall3 = "ENEV Außenwand"
-construction_wall3 = "2016"
+wall3 = "Außenwand"
+construction_wall3 = "Massivbauweise"
 door_wall3 = 0
 door_wall3_width = 0.0
 door_wall3_height = 0.0
