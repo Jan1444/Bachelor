@@ -291,8 +291,6 @@ def _analyze_data(config_data: dict, weather_data: dict, consumption_data: bool 
     min_state_of_charge: float32 = float32(min_capacity / battery_capacity * 100)
     load_efficiency: float32 = float32(battery.get('load_efficiency', 0) / 100)
 
-    state_of_charge_end: float32 = float32(0)
-
     sun_class = functions.init_sun(config_data)
 
     pv_class = functions.init_pv(config_data, number=1)
@@ -412,12 +410,22 @@ def _analyze_data(config_data: dict, weather_data: dict, consumption_data: bool 
 
             if ret == 1:
                 state_of_charge = state_of_charge_end
-
-                # Wenn state of charge steigt dann adden aber nicht den cod
-                #
+                indx_charge = indx_charge - 4
 
                 for i in range(indx_state_of_charge_end, 96 * day_indx):
                     battery_load[i] = state_of_charge_end
+
+                if ret_old == 1:
+                    for i in range((day_indx-1) * 96, day_indx * 96):
+
+                        if i < indx_charge:
+                            battery_load[i] = state_of_charge_end_old
+
+                        elif indx_charge <= i < (96 * day_indx):
+                            battery_load[i] = min(battery_load[i] + state_of_charge_end_old - min_state_of_charge, 100)
+
+            ret_old: int = ret
+            state_of_charge_end_old = state_of_charge_end
 
     energy_today = functions.calc_energy(pv_data_data[:95], kwh=False, round_=2)
 

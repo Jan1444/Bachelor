@@ -8,7 +8,13 @@ state_of_charge = 68.53888585647908
 state_of_charge = 10.0
 
 [07-03-2024]
-state_of_charge = 26.881480185564172
+state_of_charge = 26.853226138594227
 
 [08-03-2024]
-state_of_charge = 26.539687154326234
+state_of_charge = 26.061696666961975
+
+[09-03-2024]
+state_of_charge = 32.035632350091205
+
+[10-03-2024]
+state_of_charge = 10.0
