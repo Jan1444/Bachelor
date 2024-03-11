@@ -311,6 +311,9 @@ def _analyze_data(config_data: dict, weather_data: dict, consumption_data: bool 
     day_indx: uint16 = uint16(0)
 
     state_of_charge_old = -1
+    ret_old: int = 0
+    indx_charge: int = 0
+    indx_state_of_charge_end: int = 0
 
     for date, weather_today in weather_data.items():
         day_indx += 1
