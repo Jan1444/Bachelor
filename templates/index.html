@@ -55,14 +55,14 @@
             </nav>
             <section class="container">
                 <!-- Option 1 -->
-                <div class="option {{ 'selected' if choosen_heater[day-1] == 2 else '' }}">
-                    <i class="far {{ 'fa-check-circle' if choosen_heater[day-1] == 2 else 'fa-circle' }}"></i>
+                <div class="option {{ 'selected' if choosen_heater[day] == 2 else '' }}">
+                    <i class="far {{ 'fa-check-circle' if choosen_heater[day] == 2 else 'fa-circle' }}"></i>
                     <b>Strom</b><br><u>{{ price[(day + 1)|string]['strom'] }} ct</u>
                 </div>
 
                 <!-- Option 2 -->
-                <div class="option {{ 'selected' if choosen_heater[day-1] == 1 else '' }}">
-                    <i class="far {{ 'fa-check-circle' if choosen_heater[day-1] == 1 else 'fa-circle' }}"></i>
+                <div class="option {{ 'selected' if choosen_heater[day] == 1 else '' }}">
+                    <i class="far {{ 'fa-check-circle' if choosen_heater[day] == 1 else 'fa-circle' }}"></i>
                     <b>{% if config_data['heater']['heater_type'] == 'fuel' %}
                         Diesel
                     {% else %}
