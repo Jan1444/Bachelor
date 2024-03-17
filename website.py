@@ -34,8 +34,14 @@ energy_manager_evening_data = EnergyManager("ev_data.toml")
 def index():
     config_data: dict = config_manager.config_data
     data = json.load(open('./data/index_data.json', mode='r'))
+    date_list: list = []
+    print(len(data.get('vals')))
+    for i in range(len(data.get('vals'))):
+        date_list.append((datetime.datetime.today().date() + datetime.timedelta(days=i)).strftime('%d.%m.%Y'))
+
     return render_template('index.html', config_data=config_data,
-                           price=data.get('price'), choosen_heater=data.get('option'), vals=data.get('vals'))
+                           price=data.get('price'), choosen_heater=data.get('option'), vals=data.get('vals'),
+                           date_list=date_list)
 
 
 @app.route('/test_index', methods=['GET', 'POST'])
@@ -58,7 +64,7 @@ def analytics():
     config_data = config_manager.config_data
     weather_data = fc.get_weather_data(config_data, days=14)
     analytics_data = toml.load(open('./data/data.toml', mode='r'))
-    value_yesterday = list(analytics_data.keys())[len(list(analytics_data.keys()))-2]
+    value_yesterday = list(analytics_data.keys())[len(list(analytics_data.keys())) - 2]
     state_of_charge = 0
     if (datetime.datetime.strptime(value_yesterday, '%d-%m-%Y').date() -
         datetime.datetime.today().date()).days == -1:
@@ -379,96 +385,10 @@ def steering():
 @scheduler.task("interval", id="save_index_data", seconds=3601)
 def save_index_data():
     config_data: dict = config_manager.config_data
-    heater = config_data.get('heater')
-    pv = config_data.get('pv')
-    battery = config_data.get('battery')
-
-    heater_efficiency: float = heater.get('heater_efficiency')
-    heater_type: str = heater.get('heater_type')
-    fuel_price: float = heater.get('heater_price', 0) * 100 * 0.25
-
-    battery_energy_price: float = (battery.get('price', 0) /
-                                   (battery.get('capacity', 1) * battery.get('load_cycle', 1)))
-    pv_energy_price: float = (pv.get('pv_cost', 0) /
-                              (pv.get('pv_peak_power', 1) * pv.get('pv_lifetime') * 1100))
 
     weather_data = fc.get_weather_data(config_data, days=16)
 
-    energy_today, pv_power_data, market_data, heating_power_data, difference_power, battery_power, diff_energy_battery = (
-        analytics_module.analyze_data(config_data, weather_data, False)
-    )
-
-    vals: dict = {}
-    price: dict = {}
-    option: list = []
-
-    idx = 0
-    day = 1
-
-    md: list = []
-    for i in range(0, 24):
-        for _ in range(0, 4):
-            md.append(market_data[i][1])
-
-    battery: list = []
-    pv: list = []
-    heating_cost_pv: list = []
-    heating_cost_other: list = []
-    for (_, dp), (_, hp), (_, bp), (_, pp), battery_energy in zip(difference_power, heating_power_data, battery_power,
-                                                                  pv_power_data, diff_energy_battery):
-        battery.append(bp)
-        pv.append(pp)
-
-        if idx < 96:
-            electricity_costs: float = md[idx] * 0.25
-        else:
-            electricity_costs: float = max(md) * 0.25 * 1.1
-
-        dp_kw: float = abs(dp / 1_000)
-        hp_kw = abs(hp / 1_000)
-
-        if dp < 0:
-            heating_cost_pv.append(dp_kw * electricity_costs)
-            # print('smaller than zero')
-        elif dp > 0:
-            heating_cost_pv.append(dp_kw * electricity_costs * pv_energy_price * 0.25)
-            # print('greater than zero')
-        elif dp == 0:
-            heating_cost_pv.append((battery_energy / 1_000) * electricity_costs * battery_energy_price * 0.25)
-            # print('equal to zero')
-
-        # print(heating_cost_pv[idx], (dp_kw * electricity_costs) if dp < 0 else dp_kw * 0.08 * 0.25)
-
-        # heating_cost_pv.append((dp_kw * electricity_costs) if dp < 0 else dp_kw * 0.08 * 0.25)
-
-        fuel_gas_price = fc.calc_fuel_gas_consumption(hp_kw, heater_efficiency, heater_type) * fuel_price
-
-        heating_cost_other.append(fuel_gas_price)
-        idx += 1
-
-        if idx % 96 == 0:
-
-            slicer: slice = slice(((day - 1) * 96), (96 * day))
-
-            heating_cost_other_sum = sum(heating_cost_other[slicer])
-            heating_cost_sum = sum(heating_cost_pv[slicer])
-
-            if heating_cost_other_sum < heating_cost_sum:
-                option.append(2)
-            else:
-                option.append(1)
-
-            en = fc.calc_energy(pv[slicer], kwh=False, round_=2)
-
-            price[day] = {'heater': round(heating_cost_other_sum, 2), 'strom': round(heating_cost_sum, 2)}
-
-            vals[day] = {'battery': round(max(battery[slicer]), 2),
-                         'pv': round(max(pv[slicer]), 2),
-                         'energy': en}
-
-            day += 1
-
-    data = {'vals': vals, 'price': price, 'option': option}
+    data = (analytics_module.analyze_data(config_data, weather_data, False, index_data=True))
 
     json.dump(data, open('./data/index_data.json', mode='w'))
 

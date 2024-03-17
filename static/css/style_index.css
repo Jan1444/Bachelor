@@ -28,8 +28,7 @@ h1 {
 
 }
 
-
-.BoxContent {
+.BoxContent1 {
     grid-row-start: 2;
     grid-row-end: 2;
     grid-column-start: 2;

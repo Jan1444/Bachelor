@@ -265,13 +265,13 @@ def heating_power(config_data: dict, weather: dict) -> (list, list, list):
 
 @wrap.freeze_all
 def analyze_data(config_data: dict, weather_data: dict, consumption_data: bool = True, init_battery_charge: float = 0,
-                 calc_cost: bool = True):
-    return _analyze_data(config_data, weather_data, consumption_data, init_battery_charge, calc_cost)
+                 calc_cost: bool = True, index_data: bool = False):
+    return _analyze_data(config_data, weather_data, consumption_data, init_battery_charge, calc_cost, index_data)
 
 
 @lru_cache(maxsize=1)
 def _analyze_data(config_data: dict, weather_data: dict, consumption_data: bool = True, init_battery_charge: float = 0,
-                  calc_cost: bool = False):
+                  calc_cost: bool = False, index_data: bool = False):
     converter = config_data["converter"]
     load_profile = config_data["load_profile"]
     battery = config_data.get('battery')
@@ -310,10 +310,15 @@ def _analyze_data(config_data: dict, weather_data: dict, consumption_data: bool 
     indx: uint16 = uint16(0)
     day_indx: uint16 = uint16(0)
 
-    state_of_charge_old = -1
-    ret_old: int = 0
-    indx_charge: int = 0
+    state_of_charge_old: float32 = float32(-1)
+    indx_charge: uint16 = uint16(0)
+    ret: uint16 = uint16(0)
+    ret_old: uint = uint16(0)
     indx_state_of_charge_end: int = 0
+
+    vals: dict = {}
+    price: dict = {}
+    option: list = []
 
     for date, weather_today in weather_data.items():
         day_indx += 1
@@ -367,7 +372,7 @@ def _analyze_data(config_data: dict, weather_data: dict, consumption_data: bool 
             state_of_charge = max((min_state_of_charge, min((state_of_charge, 100))))
             battery_load.append(state_of_charge)
 
-            discharge = 0
+            discharge: float32 = float32(0)
             if state_of_charge_old > state_of_charge:
                 discharge = abs(diff_energy)
 
@@ -375,7 +380,7 @@ def _analyze_data(config_data: dict, weather_data: dict, consumption_data: bool 
                 state_of_charge_end = state_of_charge
                 indx_state_of_charge_end = indx
 
-            elif state_of_charge_old < state_of_charge:
+            if state_of_charge_old == min_state_of_charge and state_of_charge_old < state_of_charge:
                 indx_charge = indx
 
             state_of_charge_old = state_of_charge
@@ -408,27 +413,46 @@ def _analyze_data(config_data: dict, weather_data: dict, consumption_data: bool 
             else:
                 market_price_calc = market_price
 
-            ret = calc_heating_cost(config_data, diff_power[slicer], hp[1][slicer],
-                                    market_price_calc, diff_energy_data)
+            heating_cost_sum, heating_cost_other_sum = calc_heating_cost(config_data, diff_power[slicer], hp[1][slicer],
+                                                                         market_price_calc, diff_energy_data)
 
-            if ret == 1:
+            if heating_cost_other_sum < heating_cost_sum:
+                ret = uint16(1)
+
                 state_of_charge = state_of_charge_end
-                indx_charge = indx_charge - 4
 
                 for i in range(indx_state_of_charge_end, 96 * day_indx):
                     battery_load[i] = state_of_charge_end
 
                 if ret_old == 1:
-                    for i in range((day_indx-1) * 96, day_indx * 96):
+                    for i in range((day_indx - 1) * 96, day_indx * 96):
 
                         if i < indx_charge:
                             battery_load[i] = state_of_charge_end_old
 
                         elif indx_charge <= i < (96 * day_indx):
                             battery_load[i] = min(battery_load[i] + state_of_charge_end_old - min_state_of_charge, 100)
+            else:
+                ret = uint16(2)
 
-            ret_old: int = ret
+            en = functions.calc_energy(pv_data_data[slicer], kwh=False, round_=2)
+
+            option.append(int(ret))
+            price[int(day_indx)] = {
+                'heater': round(float(heating_cost_other_sum), 2),
+                'strom': round(float(heating_cost_sum), 2)
+            }
+            vals[int(day_indx)] = {
+                'battery': round(float(max(battery_load[slicer])), 2),
+                'pv': round(float(max(pv_data_data[slicer])), 2),
+                'energy': float(en)
+            }
+
+            ret_old = ret
             state_of_charge_end_old = state_of_charge_end
+
+    if index_data:
+        return {'vals': vals, 'price': price, 'option': option}
 
     energy_today = functions.calc_energy(pv_data_data[:95], kwh=False, round_=2)
 
@@ -452,22 +476,22 @@ def calc_heating_cost(config_data: dict, difference_power: list, heating_power_d
     pv: dict = config_data.get('pv')
     battery: dict = config_data.get('battery')
 
-    heater_efficiency: float = heater.get('heater_efficiency')
+    heater_efficiency: float32 = float32(heater.get('heater_efficiency'))
     heater_type: str = heater.get('heater_type')
-    fuel_price: float = heater.get('heater_price', 0) * 100 * 0.25
+    fuel_price: float32 = float32(heater.get('heater_price', 0) * 100 * 0.25)
 
-    battery_energy_price: float = (battery.get('price', 0) /
-                                   (battery.get('capacity', 0.0001) * battery.get('load_cycle', 0.0001)))
-    pv_energy_price: float = (pv.get('pv_cost', 0) /
-                              (pv.get('pv_peak_power', 0.0001) * pv.get('pv_lifetime') * 1100))
+    battery_energy_price: float32 = float32(battery.get('price', 0) /
+                                            (battery.get('capacity', 0.0001) * battery.get('load_cycle', 0.0001)))
+    pv_energy_price: float32 = float32(pv.get('pv_cost', 0) /
+                                       (pv.get('pv_peak_power', 0.0001) * pv.get('pv_lifetime') * 1100))
 
     heating_cost_pv: list = []
     heating_cost_other: list = []
 
     for dp, hp, md, bat_en in zip(difference_power, heating_power_data, market_data, diff_energy_battery):
         electricity_costs: float = md * 0.25
-        dp_kw: float = abs(dp / 1_000)
-        hp_kw = abs(hp / 1_000)
+        dp_kw: float32 = float32(abs(dp / 1_000))
+        hp_kw: float32 = float32(abs(hp / 1_000))
 
         if dp < 0:
             heating_cost_pv.append(dp_kw * electricity_costs)
@@ -476,16 +500,11 @@ def calc_heating_cost(config_data: dict, difference_power: list, heating_power_d
         elif dp == 0:
             heating_cost_pv.append((bat_en / 1_000) * electricity_costs * battery_energy_price * 0.25)
 
-        fuel_gas_price = functions.calc_fuel_gas_consumption(hp_kw, heater_efficiency, heater_type) * fuel_price
+        fuel_gas_price: float32 = (functions.calc_fuel_gas_consumption(hp_kw, heater_efficiency, heater_type) *
+                                   fuel_price)
         heating_cost_other.append(fuel_gas_price)
 
-    heating_cost_other_sum = sum(heating_cost_other)
-    heating_cost_sum = sum(heating_cost_pv)
+    heating_cost_other_sum: float32 = sum(heating_cost_other)
+    heating_cost_sum: float32 = sum(heating_cost_pv)
 
-    # print('oil', heating_cost_other_sum)
-    # print('hvac', heating_cost_sum)
-
-    if heating_cost_other_sum < heating_cost_sum:
-        return 1
-    else:
-        return 2
+    return heating_cost_sum, heating_cost_other_sum
