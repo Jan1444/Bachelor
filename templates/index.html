@@ -83,7 +83,7 @@
                 <div class="option">
                     <i class="fa fa-solar-panel"></i>
                     <b>max. {{ vals[(day + 1)|string]['pv'] }}W</b>
-                    <progress value="{{ vals[(day + 1)|string]['pv'] }}" max="1000" min="0"></progress>
+                    <progress value="{{ vals[(day + 1)|string]['pv'] }}" max={{ config_data['converter']['max_power'] }} min="0"></progress>
                 </div>
             </section>
             <section class="container">
