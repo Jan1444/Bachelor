@@ -283,6 +283,7 @@ def _analyze_data(config_data: dict, weather_data: dict, consumption_data: bool 
     diff_power: list = []
 
     battery_load: list = []
+    overload_energy: float32 = float32(0)
     min_capacity: float32 = float32(
         battery.get('capacity', 0) * 1_000 * (1 - battery.get('max_deload', 100) / 100))
     charging_power: float32 = float32(battery.get('charging_power', 0) * 0.25)
@@ -342,6 +343,7 @@ def _analyze_data(config_data: dict, weather_data: dict, consumption_data: bool 
                 power_ghi += functions.get_pv_data(pv_class4, temp, radiation_ghi, azimuth, elevation)
 
             if power_ghi > converter.get("max_power", 0):
+                overload_energy = power_ghi - converter.get("max_power", 0)
                 power_ghi = converter.get("max_power", 0)
 
             weather_time.append(f'{date} {tme_pv}')
@@ -367,6 +369,8 @@ def _analyze_data(config_data: dict, weather_data: dict, consumption_data: bool 
             else:
                 energy = min((energy, charging_power))
                 netto_energy = energy * load_efficiency
+
+            netto_energy += overload_energy * 0.25
 
             state_of_charge += netto_energy / battery_capacity * 100
             state_of_charge = max((min_state_of_charge, min((state_of_charge, 100))))
