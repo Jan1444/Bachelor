@@ -1,13 +1,12 @@
 #  -*- coding: utf-8 -*-
 
 import datetime
-import math
 from functools import lru_cache
 
 import toml
 from numpy import float64, float32, float16, uint16, array, absolute
 
-from module import functions, analytics
+from module import functions
 
 from module import classes, consts, own_wrapper as wrap
 
@@ -306,7 +305,7 @@ def _analyze_data(config_data: dict, weather_data: dict, consumption_data: bool 
 
     load_profile_data: dict = functions.load_load_profile(f'{consts.LOAD_PROFILE_FOLDER}/{load_profile.get("name")}')
 
-    hp = analytics.heating_power(config_data, weather_data)
+    hp = heating_power(config_data, weather_data)
 
     indx: uint16 = uint16(0)
     day_indx: uint16 = uint16(0)
@@ -314,7 +313,7 @@ def _analyze_data(config_data: dict, weather_data: dict, consumption_data: bool 
     state_of_charge_old: float32 = float32(-1)
     indx_charge: uint16 = uint16(0)
     ret: uint16 = uint16(0)
-    ret_old: uint = uint16(0)
+    ret_old: uint16 = uint16(0)
     indx_state_of_charge_end: int = 0
 
     vals: dict = {}
@@ -376,7 +375,7 @@ def _analyze_data(config_data: dict, weather_data: dict, consumption_data: bool 
             state_of_charge = max((min_state_of_charge, min((state_of_charge, 100))))
             battery_load.append(state_of_charge)
 
-            discharge: float32 = float32(0)
+            discharge: float16 = float16(0)
             if state_of_charge_old > state_of_charge:
                 discharge = abs(diff_energy)
 
