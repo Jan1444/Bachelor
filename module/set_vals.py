@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 from module import debug
 from module import functions
 
