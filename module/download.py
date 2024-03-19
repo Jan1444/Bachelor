@@ -63,7 +63,7 @@ def generate_weather_data(request_data: dict, config_data: dict) -> list[str]:
     power_data: dict = {}
     energy_data: dict = {}
     msg: list[str] = []
-
+    # TODO: NEW!
     for date, day in weather_date.items():
         sun_class = functions.init_sun(config_data, date)
 
@@ -94,6 +94,7 @@ def generate_weather_data(request_data: dict, config_data: dict) -> list[str]:
         msg.append("excel_weather")
 
     if request_data.get("plot_png_weather", "") == "on":
+        print(len(energy_data.keys()))
         if len(energy_data.keys()) > 50:
             x = len(energy_data.keys()) * 0.25
             y = x * 0.4
@@ -101,7 +102,7 @@ def generate_weather_data(request_data: dict, config_data: dict) -> list[str]:
             x = 10
             y = 5
 
-        if x < 2 ** 16:
+        if x > (2 ** 16):
             x = int(2 ** 16 - 1) / 100
             y = int(x * 0.4)
 
@@ -177,7 +178,7 @@ def generate_market_data(request_data: dict, config_data: dict) -> list[str]:
             x = 10
             y = 5
 
-        if x < 2 ** 16:
+        if x > (2 ** 16):
             x = int(2 ** 16 - 1) / 100
             y = int(x * 0.4)
 
