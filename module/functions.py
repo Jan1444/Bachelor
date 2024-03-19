@@ -114,7 +114,6 @@ def calc_energy(power: list, interval: float = 0.25, kwh: bool = True, round_: N
 
     if round_ is not None:
         total_energy = round(total_energy, round_)
-    debug.printer(total_energy)
 
     return float(total_energy)
 
