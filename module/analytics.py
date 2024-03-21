@@ -258,7 +258,6 @@ def heating_power(config_data: dict, weather: dict) -> (list, list, list):
             hp_data.append(d)
             tme_data.append(f"{date} {tme}")
 
-    # debug.printer(diff_data, hp_data)
     return tme_data, hp_data, cop_temp
 
 
@@ -291,6 +290,8 @@ def _analyze_data(config_data: dict, weather_data: dict, consumption_data: bool 
     min_state_of_charge: float32 = float32(min_capacity / battery_capacity * 100)
     load_efficiency: float32 = float32(battery.get('load_efficiency', 0) / 100)
 
+    battery_max_charging_power: float16 = float16(battery.get('charging_power'))
+
     sun_class = functions.init_sun(config_data)
 
     pv_class = functions.init_pv(config_data, number=1)
@@ -311,6 +312,7 @@ def _analyze_data(config_data: dict, weather_data: dict, consumption_data: bool 
     day_indx: uint16 = uint16(0)
 
     state_of_charge_old: float32 = float32(-1)
+    state_of_charge_end_old: float32 = float32(-1)
     indx_charge: uint16 = uint16(0)
     ret: uint16 = uint16(0)
     ret_old: uint16 = uint16(0)
@@ -360,6 +362,9 @@ def _analyze_data(config_data: dict, weather_data: dict, consumption_data: bool 
             load_diff: float16 = power_ghi - load_data  # Strom überschuss
 
             diff_energy: float16 = load_diff - (heating_pwr / cop)
+
+            if diff_energy > battery_max_charging_power:
+                diff_energy = battery_max_charging_power
 
             energy: float16 = diff_energy * 0.25
 
