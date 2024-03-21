@@ -270,12 +270,15 @@ def analyze_data(config_data: dict, weather_data: dict, consumption_data: bool =
 @lru_cache(maxsize=1)
 def _analyze_data(config_data: dict, weather_data: dict, consumption_data: bool = True, init_battery_charge: float = 0,
                   calc_cost: bool = False, index_data: bool = False):
-    converter = config_data["converter"]
-    load_profile = config_data["load_profile"]
+    converter = config_data.get("converter")
+    load_profile = config_data.get("load_profile")
     battery = config_data.get('battery')
 
     pv_data_data: list = []
     weather_time: list = []
+
+    max_converter_power: float16 = float16(converter.get("max_power", 0))
+    converter_efficiency: float16 = float16(converter.get('efficiency'))
 
     diff_energy_data: list = []
     diff_power: list = []
@@ -318,6 +321,8 @@ def _analyze_data(config_data: dict, weather_data: dict, consumption_data: bool 
     ret_old: uint16 = uint16(0)
     indx_state_of_charge_end: int = 0
 
+    path_soc: str = r'./data/data.toml'
+
     vals: dict = {}
     price: dict = {}
     option: list = []
@@ -343,9 +348,9 @@ def _analyze_data(config_data: dict, weather_data: dict, consumption_data: bool 
             if config_data['pv']['alignment'] >= 4:
                 power_ghi += functions.get_pv_data(pv_class4, temp, radiation_ghi, azimuth, elevation)
 
-            if power_ghi > converter.get("max_power", 0):
-                overload_energy = power_ghi - converter.get("max_power", 0)
-                power_ghi = converter.get("max_power", 0)
+            if power_ghi > max_converter_power:
+                overload_energy = power_ghi - max_converter_power
+                power_ghi = max_converter_power
 
             weather_time.append(f'{date} {tme_pv}')
             pv_data_data.append(power_ghi)
@@ -369,7 +374,7 @@ def _analyze_data(config_data: dict, weather_data: dict, consumption_data: bool 
             energy: float16 = diff_energy * 0.25
 
             if energy < 0:
-                netto_energy = energy / (converter.get('efficiency') / 100)
+                netto_energy = energy / (converter_efficiency / 100)
             else:
                 energy = min((energy, charging_power))
                 netto_energy = energy * load_efficiency
@@ -397,16 +402,17 @@ def _analyze_data(config_data: dict, weather_data: dict, consumption_data: bool 
             diff_energy_data.append(abs(diff_energy))
 
             if indx == 96:
-                path = r'./data/data.toml'
-
-                data = toml.load(open(path, 'r'))
+                file = open(path_soc, 'r')
+                data = toml.load(file)
+                file.close()
 
                 data.update({date_old: {
                     'state_of_charge': float(state_of_charge)
                 }
                 })
-
-                toml.dump(data, open(path, mode='w'))
+                file = open(path_soc, mode='w')
+                toml.dump(data, file)
+                file.close()
             date_old = date
             indx += 1
 

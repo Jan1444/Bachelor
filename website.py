@@ -33,7 +33,11 @@ energy_manager_evening_data = EnergyManager("ev_data.toml")
 @app.route('/', methods=['GET', 'POST'])
 def index():
     config_data: dict = config_manager.config_data
-    data = json.load(open('./data/index_data.json', mode='r'))
+
+    file = open('./data/index_data.json', mode='r')
+    data = json.load(file)
+    file.close()
+
     date_list: list = []
     print(len(data.get('vals')))
     for i in range(len(data.get('vals'))):
@@ -47,7 +51,9 @@ def index():
 @app.route('/test_index', methods=['GET', 'POST'])
 def test_index():
     config_data: dict = config_manager.config_data
-    data = json.load(open('./data/index_data.json', mode='r'))
+    file = open('./data/index_data.json', mode='r')
+    data = json.load()
+    file.close()
 
     return render_template('test_index.html', config_data=config_data,
                            price=data.get('price'), choosen_heater=data.get('option'), vals=data.get('vals'))
@@ -63,7 +69,11 @@ def dashboard():
 def analytics():
     config_data = config_manager.config_data
     weather_data = fc.get_weather_data(config_data, days=14)
-    analytics_data = toml.load(open('./data/data.toml', mode='r'))
+
+    file = open('./data/data.toml', mode='r')
+    analytics_data = toml.load(file)
+    file.close()
+
     value_yesterday = list(analytics_data.keys())[len(list(analytics_data.keys())) - 2]
     state_of_charge = 0
     if (datetime.datetime.strptime(value_yesterday, '%d-%m-%Y').date() -
@@ -390,7 +400,9 @@ def save_index_data():
 
     data = (analytics_module.analyze_data(config_data, weather_data, False, index_data=True))
 
-    json.dump(data, open('./data/index_data.json', mode='w'))
+    file = open('./data/index_data.json', mode='w')
+    json.dump(data, file)
+    file.close()
 
 
 if __name__ == '__main__':
