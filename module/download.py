@@ -2,35 +2,17 @@
 
 import datetime
 import os
-from functools import lru_cache, wraps
+from functools import lru_cache
 
 import matplotlib.pyplot as plt
 
 from numpy import arange
 from pandas import DataFrame
-from frozendict import frozendict
 
 from module import consts
 from module import debug
 from module import functions
-
-
-def freeze_all(func):
-    @wraps(func)
-    def wrapped(*args, **kwargs):
-        def freeze(obj):
-            if isinstance(obj, dict):
-                return frozendict({k: freeze(v) for k, v in obj.items()})
-            elif isinstance(obj, list):
-                return tuple(freeze(v) for v in obj)
-            return obj
-
-        frozen_args = tuple(freeze(arg) for arg in args)
-        frozen_kwargs = {k: freeze(v) for k, v in kwargs.items()}
-
-        return func(*frozen_args, **frozen_kwargs)
-
-    return wrapped
+from module import own_wrapper as wrap
 
 
 def date_time_download() -> dict:
@@ -47,8 +29,8 @@ def date_time_download() -> dict:
     return data
 
 
-@freeze_all
-@lru_cache(maxsize=None)
+@wrap.freeze_all
+@lru_cache(maxsize=100)
 def generate_weather_data(request_data: dict, config_data: dict) -> list[str]:
     if not os.path.exists(consts.DOWNLOADS_FILE_PATH):
         os.mkdir(consts.DOWNLOADS_FILE_PATH)
@@ -126,7 +108,7 @@ def generate_weather_data(request_data: dict, config_data: dict) -> list[str]:
     return msg
 
 
-@freeze_all
+@wrap.freeze_all
 @lru_cache(maxsize=None)
 def generate_market_data(request_data: dict, config_data: dict) -> list[str]:
     if not os.path.exists(consts.DOWNLOADS_FILE_PATH):
