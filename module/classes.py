@@ -1671,7 +1671,7 @@ class ShellyTRVControl:
             response: requests.models.Response = requests.get(url, timeout=timeout)
             if response.status_code == 200:
                 data: dict = response.json()
-                if data["pos"] == position:
+                if (position - 0.5) <= data["pos"] <= (position + 0.5):
                     return True
             return False
         except (requests.exceptions.ConnectTimeout, OSError) as exceptions:

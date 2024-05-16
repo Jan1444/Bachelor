@@ -7,7 +7,7 @@ import os
 import matplotlib.pyplot as plt
 from numpy import linspace
 
-from module import consts
+from module import consts, functions
 
 
 def data_analyzer(config_data: dict, path: None | str = None):
@@ -38,7 +38,7 @@ def data_analyzer(config_data: dict, path: None | str = None):
     power_data: list = []
     date_time_data: list = []
 
-    pv_class = init_pv(config_data)
+    pv_class = functions.init_pv(config_data)
 
     if "Gb(i)" not in datas[0]:
         print(datas[0])
@@ -49,13 +49,13 @@ def data_analyzer(config_data: dict, path: None | str = None):
             date: str = datetime.datetime.strptime(data["time"], "%Y%m%d:%H%M").strftime("%d-%m-%Y")
             tme: float = float(datetime.datetime.strptime(data["time"], "%Y%m%d:%H%M").strftime("%H.%M"))
 
-            sun_class = init_sun(config_data, date)
-            azimuth, elevation = get_sun_data(sun_class, tme)
+            sun_class = functions.init_sun(config_data, date)
+            azimuth, elevation = functions.get_sun_data(sun_class, tme)
 
             temp: float = 17
             radiation: float = data.get("Gb(i)", 0)
 
-            power: float = get_pv_data(pv_class, temp, radiation, azimuth, elevation)
+            power: float = functions.get_pv_data(pv_class, temp, radiation, azimuth, elevation)
 
             date_time: str = datetime.datetime.strptime(data["time"], "%Y%m%d:%H%M").strftime("%d-%m-%Y - %H:%M")
 
@@ -67,7 +67,7 @@ def data_analyzer(config_data: dict, path: None | str = None):
             date: str = datetime.datetime.strptime(data["time"], "%Y%m%d:%H%M").strftime("%d-%m-%Y")
             tme: float = float(datetime.datetime.strptime(data["time"], "%Y%m%d:%H%M").strftime("%H.%M"))
 
-            sun_class = init_sun(config_data, date)
+            sun_class = functions.init_sun(config_data, date)
 
             temp: float = 17
             radiation: float = data.get("Gb(i)", 0)
@@ -75,9 +75,9 @@ def data_analyzer(config_data: dict, path: None | str = None):
             adj_data: float = sun_class.adjust_for_new_angle(radiation, slope, azimuth, config_pv["tilt_angle"],
                                                              config_pv["exposure_angle"], tme)
 
-            azimuth, elevation = get_sun_data(sun_class, tme)
+            azimuth, elevation = functions.get_sun_data(sun_class, tme)
 
-            power: float = get_pv_data(pv_class, temp, abs(adj_data), azimuth, elevation)
+            power: float = functions.get_pv_data(pv_class, temp, abs(adj_data), azimuth, elevation)
 
             """incidence: float = pv.calc_incidence_angle(elevation, azimuth)
             eff: float = pv.calc_temp_dependency(20, abs(adj_data))
@@ -96,19 +96,19 @@ def data_analyzer(config_data: dict, path: None | str = None):
             temp: float = 17
             radiation: float = data.get("Gb(i)", 0)
 
-            sun_class = init_sun(config_data, date)
+            sun_class = functions.init_sun(config_data, date)
 
             adj_data: float = sun_class.adjust_for_new_angle(radiation, slope, azimuth, config_pv["tilt_angle"],
                                                              config_pv["exposure_angle"], tme)
 
-            azimuth, elevation = get_sun_data(sun_class, tme)
+            azimuth, elevation = functions.get_sun_data(sun_class, tme)
 
             """incidence: float = pv.calc_incidence_angle(elevation, azimuth)
             eff: float = pv.calc_temp_dependency(20, abs(adj_data))
 
             power: float = pv.calc_power(abs(adj_data), incidence, elevation, eff)"""
 
-            power: float = get_pv_data(pv_class, temp, abs(adj_data), azimuth, elevation)
+            power: float = functions.get_pv_data(pv_class, temp, abs(adj_data), azimuth, elevation)
 
             date_time: str = datetime.datetime.strptime(data["time"], "%Y%m%d:%H%M").strftime("%d-%m-%Y - %H:%M")
 
@@ -117,8 +117,7 @@ def data_analyzer(config_data: dict, path: None | str = None):
 
     max_energy: float = max(power_data)
     time_max_energy: str = date_time_data[power_data.index(max_energy)]
-    average_energy: float = round(calc_energy(power_data, 1, True) / (float(year_max) + 1 - float(year_min)), 2)
-
+    average_energy: float = round(functions.calc_energy(power_data, 1, True) / (float(year_max) + 1 - float(year_min)), 2)
     plt.clf()
     plt.figure(figsize=(20, 6))
     plt.grid(True)
