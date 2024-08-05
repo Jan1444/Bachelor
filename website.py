@@ -48,17 +48,6 @@ def index():
                            date_list=date_list)
 
 
-@app.route('/test_index', methods=['GET', 'POST'])
-def test_index():
-    config_data: dict = config_manager.config_data
-    file = open('./data/index_data.json', mode='r')
-    data = json.load()
-    file.close()
-
-    return render_template('test_index.html', config_data=config_data,
-                           price=data.get('price'), choosen_heater=data.get('option'), vals=data.get('vals'))
-
-
 @app.route('/dashboard')
 def dashboard():
     config_data = config_manager.config_data

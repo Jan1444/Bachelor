@@ -83,7 +83,7 @@
             </tr>
             <tr>
                 <td>Maximale Energie</td>
-                <td>{{ data["max_energy"] }} kWh</td>
+                <td>{{ data["max_energy"] }} Wh</td>
             </tr>
             <tr>
                 <td>Zeit der maximalen Energie</td>
@@ -91,13 +91,13 @@
             </tr>
             <tr>
                 <td>Durchschnittsenergie pro Jahr</td>
-                <td>{{ data["average_energy"] }} kWh</td>
+                <td>{{ data["average_energy"] }} Wh</td>
             </tr>
 
             {% for power, time in power_time_data %}
             <tr>
                 <td>{{ time }}</td>
-                <td>{{ power }} kWh</td>
+                <td>{{ power }} Wh</td>
             </tr>
             {% endfor %}
             {% endif %}
