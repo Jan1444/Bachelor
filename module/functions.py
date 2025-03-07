@@ -241,7 +241,6 @@ def unpack_data(data: dict) -> (list[str], list[float], list[float], list[float]
         return -1, -1, -1, -1
 
     try:
-
         for t in data.keys():
             if t != "write_time":
                 weather_time.append(t)

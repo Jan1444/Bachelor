@@ -100,12 +100,12 @@ def heating_power(config_data: dict, weather: dict) -> (list, list, list):
     def _get_u_value(data_house: dict, u_value: dict, prefix: str) -> float16:
         try:
             if "wall" in prefix:
-
+                print(prefix)
                 wall_: str = data_house.get(prefix, "")
                 wall_type: str = data_house.get(f"construction_{prefix}", "")
                 year: uint16 = uint16(data_house.get(f"house_year", 0)
                                       if data_house.get(f"house_year") < 1995 else 1995)
-
+                print(wall_)
                 if wall_ == "ENEV Außenwand" or wall_ == "ENEV Innenwand":
                     return float16(u_value.get("Wand").get(wall_).get(uint16(wall_type)))
                 elif wall_ == "u_value":
@@ -453,12 +453,12 @@ def _analyze_data(config_data: dict, weather_data: dict, consumption_data: bool 
 
             option.append(int(ret))
             price[int(day_indx)] = {
-                'heater': round(float(heating_cost_other_sum), 2),
-                'strom': round(float(heating_cost_sum), 2)
+                'heater': float(heating_cost_other_sum),
+                'strom': float(heating_cost_sum)
             }
             vals[int(day_indx)] = {
-                'battery': round(float(max(battery_load[slicer])), 2),
-                'pv': round(float(max(pv_data_data[slicer])), 2),
+                'battery': float(max(battery_load[slicer])),
+                'pv': float(max(pv_data_data[slicer])),
                 'energy': float(en)
             }
 

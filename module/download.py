@@ -172,8 +172,8 @@ def generate_market_data(request_data: dict, config_data: dict) -> list[str]:
         plt.xticks(rotation=90, ha="right", fontsize=18)
 
         _max = (max(price_data) + (100 if max(price_data) > 100 else 5))
-        ticks = arange(0, _max, step=(len(price_data) // 100 * 10 if _max > 100 else 1))
-
+        #ticks = arange(0, _max, step=(len(price_data) // 100 * 10 if _max > 100 else 1))
+        ticks = 100
         plt.yticks(ticks=ticks, ha="right", fontsize=20)
         plt.legend(loc="upper left", fontsize=20)
         plt.tight_layout()
