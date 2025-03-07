@@ -252,3 +252,30 @@ state_of_charge = 100.0
 
 [25-07-2024]
 state_of_charge = 57.00414868584039
+
+[24-08-2024]
+state_of_charge = 71.64538445151027
+
+[07-10-2024]
+state_of_charge = 10.0
+
+[08-10-2024]
+state_of_charge = 10.0
+
+[20-10-2024]
+state_of_charge = 10.451752662658691
+
+[30-12-2024]
+state_of_charge = 10.0
+
+[31-12-2024]
+state_of_charge = 10.0
+
+[01-01-2025]
+state_of_charge = 10.0
+
+[08-02-2025]
+state_of_charge = 33.20637893676758
+
+[09-02-2025]
+state_of_charge = 30.406421661376953

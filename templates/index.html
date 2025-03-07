@@ -57,7 +57,7 @@
                 <!-- Option 1 -->
                 <div class="option {{ 'selected' if choosen_heater[day] == 2 else '' }}">
                     <i class="far {{ 'fa-check-circle' if choosen_heater[day] == 2 else 'fa-circle' }}"></i>
-                    <b>Strom</b><br><u>{{ price[(day + 1)|string]['strom'] }} ct</u>
+                    <b>Strom</b><br><u>{{ price[(day + 1)|string]['strom']|round(2) }} ct</u>
                 </div>
 
                 <!-- Option 2 -->
@@ -68,28 +68,28 @@
                     {% else %}
                         Gas
                     {% endif %}</b>
-                    <br><u>{{ price[(day + 1)|string]['heater'] }} ct</u>
+                    <br><u>{{ price[(day + 1)|string]['heater']|round(2) }} ct</u>
                 </div>
             </section>
             <section class="container">
                 <div class="option">
                     <i class="fa fa-car-battery"></i>
-                    <b>max. {{ vals[(day + 1)|string]['battery'] }}%</b>
-                    <progress value="{{ vals[(day + 1)|string]['battery'] }}" max="100" min="0"></progress>
+                    <b>max. {{ vals[(day + 1)|string]['battery']|round(1) }}%</b>
+                    <progress value="{{ vals[(day + 1)|string]['battery']|round(2) }}" max="100" min="0"></progress>
                 </div>
             </section>
 
             <section class="container">
                 <div class="option">
                     <i class="fa fa-solar-panel"></i>
-                    <b>max. {{ vals[(day + 1)|string]['pv'] }}W</b>
-                    <progress value="{{ vals[(day + 1)|string]['pv'] }}" max={{ config_data['converter']['max_power'] }} min="0"></progress>
+                    <b>max. {{ vals[(day + 1)|string]['pv']|round(2) }}W</b>
+                    <progress value="{{ vals[(day + 1)|string]['pv']|round(2) }}" max={{ config_data['converter']['max_power'] }} min="0"></progress>
                 </div>
             </section>
             <section class="container">
                 <div class="option">
                     <i class="fa fa-bolt"></i>
-                    <b>{{ vals[(day + 1)|string]['energy'] }}Wh</b>
+                    <b>{{ vals[(day + 1)|string]['energy']|round(2) }}Wh</b>
                 </div>
             </section>
 
