@@ -62,7 +62,7 @@ def data_analyzer(config_data: dict, path: None | str = None):
             power_data.append(round(power, 2))
             date_time_data.append(date_time)
 
-    elif slope == config_pv["tilt_angle"] and azimuth == config_pv["exposure_angle"]:
+    elif slope == config_pv["tilt_angle1"] and azimuth == config_pv["exposure_angle1"]:
         for data in datas:
             date: str = datetime.datetime.strptime(data["time"], "%Y%m%d:%H%M").strftime("%d-%m-%Y")
             tme: float = float(datetime.datetime.strptime(data["time"], "%Y%m%d:%H%M").strftime("%H.%M"))
@@ -98,8 +98,8 @@ def data_analyzer(config_data: dict, path: None | str = None):
 
             sun_class = functions.init_sun(config_data, date)
 
-            adj_data: float = sun_class.adjust_for_new_angle(radiation, slope, azimuth, config_pv["tilt_angle"],
-                                                             config_pv["exposure_angle"], tme)
+            adj_data: float = sun_class.adjust_for_new_angle(radiation, slope, azimuth, config_pv["tilt_angle1"],
+                                                             config_pv["exposure_angle1"], tme)
 
             azimuth, elevation = functions.get_sun_data(sun_class, tme)
 
