@@ -8,21 +8,7 @@ import requests_cache
 from numpy import (float32, float16, uint16, sin, cos, arcsin, arccos, deg2rad, rad2deg, round as np_round, power,
                    max as np_max)
 
-from module import debug
-
-
-def precision(func, precision_: int = 5):
-    @wraps(func)
-    def wrapped(*args, **kwargs):
-        precision_args = (np_round(arg, precision_) if isinstance(arg, (float, float32)) else arg for arg in args)
-
-        precision_kwargs = {k: (np_round(v, precision_) if isinstance(v, (float, float32)) else v) for k, v in
-                            kwargs.items()}
-
-        return func(*precision_args, **precision_kwargs)
-
-    return wrapped
-
+from module import debug, own_wrapper
 
 class MarketData:
     """
@@ -618,7 +604,7 @@ class CalcSunPos:
                 f"Die aktuelle Sonnenposition ist: {np_round(self.calc_azimuth(t), 2)}°\n"
                 f"und die aktuelle Sonnenhöhe beträgt {np_round(self.calc_solar_elevation(t), 2)}°")
 
-    @precision
+    @own_wrapper.precision()
     @lru_cache(maxsize=1_000)
     def calc_azimuth(self, t: float) -> float32:
         """
@@ -639,7 +625,7 @@ class CalcSunPos:
                 (cos(sun_height, dtype=float32) * cos(self.latitude, dtype=float32)))
         return rad2deg(sun_azimuth, dtype=float32)
 
-    @precision
+    @own_wrapper.precision()
     @lru_cache(maxsize=1_000)
     def calc_solar_elevation(self, t: float) -> float32:
         """
@@ -658,7 +644,7 @@ class CalcSunPos:
                                      sin(self.sun_declination, dtype=float32), dtype=float32)
         return rad2deg(sun_height, dtype=float32)
 
-    @precision
+    @own_wrapper.precision()
     @lru_cache(maxsize=1_000)
     def adjust_for_new_angle(self, original_gb: float, original_tilt_angle: float, original_azimuth_angle: float,
                              new_tilt_angle: float, new_azimuth_angle: float, tme: float) -> float32:
@@ -673,7 +659,7 @@ class CalcSunPos:
         :return:
         """
 
-        @precision
+        @own_wrapper.precision()()
         @lru_cache(maxsize=1_000)
         def _calc_incidence_angle(elevation_sun, azimuth_sun, tilt_angle, panel_azimuth) -> float32:
             """
@@ -770,7 +756,7 @@ class PVProfit:
                f"Der Ausrichtungswinkel ist: {self.exposure_angle}°")
         return val
 
-    @precision
+    @own_wrapper.precision()
     @lru_cache(maxsize=1_000)
     def calc_incidence_angle(self, sun_height: float, sun_azimuth: float) -> float32:
         """
@@ -789,7 +775,7 @@ class PVProfit:
                            dtype=float32)
         return -1
 
-    @precision
+    @own_wrapper.precision()
     @lru_cache(maxsize=1_000)
     def calc_pv_temp(self, temperature: float, radiation: float) -> float32:
         """
@@ -807,7 +793,7 @@ class PVProfit:
                 print("No radiation")
             return 0
 
-    @precision
+    @own_wrapper.precision()
     @lru_cache(maxsize=1_000)
     def calc_temp_dependency(self, temperature: float, radiation: float) -> float32:
         """
@@ -821,7 +807,7 @@ class PVProfit:
                                      self.temperature_coefficient)
         return current_efficiency
 
-    @precision
+    @own_wrapper.precision()
     @lru_cache(maxsize=1_000)
     def calc_power(self, power_direct_horizontal: float, incidence_angle: float, sun_height: float,
                    current_efficiency: float) -> float32:
@@ -902,7 +888,7 @@ class PVProfit:
 
         return diffuse_energy
 
-    @precision
+    @own_wrapper.precision()
     @lru_cache(maxsize=1_000)
     def calc_power_with_dni(self, dni: float, incidence_angle: float, temperature: float) -> float32:
         """
@@ -1504,7 +1490,7 @@ class RequiredHeatingPower:
         :return:
         """
 
-        @precision
+        @own_wrapper.precision()
         @lru_cache(maxsize=1_000)
         def _calc(wall_obj: room.Wall1 | room.Wall2 | room.Wall3 | room.Wall4) -> (float32, float32, float32,
                                                                                    float32, float32, float32):
@@ -1698,3 +1684,30 @@ class ShellyTRVControl:
             print("No Shelly TRV reached")
             debug.printer(exceptions)
             return False
+
+
+class Shelly3PM:
+    def __init__(self, ip_address: str) -> None:
+        """
+
+        :param ip_address:
+        """
+        self.ip_address: str = ip_address
+
+    def get_status(self, timeout: int = 5) -> dict | None:
+        """
+
+        :param timeout:
+        :return:
+        """
+        url: str = f"http://{self.ip_address}/status"
+        try:
+            response: requests.models.Response = requests.get(url, timeout=timeout)
+            if response.status_code == 200:
+                data: dict = response.json()
+                return data
+            return None
+        except (requests.exceptions.ConnectTimeout, OSError) as exceptions:
+            print("No Shelly TRV reached")
+            debug.printer(exceptions)
+            return None

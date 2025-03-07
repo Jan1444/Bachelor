@@ -372,9 +372,9 @@ def load_load_profile(path: str | None) -> dict:
 @lru_cache(maxsize=100)
 def calc_fuel_consumption(heating: float32, efficiency: float32, energy_density: float32 = float32(11.8),
                           density: float32 = float32(0.85)) -> float32:
-    heating: float32 = float32(heating / 1000.0)
+    heating: float32 = float32(heating / float32(1000.0))
 
-    required_energy: float32 = heating / (efficiency / 100.0)
+    required_energy: float32 = heating / (efficiency / float32(100.0))
 
     fuel_mass: float32 = required_energy / energy_density
 
@@ -387,9 +387,9 @@ def calc_fuel_consumption(heating: float32, efficiency: float32, energy_density:
 @wrap.formatter
 @lru_cache(maxsize=100)
 def calc_gas_consumption(heating: float32, efficiency: float32) -> float32:
-    heating = float32(heating / 1000.0)
+    heating = float32(heating / float32(1000.0))
 
-    required_energy: float32 = heating / (efficiency / 100.0)
+    required_energy: float32 = heating / (efficiency / float32(100.0))
 
     return required_energy
 
@@ -399,18 +399,19 @@ def calc_gas_consumption(heating: float32, efficiency: float32) -> float32:
 @lru_cache(maxsize=100)
 def calc_fuel_gas_consumption(heating: float32, efficiency: float32, fuel: str):
     if fuel == 'gas':
-        required_energy: float32 = heating / (efficiency / 100.0)
+        required_energy: float32 = heating / (efficiency / float32(100.0))
         return required_energy
 
     elif fuel == 'fuel':
         energy_density: float32 = float32(11.8)
 
-        required_energy: float32 = heating / (efficiency / 100.0)
+        required_energy: float32 = heating / (efficiency / float32(100.0))
         fuel_volume: float32 = required_energy / energy_density
         return fuel_volume
     return 1
 
 
+'''
 def read_val_from_adc(channel: int, address: hex = 0x48) -> float32:
     # https://github.com/chandrawi/ADS1x15-ADC/blob/main/README.md
     r1: float32 = float32(1_000)
@@ -448,4 +449,4 @@ def relay(channel: int, val: bool):
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(pin, GPIO.OUT)
     GPIO.output(pin, val)
-    GPIO.cleanup()
+    GPIO.cleanup()'''

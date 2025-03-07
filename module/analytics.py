@@ -103,10 +103,15 @@ def heating_power(config_data: dict, weather: dict) -> (list, list, list):
 
                 wall_: str = data_house.get(prefix, "")
                 wall_type: str = data_house.get(f"construction_{prefix}", "")
+                print(wall_type)
                 year: uint16 = uint16(data_house.get(f"house_year", 0)
                                       if data_house.get(f"house_year") < 1995 else 1995)
-
+                #TODO: fix wall_type Enev
                 if wall_ == "ENEV Außenwand" or wall_ == "ENEV Innenwand":
+                    wall_type = 2016
+                    print("a,",u_value.get("Wand"))
+                    print("b,",u_value.get("Wand").get(wall_))
+                    print("c,",u_value.get("Wand").get(wall_).get(uint16(wall_type)))
                     return float16(u_value.get("Wand").get(wall_).get(uint16(wall_type)))
                 elif wall_ == "u_value":
                     return float16(data_house.get(f"{prefix}_u_value", 0))

@@ -1,6 +1,4 @@
 #  -*- coding: utf-8 -*-
-
-
 from functools import wraps
 
 from numpy import float32, uint16, round as np_round
@@ -20,9 +18,7 @@ def freeze_all(func):
 
         frozen_args = tuple(freeze(arg) for arg in args)
         frozen_kwargs = {k: freeze(v) for k, v in kwargs.items()}
-
         return func(*frozen_args, **frozen_kwargs)
-
     return wrapped
 
 
@@ -35,9 +31,7 @@ def precision(precision_: int = 5):
             precision_kwargs = {k: (np_round(v, precision_) if isinstance(v, (float, float32)) else v)
                                 for k, v in kwargs.items()}
             return func(*precision_args, **precision_kwargs)
-
         return wrapped
-
     return _precision
 
 
@@ -50,7 +44,5 @@ def formatter(func):
                                else arg)
                          )
                    for arg in args)
-
         return func(*np_args, **kwargs)
-
     return wrapped
