@@ -12,7 +12,7 @@ from module import consts, functions
 
 def data_analyzer(config_data: dict, path: None | str = None):
     if path is None:
-        path = rf"./uploads/{os.listdir("./uploads")[0]}"
+        path = rf"./uploads/{os.listdir('./uploads')[0]}"
 
     data = json.load(open(path, "rb+"))
 
