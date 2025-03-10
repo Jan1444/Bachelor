@@ -2,22 +2,22 @@
 reload = true
 
 [write_time]
-time = "07-03-2025 13:20:37"
+time = "09-03-2025 22:56:16"
 format = "%d-%m-%Y %H:%M:%S"
 
 [coordinates]
-latitude = 49.46039584620328
-longitude = 11.110736002157667
+latitude = 49.46039308474446
+longitude = 11.110739313216815
 
 [pv]
 alignment = 1
 pv_lifetime = 25.0
-pv_peak_power = 1080.0
-pv_cost = 750.0
+pv_peak_power = 870.0
+pv_cost = 200.0
 tilt_angle1 = 45.0
 area1 = 2.5
-module_efficiency1 = 20.0
-exposure_angle1 = 35.0
+module_efficiency1 = 25.0
+exposure_angle1 = 60.0
 temperature_coefficient1 = -0.35
 nominal_temperature1 = 25.0
 mounting_type1 = 0.0
@@ -44,16 +44,16 @@ nominal_temperature4 = 0.0
 mounting_type4 = 0.0
 
 [converter]
-max_power = 800.0
-efficiency = 96.0
+max_power = 820.0
+efficiency = 94.0
 
 [battery]
 capacity = 1.6
-charging_power = 900.0
+charging_power = 1200.0
 max_deload = 90.0
 load_efficiency = 95.0
 load_cycle = 6000.0
-price = 600.0
+price = 700.0
 
 [market]
 consumer_price = 15.35
@@ -74,80 +74,80 @@ ip_address_cloud = ""
 ir_remote = ""
 
 [load_profile]
-name = "None"
+name = "lastprofil_nsi_2023.xls"
 
 [house]
 house_year = 1979
-window1_frame = "Kunststoffrahmen"
-window1_glazing = "Isolierverglasung"
-window1_year = 2016
-window1_width = 0.8
-window1_height = 1.0
+window1_frame = "u_value"
+window1_glazing = ""
+window1_year = 1979
+window1_width = 1.2
+window1_height = 2.0
 window1_u_value = 0.0
-wall1 = "ENEV Außenwand"
-construction_wall1 = "2016"
+wall1 = "u_value"
+construction_wall1 = ""
 wall1_type = 0
-wall1_width = 15.0
-wall1_height = 2.4
+wall1_width = 4.0
+wall1_height = 2.6
 wall1_diff_temp = 0.0
-door_wall1 = 2
-door_wall1_width = 0.8
-door_wall1_height = 2.0
+door_wall1 = 0
+door_wall1_width = 0.0
+door_wall1_height = 0.0
 window4_frame = "u_value"
 window4_glazing = ""
 window4_year = 1979
 window4_width = 0.8
 window4_height = 1.0
-ceiling = "ENEV beheiztes Geschoss"
-construction_ceiling = "2016"
+ceiling = "u_value"
+construction_ceiling = ""
 window2_frame = "u_value"
 window2_glazing = ""
 window2_year = 1979
 window2_width = 0.8
-window2_height = 1.0
-wall4 = "ENEV Innenwand"
-construction_wall4 = "2016"
-wall2 = "Innenwand"
-construction_wall2 = "Massivbauweise"
-wall2_width = 15.0
+window2_height = 2.4
+wall4 = "u_value"
+construction_wall4 = ""
+wall2 = "u_value"
+construction_wall2 = ""
+wall2_width = 8.0
 door_wall4 = 0
 door_wall4_width = 1.5
 door_wall4_height = 2.0
-floor = "ENEV beheiztes Geschoss"
-construction_floor = "2016"
+floor = "u_value"
+construction_floor = ""
 door_wall2 = 0
 door_wall2_width = 0.0
 door_wall2_height = 0.0
 window3_frame = "u_value"
 window3_glazing = ""
 window3_year = 1979
-window3_width = 0.8
+window3_width = 0.9
 window3_height = 1.0
-wall3 = "ENEV Innenwand"
+wall3 = "u_value"
 construction_wall3 = ""
 door_wall3 = 0
-door_wall3_width = 0.0
-door_wall3_height = 0.0
+door_wall3_width = 1.2
+door_wall3_height = 2.4
 wall1_u_value = 0.0
 door_enev_wall1 = ""
-door_wall1_enev = "2016"
+door_wall1_enev = ""
 window2_u_value = 0.0
-wall2_height = 2.4
+wall2_height = 2.6
 wall2_type = 0
 wall2_u_value = 0.0
-wall2_diff_temp = 19.0
+wall2_diff_temp = 16.0
 door_wall2_enev = ""
 window3_u_value = 0.0
-wall3_width = 15.0
-wall3_height = 2.4
+wall3_width = 4.0
+wall3_height = 2.6
 wall3_type = 0
 wall3_u_value = 0.0
-wall3_diff_temp = 22.0
-door_wall3_enev = ""
+wall3_diff_temp = 24.0
+door_wall3_enev = "2016"
 window4_u_value = 0.0
-wall4_width = 15.0
+wall4_width = 8.0
 wall4_height = 2.6
 wall4_type = 0
 wall4_u_value = 0.0
-wall4_diff_temp = 20.0
+wall4_diff_temp = 22.0
 door_wall4_enev = "2016"

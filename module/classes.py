@@ -1531,7 +1531,9 @@ class RequiredHeatingPower:
                 door: float32 = wall_obj.Door.area * wall_obj.Door.u_wert * wall_obj.temp_diff
             except TypeError:
                 pass
-
+            print(wall, window1, window2, window3, window4, door)
+            door = 0
+            #TODO Fix door
             return wall, window1, window2, window3, window4, door
 
         wall_1, wall_1_window_1, wall_1_window_2, wall_1_window_3, wall_1_window_4, wall_1_door = _calc(room.Wall1)
@@ -1542,7 +1544,9 @@ class RequiredHeatingPower:
         floor: float32 = room.Floor.area * room.Floor.u_wert * room.Floor.temp_diff
 
         ceiling: float32 = room.Ceiling.area * room.Ceiling.u_wert * room.Floor.temp_diff
-
+        #TODO: fix ceiling and floor
+        ceiling = float32(0.0)
+        floor = float32(0.0)
         heating_power: float32 = (wall_1 + wall_1_window_1 + wall_1_window_2 + wall_1_window_3 + wall_1_window_4 +
                                   wall_1_door +
                                   wall_2 + wall_2_window_1 + wall_2_window_2 + wall_2_window_3 + wall_2_window_4 +
@@ -1552,7 +1556,7 @@ class RequiredHeatingPower:
                                   wall_4 + wall_4_window_1 + wall_4_window_2 + wall_4_window_3 + wall_4_window_4 +
                                   wall_4_door +
                                   floor + ceiling)
-
+        print(heating_power)
         return heating_power
 
     @staticmethod

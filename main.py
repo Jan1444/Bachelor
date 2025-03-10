@@ -26,7 +26,7 @@ def init_classes(latitude: float, longitude: float, module_efficiency: float, mo
     :param exposure_angle:
     :return:
     """
-    weather: classes.Weather = classes.Weather(latitude, longitude, api='ensemble')
+    weather: classes.Weather = classes.Weather(latitude, longitude, days=3)
     market: classes.MarketData = classes.MarketData(costs)
     sun: classes.CalcSunPos = classes.CalcSunPos(latitude, longitude)
     pv: classes.PVProfit = classes.PVProfit(module_efficiency, module_area, tilt_angle, exposure_angle, -0.35, 25,
@@ -145,9 +145,9 @@ def main():
     market_consts = config_data["market"]
 
     w, m, sun, pv = init_classes(coordinates["latitude"], coordinates["longitude"],
-                                 pv_consts["module_efficiency"], pv_consts["area"],
-                                 pv_consts["tilt_angle"], pv_consts["exposure_angle"],
-                                 pv_consts["mounting_type"], market_consts["consumer_price"])
+                                 pv_consts["module_efficiency1"], pv_consts["area1"],
+                                 pv_consts["tilt_angle1"], pv_consts["exposure_angle1"],
+                                 pv_consts["mounting_type1"], market_consts["consumer_price"])
     # test_day_data(w.data[list(w.data.keys())[0]], sun, pv, m)
 
     '''test_data = {

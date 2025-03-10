@@ -127,12 +127,12 @@ def generate_market_data(request_data: dict, config_data: dict) -> list[str]:
 
     for market_data in market_datas:
         time_data.append(
-            f"{market_data.get('date', "")} {market_data.get('start_timestamp', ":")}"
+            f"{market_data.get('date', '')} {market_data.get('start_timestamp', ':')}"
         )
         price_data.append(market_data.get('consumerprice', 0))
         data_dict.update(
             {
-                f"{market_data.get('date', "")} {market_data.get('start_timestamp', ":")}": market_data.get(
+                f"{market_data.get('date', '')} {market_data.get('start_timestamp', ':')}": market_data.get(
                     'consumerprice', "0")
             }
         )
@@ -142,7 +142,7 @@ def generate_market_data(request_data: dict, config_data: dict) -> list[str]:
     if os.path.exists(rf"{consts.DOWNLOADS_FILE_PATH}plot_market.png"):
         os.remove(rf"{consts.DOWNLOADS_FILE_PATH}plot_market.png")
 
-    if request_data.get("excel_market", "") == "on":
+    if request_data.get("excel_market", '') == "on":
         df = DataFrame.from_dict(data_dict, orient='index', columns=['price [ct]'])
         df.to_excel(f'{consts.DOWNLOADS_FILE_PATH}market_data.xlsx')
         msg.append("excel_market")
@@ -172,8 +172,8 @@ def generate_market_data(request_data: dict, config_data: dict) -> list[str]:
         plt.xticks(rotation=90, ha="right", fontsize=18)
 
         _max = (max(price_data) + (100 if max(price_data) > 100 else 5))
-        ticks = arange(0, _max, step=(len(price_data) // 100 * 10 if _max > 100 else 1))
-
+        #ticks = arange(0, _max, step=(len(price_data) // 100 * 10 if _max > 100 else 1))
+        ticks = 100
         plt.yticks(ticks=ticks, ha="right", fontsize=20)
         plt.legend(loc="upper left", fontsize=20)
         plt.tight_layout()

@@ -100,7 +100,7 @@ def heating_power(config_data: dict, weather: dict) -> (list, list, list):
     def _get_u_value(data_house: dict, u_value: dict, prefix: str) -> float16:
         try:
             if "wall" in prefix:
-
+                print(prefix)
                 wall_: str = data_house.get(prefix, "")
                 wall_type: str = data_house.get(f"construction_{prefix}", "")
                 print(wall_type)
